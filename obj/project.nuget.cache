@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "dgSpecHash": "kbPsVB1G4IsHDZ7hmTJwR1XmeAqyOlwjPLN+Q4Ye4VRJZb2FIETnL15d4OUsm+sHi7TswCWVc842ckrxMWLqTA==",
+  "success": true,
+  "projectFilePath": "D:\\Projects\\DatalinkALA\\DatalinkALASample\\DatalinkALASample\\DataLink_ALA.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\John\\.nuget\\packages\\entityframework\\6.3.0\\entityframework.6.3.0.nupkg.sha512",
+    "C:\\Users\\John\\.nuget\\packages\\exceldatareader\\3.6.0\\exceldatareader.3.6.0.nupkg.sha512",
+    "C:\\Users\\John\\.nuget\\packages\\newtonsoft.json\\12.0.3\\newtonsoft.json.12.0.3.nupkg.sha512",
+    "C:\\Users\\John\\.nuget\\packages\\system.data.sqlite\\1.0.112\\system.data.sqlite.1.0.112.nupkg.sha512",
+    "C:\\Users\\John\\.nuget\\packages\\system.data.sqlite.core\\1.0.112\\system.data.sqlite.core.1.0.112.nupkg.sha512",
+    "C:\\Users\\John\\.nuget\\packages\\system.data.sqlite.ef6\\1.0.112\\system.data.sqlite.ef6.1.0.112.nupkg.sha512",
+    "C:\\Users\\John\\.nuget\\packages\\system.data.sqlite.linq\\1.0.112\\system.data.sqlite.linq.1.0.112.nupkg.sha512",
+    "C:\\Users\\John\\.nuget\\packages\\system.net.http\\4.3.4\\system.net.http.4.3.4.nupkg.sha512",
+    "C:\\Users\\John\\.nuget\\packages\\system.reactive\\4.1.5\\system.reactive.4.1.5.nupkg.sha512",
+    "C:\\Users\\John\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\4.5.2\\system.runtime.compilerservices.unsafe.4.5.2.nupkg.sha512",
+    "C:\\Users\\John\\.nuget\\packages\\system.security.cryptography.algorithms\\4.3.0\\system.security.cryptography.algorithms.4.3.0.nupkg.sha512",
+    "C:\\Users\\John\\.nuget\\packages\\system.security.cryptography.encoding\\4.3.0\\system.security.cryptography.encoding.4.3.0.nupkg.sha512",
+    "C:\\Users\\John\\.nuget\\packages\\system.security.cryptography.primitives\\4.3.0\\system.security.cryptography.primitives.4.3.0.nupkg.sha512",
+    "C:\\Users\\John\\.nuget\\packages\\system.security.cryptography.x509certificates\\4.3.0\\system.security.cryptography.x509certificates.4.3.0.nupkg.sha512",
+    "C:\\Users\\John\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.2\\system.threading.tasks.extensions.4.5.2.nupkg.sha512",
+    "C:\\Users\\John\\.nuget\\packages\\system.valuetuple\\4.5.0\\system.valuetuple.4.5.0.nupkg.sha512",
+    "C:\\Users\\John\\.nuget\\packages\\wpfanimatedgif\\1.4.18\\wpfanimatedgif.1.4.18.nupkg.sha512"
+  ],
+  "logs": []
+}
