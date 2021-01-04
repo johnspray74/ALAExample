@@ -1142,13 +1142,10 @@ namespace Application
             var destination = new Wizard("Get information off device") {SecondTitle="What do you want to do with the session file?",InstanceName="destination"}; /* {"IsRoot":false} */
             var saveSelectedSessionToCSV = new WizardItem("Save selected session to CSV file") {ImageName="Icon_Session.png",Checked=true,InstanceName="saveSelectedSessionToCSV"}; /* {"IsRoot":false} */
             var sendToCloud = new WizardItem("Send sessions to Cloud") {ImageName="cloud.png",InstanceName="sendToCloud"}; /* {"IsRoot":false} */
-            var filterEmptyDates = new Filter() {InstanceName="filterEmptyDates",FilterDelegate=(DataRow r) =>{    if (!String.IsNullOrEmpty(r["date"].ToString()))        return true;    return false;}}; /* {"IsRoot":false} */
-            var sortByDate = new Sort() {InstanceName="sortByDate",Column="date",IsDescending=true}; /* {"IsRoot":false} */
-            var sessionListSelectionMap = new Map() {InstanceName="sessionListSelectionMap",Column="checkbox",MapDelegate=(DataRow r, string s) =>{    if (s.Equals("Today") && DateTime.Now.ToString("dd/MM/yyyy").Equals(r["date"]) || s.Equals("All"))        return true;    return false;}}; /* {"IsRoot":false} */
             var comPortAdapter = new COMPortAdapter() {InstanceName="comPortAdapter"}; /* {"IsRoot":true} */
             var scpDeviceSense = new SCPDeviceSense() {InstanceName="scpDeviceSense"}; /* {"IsRoot":false} */
             var scpProtocol = new SCPProtocol() {InstanceName="scpProtocol"}; /* {"IsRoot":false} */
-            var scpArbitrator = new Arbitrator() {InstanceName="scpArbitrator"}; /* {"IsRoot":false} */
+            var COMPort = new Arbitrator() {InstanceName="COMPort"}; /* {"IsRoot":false} */
             var scpSessionFilesWriter = new CSVFileReaderWriter() {FileType=3,InstanceName="scpSessionFilesWriter"}; /* {"IsRoot":false} */
             var saveScpSessionsDataToFileBrowser = new SaveFileBrowser("Get information onto device") {InstanceName="saveScpSessionsDataToFileBrowser"}; /* {"IsRoot":true} */
             var sessionListScp = new SessionListSCP() {InstanceName="sessionListScp"}; /* {"IsRoot":true} */
@@ -1157,11 +1154,11 @@ namespace Application
             var sessionDataForGrid = new SessionDataSCP() {InstanceName="sessionDataForGrid"}; /* {"IsRoot":false} */
             var pollSerial = new Timer() {InstanceName="pollSerial"}; /* {"IsRoot":false} */
             var sessionDataTransact = new Transact() {InstanceName="sessionDataTransact"}; /* {"IsRoot":true} */
-            var id_b450cfaa54744d0a978d3aa700de0f9a = new ToEvent<bool>() {}; /* {"IsRoot":false} */
-            var id_91dac706bbe643529fca59fdc379a223 = new Not() {}; /* {"IsRoot":false} */
-            var id_f9a3c2f1b4eb46d386e9b76a0d264683 = new ToEvent<bool>() {}; /* {"IsRoot":false} */
+            var id_b450cfaa54744d0a978d3aa700de0f9a = new ToEvent<bool>() {InstanceName="id_b450cfaa54744d0a978d3aa700de0f9a"}; /* {"IsRoot":false} */
+            var id_91dac706bbe643529fca59fdc379a223 = new Not() {InstanceName="id_91dac706bbe643529fca59fdc379a223"}; /* {"IsRoot":false} */
+            var id_f9a3c2f1b4eb46d386e9b76a0d264683 = new ToEvent<bool>() {InstanceName="id_f9a3c2f1b4eb46d386e9b76a0d264683"}; /* {"IsRoot":false} */
             var sessionDataForImport = new SessionDataSCP() {InstanceName="sessionDataForImport"}; /* {"IsRoot":false} */
-            var id_ced2fdc009d34ef79c279aa1828c7744 = new ToEvent<bool>() {}; /* {"IsRoot":false} */
+            var id_ced2fdc009d34ef79c279aa1828c7744 = new ToEvent<bool>() {InstanceName="id_ced2fdc009d34ef79c279aa1828c7744"}; /* {"IsRoot":false} */
             // END AUTO-GENERATED INSTANTIATIONS FOR MainDiagram
             #endregion
 
@@ -3414,15 +3411,13 @@ namespace Application
             statusLine.WireTo(textDeviceConnected, "children"); /* {"SourceType":"Horizontal","SourceIsReference":false,"DestinationType":"Text","DestinationIsReference":false} */
             sessionDataGrid.WireTo(sessionDataForGrid, "?ITableDataFlow"); /* {"SourceType":"Grid","SourceIsReference":false,"DestinationType":"SessionDataSCP","DestinationIsReference":false} */
             sessionDataTransact.WireTo(scpSessionFilesWriter, "tableDataFlowDestination"); /* {"SourceType":"Transact","SourceIsReference":false,"DestinationType":"CSVFileReaderWriter","DestinationIsReference":false} */
-            filterEmptyDates.WireTo(sortByDate, "tableDataFlow"); /* {"SourceType":"Filter","SourceIsReference":false,"DestinationType":"Sort","DestinationIsReference":false} */
-            sortByDate.WireTo(sessionListSelectionMap, "sourceDataFlow"); /* {"SourceType":"Sort","SourceIsReference":false,"DestinationType":"Map","DestinationIsReference":false} */
             sessionListGrid.WireTo(sessionDataForGrid, "dataFlowSelectedPrimaryKey"); /* {"SourceType":"Grid","SourceIsReference":false,"DestinationType":"SessionDataSCP","DestinationIsReference":false} */
             comPortAdapter.WireTo(scpProtocol, "charFromPort"); /* {"SourceType":"COMPortAdapter","SourceIsReference":false,"DestinationType":"SCPProtocol","DestinationIsReference":false} */
             scpDeviceSense.WireTo(scpProtocol, "SCPRequestResponse_B"); /* {"SourceType":"SCPDeviceSense","SourceIsReference":false,"DestinationType":"SCPProtocol","DestinationIsReference":false} */
             sessionListScp.WireTo(scpProtocol, "requestResponseDataFlow_B"); /* {"SourceType":"SessionListSCP","SourceIsReference":false,"DestinationType":"SCPProtocol","DestinationIsReference":false} */
-            scpDeviceSense.WireTo(scpArbitrator, "arbitrator"); /* {"SourceType":"SCPDeviceSense","SourceIsReference":false,"DestinationType":"Arbitrator","DestinationIsReference":false} */
-            sessionListScp.WireTo(scpArbitrator, "arbitrator"); /* {"SourceType":"SessionListSCP","SourceIsReference":false,"DestinationType":"Arbitrator","DestinationIsReference":false} */
-            sessionDataForGrid.WireTo(scpArbitrator, "arbitrator"); /* {"SourceType":"SessionDataSCP","SourceIsReference":false,"DestinationType":"Arbitrator","DestinationIsReference":false} */
+            scpDeviceSense.WireTo(COMPort, "arbitrator"); /* {"SourceType":"SCPDeviceSense","SourceIsReference":false,"DestinationType":"Arbitrator","DestinationIsReference":false} */
+            sessionListScp.WireTo(COMPort, "arbitrator"); /* {"SourceType":"SessionListSCP","SourceIsReference":false,"DestinationType":"Arbitrator","DestinationIsReference":false} */
+            sessionDataForGrid.WireTo(COMPort, "arbitrator"); /* {"SourceType":"SessionDataSCP","SourceIsReference":false,"DestinationType":"Arbitrator","DestinationIsReference":false} */
             saveScpSessionsDataToFileBrowser.WireTo(scpSessionFilesWriter, "dataFlowOutputFilePaths"); /* {"SourceType":"SaveFileBrowser","SourceIsReference":false,"DestinationType":"CSVFileReaderWriter","DestinationIsReference":false} */
             scpDeviceSense.WireTo(id_b450cfaa54744d0a978d3aa700de0f9a, "connected"); /* {"SourceType":"SCPDeviceSense","SourceIsReference":false,"DestinationType":"ToEvent","DestinationIsReference":false} */
             scpDeviceSense.WireTo(textDeviceConnected, "connected"); /* {"SourceType":"SCPDeviceSense","SourceIsReference":false,"DestinationType":"Text","DestinationIsReference":false} */
@@ -3434,13 +3429,14 @@ namespace Application
             sessionListGrid.WireTo(id_f9a3c2f1b4eb46d386e9b76a0d264683, "dataFlowSelectedPrimaryKey"); /* {"SourceType":"Grid","SourceIsReference":false,"DestinationType":"ToEvent","DestinationIsReference":false} */
             id_f9a3c2f1b4eb46d386e9b76a0d264683.WireTo(sessionDataGrid, "eventOutput"); /* {"SourceType":"ToEvent","SourceIsReference":false,"DestinationType":"Grid","DestinationIsReference":false} */
             sessionListGrid.WireTo(sessionDataForImport, "dataFlowSelectedPrimaryKey"); /* {"SourceType":"Grid","SourceIsReference":false,"DestinationType":"SessionDataSCP","DestinationIsReference":false} */
-            sessionDataForImport.WireTo(scpArbitrator, "arbitrator"); /* {"SourceType":"SessionDataSCP","SourceIsReference":false,"DestinationType":"Arbitrator","DestinationIsReference":false} */
+            sessionDataForImport.WireTo(COMPort, "arbitrator"); /* {"SourceType":"SessionDataSCP","SourceIsReference":false,"DestinationType":"Arbitrator","DestinationIsReference":false} */
             sessionDataForImport.WireTo(scpProtocol, "requestResponseDataFlow"); /* {"SourceType":"SessionDataSCP","SourceIsReference":false,"DestinationType":"SCPProtocol","DestinationIsReference":false} */
             sessionDataTransact.WireTo(sessionDataForImport, "tableDataFlowSource"); /* {"SourceType":"Transact","SourceIsReference":false,"DestinationType":"SessionDataSCP","DestinationIsReference":false} */
             mainWindow.WireTo(pollSerial, "appStartsRun"); /* {"SourceType":"MainWindow","SourceIsReference":true,"DestinationType":"Timer","DestinationIsReference":false} */
             saveScpSessionsDataToFileBrowser.WireTo(id_ced2fdc009d34ef79c279aa1828c7744, "dataFlowOutputFilePaths"); /* {"SourceType":"SaveFileBrowser","SourceIsReference":false,"DestinationType":"ToEvent","DestinationIsReference":false} */
             id_ced2fdc009d34ef79c279aa1828c7744.WireTo(sessionDataTransact, "eventOutput"); /* {"SourceType":"ToEvent","SourceIsReference":false,"DestinationType":"Transact","DestinationIsReference":false} */
             exitApp.WireTo(mainWindow, "eventOutput"); /* {"SourceType":"MenuItem","SourceIsReference":false,"DestinationType":"MainWindow","DestinationIsReference":true} */
+            ImportToCSV.WireTo(saveScpSessionsDataToFileBrowser, "eventOutput"); /* {"SourceType":"Tool","SourceIsReference":false,"DestinationType":"SaveFileBrowser","DestinationIsReference":false} */
             // END AUTO-GENERATED WIRING FOR MainDiagram
             #endregion
 
@@ -4453,6 +4449,8 @@ namespace Application
 
 
 }
+
+
 
 
 

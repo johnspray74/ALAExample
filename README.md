@@ -25,15 +25,12 @@ Swift and Andriod versions to follow.
 ### Installing
 
 
-## Running the code
+### Running the code
 
 
-## Built With
+### Built With
 
-C#, Visual Studio 2019, GALADE v1.16
-
-
-## Versioning
+C#, Visual Studio 2019, GALADE v1.6.1
 
 
 ## Authors
