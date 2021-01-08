@@ -35,7 +35,7 @@ C#, Visual Studio 2019, GALADE v1.6.1
 
 ## Authors
 
-John Spray, Roopak Sinha, Rosman Cheng, Arnab Sen, Kelly Luo, David Cole, Aiden Kim
+John Spray, Roopak Sinha, Rosman Cheng, Arnab Sen, Kelly Luo, Shuwei Zhai, David Cole, Aiden Kim
 
 
 ## License
