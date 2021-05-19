@@ -20,8 +20,8 @@ namespace DomainAbstractions
         // properties
         public string InstanceName = "Default";
 
-        // outputs
-        private IRequestResponseDataFlow_B<string, string> requestResponseDataFlow_B;
+        // ports
+        private IRequestResponseDataFlow<string, string> requestResponseDataFlow;
         private IArbitrator arbitrator;
         private IDataFlow<string> sessionListCount;
 
@@ -61,17 +61,15 @@ namespace DomainAbstractions
 
             // start to fetch file index from device
             await arbitrator.Request(InstanceName);
-            await requestResponseDataFlow_B.SendRequest("{FGDD}");
-            arbitrator.Release(InstanceName);
+            await requestResponseDataFlow.SendRequest("{FGDD}");
 
             string index = null;
-            await arbitrator.Request(InstanceName);
             // fetch session file index list
-            index = await requestResponseDataFlow_B.SendRequest("{FL}");
+            index = await requestResponseDataFlow.SendRequest("{FL}");
             while (!string.IsNullOrEmpty(index))
             {
                 sessionFileNumber.Add(index);
-                index = await requestResponseDataFlow_B.SendRequest("{FL}");
+                index = await requestResponseDataFlow.SendRequest("{FL}");
             }
             arbitrator.Release(InstanceName);
 
@@ -98,9 +96,9 @@ namespace DomainAbstractions
                 await arbitrator.Request(InstanceName);
                 try
                 {
-                    name = await requestResponseDataFlow_B.SendRequest("{FPNA" + sessionFileNumber[indexOfList] + "}");
-                    date = await requestResponseDataFlow_B.SendRequest("{FPDA" + sessionFileNumber[indexOfList] + "}");
-                    record = await requestResponseDataFlow_B.SendRequest("{FPNR" + sessionFileNumber[indexOfList] + "}");
+                    name = await requestResponseDataFlow.SendRequest("{FPNA" + sessionFileNumber[indexOfList] + "}");
+                    date = await requestResponseDataFlow.SendRequest("{FPDA" + sessionFileNumber[indexOfList] + "}");
+                    record = await requestResponseDataFlow.SendRequest("{FPNR" + sessionFileNumber[indexOfList] + "}");
                 }
                 catch (TaskCanceledException tsc)
                 {

@@ -2,7 +2,6 @@ using ProgrammingParadigms;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Timers;
 using System.Linq;
 
 namespace DomainAbstractions
@@ -27,19 +26,21 @@ namespace DomainAbstractions
         public string InstanceName;
 
         // ports -----------------------------------------------------------------
-        private IRequestResponseDataFlow_B<string, string> SCPRequestResponse_B;
-        private IDataFlow<bool> connected;
+        private IRequestResponseDataFlow<string, string> requestResponseDataFlow;
         private IDataFlow<string> selectedCOMPort;
         private IDataFlow<string> connectedDeviceName;
+        private IDataFlow<string> connectedDeviceVersion;
+        private IDataFlow<string> connectedDeviceSerialNumber;
         private IArbitrator arbitrator;
 
         // private fields -----------------------------------------------------------------
         private List<string> newListOfPorts;
         private bool isDeviceConnected;
         private string deviceName = null;
+        private string deviceVersion;
+        private string deviceSerialNumber;
         private string connectedPort;
         private bool isLoopingThroughPorts = false;
-
 
         /// <summary>
         /// Loops through COM list to find device connected response and acquires device name using SCP commands. Also turns on acknowledgements and error responses.
@@ -75,6 +76,7 @@ namespace DomainAbstractions
                     try
                     {
                         List<string> listOfPorts = newListOfPorts.Select(s => s).ToList(); // Create a new copy of the list to avoid interference from other scopes
+                       
                         if (listOfPorts.Count == 0) return;
                         listOfPorts.Reverse(); // To speed up debugging, when you have a lot of COMPorts and your desired port is closer to the end of the list
                         isLoopingThroughPorts = true;
@@ -89,11 +91,12 @@ namespace DomainAbstractions
                             }));
                             await TryingForPortResponseAsync(port);
                             if (counter.Equals(listOfPorts.Count)) { completedLoop = true; }
-
                         }
                     }
                     catch (Exception e)
                     {
+                        var text = e.StackTrace;
+                        Debug.WriteLine(text);
                         completedLoop = true;
                         Libraries.Logging.Log(e);
                     }
@@ -115,17 +118,17 @@ namespace DomainAbstractions
             try
             {
                 string response = "";
+            
                 await arbitrator.Request(InstanceName);
                 try
                 {
-                    response = await requestResponseDataFlow.SendRequest("{ZA1}");
+                        response = await requestResponseDataFlow.SendRequest("{ZA1}");
                 }
                 catch (TaskCanceledException e)
                 {
                     System.Diagnostics.Debug.WriteLine("3 seconds no response from device.");
                     return; // return to the next port
                 }
-
                 System.Diagnostics.Debug.WriteLine($"TryingForPortResponse: response was ({response})");
                 arbitrator.Release(InstanceName);
 
@@ -157,7 +160,6 @@ namespace DomainAbstractions
             {
                 firmware = await requestResponseDataFlow.SendRequest("{ZF}"); // {ZF} SCP command for Firmware features
 
-
                 if (firmware.Equals("Reader") || firmware.Equals("Reader,Alerts")) // Check if it is SRS2 or XRS2
                 {
                     deviceName = await requestResponseDataFlow.SendRequest("{ZI}");
@@ -167,6 +169,9 @@ namespace DomainAbstractions
                     deviceName = await requestResponseDataFlow.SendRequest("{ZN}");
                 }
 
+                deviceVersion = await requestResponseDataFlow.SendRequest("{VA}");
+                deviceSerialNumber = await requestResponseDataFlow.SendRequest("{VS}");
+                
                 // turn acknowledgements on with {ZA1}, turn error responses on with {ZE1}.
                 await requestResponseDataFlow.SendRequest("{ZA1}");
                 await requestResponseDataFlow.SendRequest("{ZE1}");
@@ -178,6 +183,8 @@ namespace DomainAbstractions
                 await System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() =>
                 {
                     connectedDeviceName.Data = null;
+                    connectedDeviceVersion.Data = null;
+                    connectedDeviceSerialNumber.Data = null;
                 }));
             }
             arbitrator.Release(InstanceName);
@@ -188,6 +195,8 @@ namespace DomainAbstractions
                 await System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() =>
                 {
                     connectedDeviceName.Data = deviceName;
+                    connectedDeviceVersion.Data = deviceVersion;
+                    connectedDeviceSerialNumber.Data = deviceSerialNumber;
                 }));
             }
         }
@@ -218,7 +227,5 @@ namespace DomainAbstractions
 
             arbitrator.Release(InstanceName);
         }
-
     }
-
 }

@@ -10,7 +10,7 @@ namespace DomainAbstractions
     /// 1. IDataFlow<T> dataToBePushed: generic type of data flow wanting to be pushed
     /// 2. IEvent pushDataRegardlessOfLatch: regardless of whether the gate is closed or open, push the data if it has arrived
     /// 3. IDataFlow<T> dataOutput: generic type of data flow being outputted
-    /// 4. IDataFlowB<bool> triggerLatchInput: is used to control to turn the gate on or off with a boolean value (turned off is false).
+    /// 4. IDataFlow_B<bool> triggerLatchInput: is used to control to turn the gate on or off with a boolean value (turned off is false).
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class DataFlowGate<T> : IDataFlow<T>, IEvent // dataToBePushed, pushDataRegardlessOfLatch
@@ -21,7 +21,7 @@ namespace DomainAbstractions
 
         // ports ---------------------------------------------------------------
         private IDataFlow<T> dataOutput;
-        private IDataFlowB<bool> triggerLatchInput;
+        private IDataFlow_B<bool> triggerLatchInput;
 
         /// <summary>
         /// Control the latch of the gate to block or push the incoming data.

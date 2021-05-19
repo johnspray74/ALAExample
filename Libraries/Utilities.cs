@@ -12,6 +12,8 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Net.Http;
+using System.Threading;
 
 namespace Libraries
 {
@@ -167,6 +169,60 @@ namespace Libraries
         public static JObject CreateJObjectMessage(string msgKeyword, string msgContent)
         {
             return new JObject(new JProperty(msgKeyword.ToUpper(), new JValue(msgContent)));
+        }
+
+        public static IEnumerable<List<T>> Chunk<T>(this List<T> list, int chunkSize)
+        {
+            for (int i = 0; i < list.Count; i += chunkSize)
+            {
+                yield return list.GetRange(i, Math.Min(chunkSize, list.Count - i));
+            }
+        }
+    }
+
+    public class HttpLoggingHandler : DelegatingHandler
+    {
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            string content;
+
+            this.Log("HTTP Request:\r\n" + request.ToString());
+            if (request.Content != null)
+            {
+                content = await request.Content.ReadAsStringAsync();
+
+                // try format JSON nicely, if it's not JSON just leave as string
+                try
+                {
+                    content = JValue.Parse(content).ToString(Formatting.Indented);
+                }
+                catch
+                {
+                }
+
+                this.Log("HTTP Request Content:\r\n" + content);
+            }
+
+            HttpResponseMessage response = await base.SendAsync(request, cancellationToken);
+
+            this.Log("HTTP Response:\r\n" + response.ToString());
+            if (response.Content != null)
+            {
+                content = await response.Content.ReadAsStringAsync();
+
+                // try format JSON nicely, if it's not JSON just leave as string
+                try
+                {
+                    content = JValue.Parse(content).ToString(Formatting.Indented);
+                }
+                catch
+                {
+                }
+
+                this.Log("HTTP Response Content:\r\n" + content);
+            }
+
+            return response;
         }
     }
 }

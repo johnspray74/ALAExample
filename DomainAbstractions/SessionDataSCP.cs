@@ -1,7 +1,10 @@
-﻿using ProgrammingParadigms;
+﻿using Libraries;
+using ProgrammingParadigms;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,28 +16,33 @@ namespace DomainAbstractions
     /// There is a Dictionary to store cached session data tables.
     /// ------------------------------------------------------------------------------------------------------------------
     /// Ports:
-    /// 1. IDataFlow<string> currentSessionIndex: sets the current session index to cache the session table data (not needing to reload it)
-    /// 2. ITableDataFlow inputOutputTableData: input/output port which can be source - getting session data (retrieving from device) or destination - putting session data (uploading to device)
-    /// 3. IRequestResponseDataFlow<string, string> requestResponseDataFlow: usage of the request response of the SCPProtocol
-    /// 3. IArbitrator arbitrator: arbitrator for ordering SCP commands
+    /// 1. IEvent clear: Clears the session data cache.
+    /// 2. IDataFlow<string> currentSessionIndex: sets the current session index to cache the session table data (not needing to reload it)
+    /// 3. ITableDataFlow inputOutputTableData: input/output port which can be source - getting session data (retrieving from device) or destination - putting session data (uploading to device)
+    /// 4. IRequestResponseDataFlow<string, string> requestResponseDataFlow: usage of the request response of the SCPProtocol
+    /// 5. IArbitrator arbitrator: arbitrator for ordering SCP commands
     /// </summary>
-    public class SessionDataSCP : IDataFlow<string>, ITableDataFlow // currentSessionIndex, inputOutputTableData
+    public class SessionDataSCP : IEvent, IDataFlow<string>, ITableDataFlow // clear, currentSessionIndex, inputOutputTableData
     {
         // properties
         public string InstanceName = "Default";
 
-        // outputs
-        private IRequestResponseDataFlow_B<string, string> requestResponseDataFlow;
+        // ports
+        private IRequestResponseDataFlow<string, string> requestResponseDataFlow;
         private IArbitrator arbitrator;
+        private IDataFlow<DateTime> sessionCreationDate;
 
         // cache, the loaded session data will be stored in cache so we don't need to load again when we select the session
         private Dictionary<string, DataTable> cachedSessionData = new Dictionary<string, DataTable>();
         private Dictionary<string, int> sessionRecordsCount = new Dictionary<string, int>();
+        private Dictionary<string, DateTime> sessionCreationDates = new Dictionary<string, DateTime>();
 
         // private fields
         // how many records are there in a page. default is 26
         private int pageSize = 26;
         private long rowId = 1;
+        private List<FieldHeader> headers = new List<FieldHeader>();
+        private Dictionary<string, Dictionary<int, string>> customFields;
 
         // this flag is used when a session file is selected and there exsits cached data, then the cached data will be returned
         // when GetPageFromSource is called. However, there still exists another situation that the user wants to load next page
@@ -45,6 +53,15 @@ namespace DomainAbstractions
         /// Fetch session data by sending a series SCP commands to device. Such as {FH} for header, {FN} for row.
         /// </summary>
         public SessionDataSCP() { }
+        
+        // IEvent implementation
+        void IEvent.Execute()
+        {
+            headers.Clear();
+            sessionRecordsCount.Clear();
+            cachedSessionData.Clear();
+            currentDataTable = new DataTable();
+        }
 
         // IDataFlow<DataRow> implementation ----------------------------------------------------------------------
         // store current session primary key
@@ -85,6 +102,32 @@ namespace DomainAbstractions
             await requestResponseDataFlow.SendRequest("{FGDD}");
             await requestResponseDataFlow.SendRequest("{FF" + primaryKey + "}");
             arbitrator.Release(InstanceName);
+
+            if (customFields == null)
+            {
+                await arbitrator.Request(InstanceName);
+
+                customFields = new Dictionary<string, Dictionary<int, string>>();
+                int customFieldCount = int.Parse(await requestResponseDataFlow.SendRequest("{SOCU}"));
+
+                for (int i = 0; i < customFieldCount; i++)
+                {
+                    Dictionary<int, string> field = new Dictionary<int, string>();
+                    string[] response = (await requestResponseDataFlow.SendRequest("{SOCU" + i + "}")).Split(',');
+                    string fieldName = response[0];
+                    int numberVal = int.Parse(response[1]);
+
+                    for (int j = 1; j <= numberVal; j++)
+                    {
+                        string valueName = await requestResponseDataFlow.SendRequest("{SOCU" + i + "," + j + "}");
+                        field.Add(j, valueName);
+                    }
+
+                    customFields.Add(fieldName, field);
+                }
+
+                arbitrator.Release(InstanceName);
+            }
 
             if (cachedSessionData.ContainsKey(primaryKey)
                 && cachedSessionData[primaryKey].Rows.Count > 0
@@ -129,9 +172,14 @@ namespace DomainAbstractions
 
                 sessionRecordsCount[primaryKey] = Convert.ToInt32(count);
                 currentDataTable.TableName = string.Format("FileNo: {0};Name: {1};Date: {2}", primaryKey, name, date);
-                
-
+                if (DateTime.TryParseExact(date, "dd/MM/yyyy", null, DateTimeStyles.None, out DateTime dateTime))
+                {
+                    sessionCreationDates[primaryKey] = dateTime;
+                }
             }
+
+            sessionCreationDates.TryGetValue(primaryKey, out var sessionDate);
+            if (sessionCreationDate != null) sessionCreationDate.Data = sessionDate;
         }
 
         async Task<Tuple<int, int>> ITableDataFlow.GetPageFromSourceAsync()
@@ -139,6 +187,11 @@ namespace DomainAbstractions
             // cache exist and the current table is going to be displayed
             if (cacheFlag)
             {
+                await arbitrator.Request(InstanceName);
+                await requestResponseDataFlow.SendRequest("{FGDD}");
+                await requestResponseDataFlow.SendRequest("{FF" + currentSessionPrimaryKey  + "}");
+                arbitrator.Release(InstanceName);
+
                 cacheFlag = false;
                 return new Tuple<int, int>(0, currentDataTable.Rows.Count);
             }
@@ -153,6 +206,8 @@ namespace DomainAbstractions
             int rowStartIndex = currentDataTable.Rows.Count;
 
             await arbitrator.Request(InstanceName);
+            await requestResponseDataFlow.SendRequest("{FGDD}");
+
             // set the cursor to the last record
             await requestResponseDataFlow.SendRequest("{FD}");  // {FD} first to start downloading from the first record
             await requestResponseDataFlow.SendRequest("{FR" + rowStartIndex + "}"); // {FRn} resets back to this record number inside the selected session or life data
@@ -171,7 +226,24 @@ namespace DomainAbstractions
                         DataRow row = currentDataTable.NewRow();
                         for (var i = 0; i < currentDataTable.Columns.Count - 1; i++)
                         {
-                            row[currentDataTable.Columns[i].ColumnName] = fields[i + 1];
+                            DataColumn column = currentDataTable.Columns[i];
+                            string field = fields[i+1];
+
+                            if (customFields.ContainsKey(column.ColumnName))
+                            {
+                                // try get custom field from the dictionary
+                                // if there is some sort of error, skip and just
+                                // display the value
+                                try
+                                {
+                                    field = customFields[column.ColumnName][int.Parse(field)];
+                                }
+                                catch
+                                {
+                                }
+                            }
+
+                            row[column.ColumnName] = field;
                         }
                         if (currentDataTable.Columns.Contains("index"))
                         {
@@ -187,126 +259,100 @@ namespace DomainAbstractions
 
 
         // uploading records to device ----------------------------------------------------------
-        //private bool is2Fields = false;
-        private string uploadSessionPrimaryKey;
+        private int sessionId;
         async Task ITableDataFlow.PutHeaderToDestinationAsync()
         {
-            string tableName = currentDataTable.TableName;
-            DataColumnCollection columns = currentDataTable.Columns;
+            // retrieve metadata from table header
+            // should reallly be changed - we don't need to know the session index
+            // as we will just add it to a new session anyway
+            // also don't need the field headers from the 3000 format - we can get this from a regular
+            // csv file headers and then call {FH} to get all headers - remove the first 3 characters and you get the
+            // CSV file header
+            string[] metaData = currentDataTable.TableName.Split(';');
 
-            string[] meta = currentDataTable.TableName.Split(';');
-            if (meta.Length < 4) return;
-   
-            uploadSessionPrimaryKey = currentSessionPrimaryKey;
-            string fileName = meta[1].Length > 6 ? meta[1].Substring(6) : "session-file";
-            fileName = fileName.IndexOf(",") > 0 ? fileName.Substring(0, fileName.IndexOf(",")) : fileName;
-            string date = meta[2].Length > 15 ? meta[2].Substring(6, 10) : DateTime.Now.ToString("dd/MM/yyyy");
-
-            string[] fieldIDs = meta[3].Split(',');
-            string letterFieldId = "";
-
-            for(int i = 0; i < fieldIDs.Length; i++)
+            if (metaData.Length < 3)
             {
-                if (i != fieldIDs.Length - 1)
+                throw new ArgumentException($"Table did not have enough metadata");
+            }
+
+            // you can thank CSVFileReaderWriter for this :)
+            // to be changed when CSV file is refactored
+            string sessionName = metaData[1].Replace("Name: ", "");
+            string sessionDate = metaData[2].Replace("Date: ", "");
+
+            await arbitrator.Request(InstanceName);
+            await requestResponseDataFlow.SendRequest("{FGDD}"); // select session data
+
+            // find the end of the session list
+            // add one to the end to create new session
+            while (true)
+            {
+                string response = await requestResponseDataFlow.SendRequest("{FL}");
+                if (String.IsNullOrEmpty(response)) break;
+                sessionId = Int32.Parse(response) + 1;
+            }
+
+            await requestResponseDataFlow.SendRequest("{FF" + sessionId + "}"); // select session
+
+            // retrieve headers
+            // convert into field headers
+            headers.Clear();
+            string header;
+            while (true)
+            {
+                header = await requestResponseDataFlow.SendRequest("{FH}");
+                if (String.IsNullOrEmpty(header)) break;
+
+                try
                 {
-                    letterFieldId += fieldIDs[i].Substring(0,2) + ",";
+                    FieldHeader fieldHeader = FieldHeader.FromString(header);
+                    if (currentDataTable.Columns.Contains(fieldHeader.Name))
+                    {
+                        headers.Add(fieldHeader);
+                    }
                 }
-                else
+                // if we can't parse the header just ignore it
+                catch (ArgumentException)
                 {
-                    letterFieldId += fieldIDs[i].Substring(0, 2);
                 }
             }
 
-            //is2Fields = false;
+            // set name and date of session
+            await requestResponseDataFlow.SendRequest("{FPNA" + sessionId + "," + sessionName + "}");
+            await requestResponseDataFlow.SendRequest("{FPDA" + sessionId + "," + sessionDate + "}");
 
-            currentDataTable.TableName = tableName;
-            foreach (DataColumn c in columns)
-            {
-                if (!currentDataTable.Columns.Contains(c.ColumnName))
-                {
-                    currentDataTable.Columns.Add(new DataColumn(c.ColumnName) { Prefix = c.Prefix });
-                }
-            }
-
-            await arbitrator.Request(InstanceName);
-            await requestResponseDataFlow.SendRequest("{FGDD}"); // to operate on Session Data 
-            await requestResponseDataFlow.SendRequest("{FF" + uploadSessionPrimaryKey + "}");
-            await requestResponseDataFlow.SendRequest("{FC}"); // this to clear the current 
-            await requestResponseDataFlow.SendRequest("{FPNA" + uploadSessionPrimaryKey + "," + fileName + "}");
-            await requestResponseDataFlow.SendRequest("{FPDA" + uploadSessionPrimaryKey + "," + date + "}");
             arbitrator.Release(InstanceName);
-
-            await arbitrator.Request(InstanceName);
-            await requestResponseDataFlow.SendRequest("{FI" + letterFieldId + "}");
-            arbitrator.Release(InstanceName);
-
-            //KL: commented out the is2field as unsure what this is for?
-            //try
-            //{
-
-            //}
-            //catch (Exception ex)
-            //{
-            //    Debug.WriteLine($"{ex.Message}");
-            //    await requestResponseDataFlow.SendRequest("{FIDW,F1}");
-            //    is2Fields = true;
-            //}
-
         }
 
         async Task ITableDataFlow.PutPageToDestinationAsync(int firstRowIndex, int lastRowIndex, GetNextPageDelegate getNextPage)
         {
-            if (firstRowIndex >= lastRowIndex) // all records has been uploaded, release arbitrator source
+            if (firstRowIndex >= lastRowIndex)
             {
-                sessionRecordsCount[uploadSessionPrimaryKey] = lastRowIndex;
-                //cachedSessionData.Remove(uploadSessionPrimaryKey);
                 getNextPage?.Invoke();
                 return;
             }
 
-            //string headers = is2Fields ? "Weight,EID" : "IDV,Weight,Draft,IDE";
+            await arbitrator.Request(InstanceName);
 
-            string headers = "";
-            for(int i = 0; i < currentDataTable.Columns.Count; i++)
+            await requestResponseDataFlow.SendRequest("{FGDD}"); // select session data
+            await requestResponseDataFlow.SendRequest("{FF" + sessionId + "}"); // select session index
+
+            // build headers to send
+            // basically their IDs joined together with commas
+            string uploadHeaders = String.Join(",", from FieldHeader header in headers select header.Id);
+            await requestResponseDataFlow.SendRequest("{FI" + uploadHeaders + "}"); // send upload headers
+
+            for (int i = firstRowIndex; i < lastRowIndex; i++)
             {
-                DataColumn c = currentDataTable.Columns[i];
-
-                if(i != currentDataTable.Columns.Count - 1)
-                {
-                    headers += currentDataTable.Columns[i] + ",";
-                }
-                else
-                {
-                    headers += currentDataTable.Columns[i];
-                }
+                DataRow row = currentDataTable.Rows[i];
+                
+                // select data from row in same order as headers
+                // join with commas
+                string uploadData = String.Join(",", from FieldHeader header in headers select row[header.Name].ToString());
+                await requestResponseDataFlow.SendRequest("{FU" + uploadData + "}");
             }
 
-            //StringBuilder sb = new StringBuilder();
-            for (var i = firstRowIndex; i < lastRowIndex; i++)
-            {
-                DataRow r = currentDataTable.Rows[i];
-
-                string rowInfo = String.Join(",", r.ItemArray);
-
-                // KL: Rosman way of uploading multiple rows at a time however does not work for XRS2
-                //foreach (var h in headers.Split(','))
-                //{
-                //    sb.AppendFormat("{0},", r[h]);
-                //}
-                //sb.Remove(sb.Length - 1, 1);
-                //sb.Append(";");
-
-                await arbitrator.Request(InstanceName);
-                await requestResponseDataFlow.SendRequest("{FU"+ rowInfo + "}");
-                arbitrator.Release(InstanceName);
-
-            }
-            //string uploadCommand = "{FU" + sb.Remove(sb.Length - 1, 1).ToString() + "}";
-
-            //await arbitrator.Request(InstanceName);
-            //await requestResponseDataFlow.SendRequest(uploadCommand);
-            //arbitrator.Release(InstanceName);
-
+            arbitrator.Release(InstanceName);
             getNextPage?.Invoke();
         }
     }

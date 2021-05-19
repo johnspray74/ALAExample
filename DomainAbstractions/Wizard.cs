@@ -20,17 +20,22 @@ namespace DomainAbstractions
     /// The IEvent for showing the window(if it's not active).
     ///
     /// See Macro for implementation. Wizard instance builds the other instances according to the macro diagram and information from the list of WizardItems. 
+    /// ------------------------------------------------------------------------------------------------------------------
+    /// Ports:
+    /// IEvent open: opens the Wizard window
+    /// List<IUIWizard> children: output list of UI elements contained in this Wizard (Note: wiring order determines order of position)
+    /// IEvent backEventOutput: link to the Wizard which you would like the back button to go back to opening
     /// </summary>
 
-    public class Wizard : IEvent
+    public class Wizard : IEvent // open
     {
         // properties 
         public string InstanceName = "Default";
         public string SecondTitle { set => titleTextBlock.Text = value; } 
         public bool ShowBackButton { set => InitializeBackButton(value); }
         public double Width { set => window.Width = value; }
-        
-        // outputs
+
+        // ports
         private List<IUIWizard> children = new List<IUIWizard>();
         private IEvent backEventOutput;
 
@@ -58,7 +63,6 @@ namespace DomainAbstractions
                 Title = title,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen,
                 Topmost = false,
-                Icon = new BitmapImage(new Uri(@"pack://application:,,,/" + Assembly.GetExecutingAssembly().GetName().Name + @";component/Application/" + "Resources/DataLink.ico", UriKind.Absolute)),
                 Background = new SolidColorBrush(Color.FromRgb(245, 245, 245)),
                 Content = GetInitializedBackgroundPanel()
             };

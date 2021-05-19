@@ -18,10 +18,10 @@ namespace DomainAbstractions
         public string InstanceName = "Default";
         public string ToolTip;
 
-        // outputs
+        // ports
         private IEvent eventOutput;
         private IUI iuiStructure;
-        private IDataFlowB<bool> dataFlowBOutput;
+        private IDataFlow_B<bool> dataFlowBOutput;
 
         // private fields
         private System.Windows.Controls.Button toolButton = new System.Windows.Controls.Button();

@@ -1,4 +1,0 @@
-D:\Projects\DatalinkALA\DatalinkALASample\DatalinkALASample\obj\Debug\DataLink_ALA.csprojAssemblyReference.cache
-D:\Projects\DatalinkALA\DatalinkALASample\DatalinkALASample\obj\Debug\DataLink_ALA.exe.config
-D:\Projects\DatalinkALA\DatalinkALASample\DatalinkALASample\obj\Debug\DataLink_ALA.g.resources
-D:\Projects\DatalinkALA\DatalinkALASample\DatalinkALASample\obj\Debug\DataLink_ALA.csproj.GenerateResource.cache

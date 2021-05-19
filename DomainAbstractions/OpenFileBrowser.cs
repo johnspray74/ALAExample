@@ -1,9 +1,12 @@
-﻿using Microsoft.Win32;
+﻿using Libraries;
+using Microsoft.Win32;
 using ProgrammingParadigms;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DomainAbstractions
@@ -17,15 +20,22 @@ namespace DomainAbstractions
     /// 2. ITableDataFlow outputFilesInfoTable: supported as a source data table input which generates the selected files - "name" for file name, "path" for  file path, and "filepath" for the full path of the file.
     /// 3. IEvent eventFileSelectedOutput: output event for when the 'Open' button is pressed
     /// 4. IDataFlow<string> dataFlowSelectedFileCount: string output of the count of selected files
+    /// 5. IDataFlow<List<string>> selectedFilePaths: list of selected file paths
+    /// 6. IDataFlow<int> fileFormatIndex: index of the filter that was selected.
     /// </summary>
     public class OpenFileBrowser : IEvent, ITableDataFlow // showWindow, outputFilesInfoTable
     {
         // properties
         public string InstanceName = "Default";
+        public string Filter { set => fileBrowser.Filter = value; }
+        public bool Multiselect { set => fileBrowser.Multiselect = value; }
+        public int FilterIndex { set => fileBrowser.FilterIndex = value; }
 
-        // outputs
+        // ports
         private IEvent eventFileSelectedOutput;
         private IDataFlow<string> dataFlowSelectedFileCount;
+        private IDataFlow<List<string>> selectedFilePaths; 
+        private IDataFlow<int> fileFormatIndex;
 
         // private fields
         private OpenFileDialog fileBrowser = new OpenFileDialog();
@@ -39,20 +49,19 @@ namespace DomainAbstractions
         {
             fileBrowser.Title = title;
             fileBrowser.Multiselect = true;
-            fileBrowser.Filter = "Datamars (*.csv;*.xls;*.xlsx;*.txt;*.xml)|*.csv;*.xls;*.xlsx;*.txt;*.xml|" +
-                                 "Datamars CSV file (*.csv)|*.csv|" +
-                                 "Microsoft Excel 97-2003 Worksheet (.xls)|*.xls|" +
-                                 "Microsoft Excel Worksheet (.xlsx)|*.xlsx|" +
-                                 "Datamars XML file (*.xml)|*.xml|" +
-                                 "Datamars Fav file (*.ttfav)|*.ttfav|" +
-                                 "All files (*.*)|*.*";
+            fileBrowser.Filter = String.Join("|", Constants.FilterTypes.Values);
 
-            fileBrowser.FileOk += (object sender, CancelEventArgs e) => {
+            fileBrowser.FileOk += (object sender, CancelEventArgs e) =>
+            {
+                if (fileFormatIndex != null) fileFormatIndex.Data = fileBrowser.FilterIndex;
+
                 filePaths = fileBrowser.FileNames;
                 if (dataFlowSelectedFileCount != null)
                 {
                     dataFlowSelectedFileCount.Data = filePaths.Length.ToString();
                 }
+
+                if (selectedFilePaths != null) selectedFilePaths.Data = filePaths.ToList();
                 eventFileSelectedOutput?.Execute();
             };
         }

@@ -14,7 +14,7 @@ namespace DomainAbstractions
         // properties
         public string InstanceName = "Default";
 
-        // outputs
+        // ports
         IDataFlow<bool> reversedInput;
 
         /// <summary>

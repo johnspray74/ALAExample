@@ -10,11 +10,14 @@ namespace DomainAbstractions
     /// <summary>
     /// A menu item of a menu that can be clicked. Has a IEvent port on the RHS. 
     /// When the item is clicked, it generates an event.
-    /// Ports
-    /// 1. IUI 
-    /// 2. IDataFlow<bool> Visible
+    /// ------------------------------------------------------------------------------------------------------------------
+    /// Ports:
+    /// 1. IUI wpfElement: The input IUI for get WPF element
+    /// 2. IDataFlow<bool> visible: toggles the visibility of the menu item
+    /// 3. IEvent eventOutput: output event for when the menu item is clicked
+    /// 4. IDataFlow_B<bool> dataFlowBOutput: data flow is false, background colour of the menu item will be set to grey
     /// </summary>
-    public class MenuItem : IUI, IDataFlow<bool>
+    public class MenuItem : IUI, IDataFlow<bool> // wpfElement, visible
     {
         // properties
         public string InstanceName = "Default";
@@ -34,9 +37,9 @@ namespace DomainAbstractions
             }
         }
 
-        // outputs
+        // ports
         private IEvent eventOutput;
-        private IDataFlowB<bool> dataFlowBOutput;
+        private IDataFlow_B<bool> dataFlowBOutput;
 
         // private fields
         private System.Windows.Controls.MenuItem menuItem;

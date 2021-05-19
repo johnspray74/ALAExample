@@ -26,18 +26,19 @@ namespace DomainAbstractions
     /// 2. The visibility of a column was configured in the DataTable (DataColumn.Prefix = 'hide').
     /// ------------------------------------------------------------------------------------------------------------------
     /// Ports:
-    /// 1. IUI "NEEDNAME": Connection from the containing IUI element such as a window, panel, horizontal, vertical.
-    /// 2. ITableDataFlow "NEEDNAME": mainTableDataFlow, the main data input/output for the grid
-    /// 3. IEvent "NEEDNAME": Clear the data table and internal copy
-    /// 4. IDataFlow<bool> "NEEDNAME": toggle the visibility of the grid with a boolean value (visible or collapsed)
-    /// 5. IEvent eventRowSelected: outputs an event when the currently selected row changes (by the user click or the default) TBD: deprecate this, use dataFlowSelectedPrimaryKey instead
+    /// 1. IUI inputUI: connection from the containing IUI element such as a window, panel, horizontal, vertical.
+    /// 2. ITableDataFlow inputOutputTableData: mainTableDataFlow, the main data input/output for the grid
+    /// 3. IEvent clearTable: Clear the data table and internal copy
+    /// 4. IDataFlow<bool> visible: toggle the visibility of the grid with a boolean value (visible or collapsed)
+    /// 5. IDataFlow<int> gridSelectedIndex: will set the internal datagrid index
+    /// 6. IEvent eventRowSelected: outputs an event when the currently selected row changes (by the user click or the default) TBD: deprecate this, use dataFlowSelectedPrimaryKey instead
     /// 6. IDataFlow<string> dataFlowSelectedPrimaryKey: string output of the current row primary key selected (by the user click or the default)
     /// 7. IDataFlow<string> dataFlowNumberOfRecords: string output of the total number of records displayed
     /// 8. IDataFlow<bool> dataFlowShowRecordStateTitle: boolean output to toggle the finished recording on the grid title
     /// 9. IDataFlow<bool> dataFlowShowDownloadingStateTitle: boolean output to toggle the downloading state title
     /// </summary>
 
-    public class Grid : IUI, ITableDataFlow, IEvent, IDataFlow<bool>, IDataFlow<int>
+    public class Grid : IUI, ITableDataFlow, IEvent, IDataFlow<bool>, IDataFlow<int> // inputUI, inputOutputTableData, clearTable, visible, gridSelectedIndex
     {
         // properties ---------------------------------------------------------------------
         public string InstanceName = "Default";
@@ -54,9 +55,8 @@ namespace DomainAbstractions
 
         private IDataFlow<bool> dataFlowShowRecordStateTitle;
         private IDataFlow<bool> dataFlowShowDownloadingStateTitle;
-        //private IDataFlowB<bool> dataTransactionCompleted;
 
-        private List<IDataFlowB<bool>> unselectAll = new List<IDataFlowB<bool>>();
+        private List<IDataFlow_B<bool>> unselectAll = new List<IDataFlow_B<bool>>();
 
         // private fields ---------------------------------------------------------------------
         private DataGrid dataGrid;
@@ -162,6 +162,7 @@ namespace DomainAbstractions
         async Task ITableDataFlow.PutHeaderToDestinationAsync()
         {
             dataGrid.Columns.Clear();
+
             // generates data grid headers
             foreach (DataColumn c in dataTable.Columns)
             {
@@ -285,7 +286,7 @@ namespace DomainAbstractions
 
         private DataGridColumn GetInitializedColumn(DataColumn column)
         {
-            return column.ColumnName.Equals("checkbox") ?
+            return column.ColumnName.Equals("checkbox") || column.DataType == typeof(bool) ?
             // checkbox column
             (DataGridColumn)new DataGridCheckBoxColumn()
             {
@@ -326,7 +327,7 @@ namespace DomainAbstractions
         {
             foreach (var unselectEvent in unselectAll)
             {
-                unselectEvent.DataChanged += () => { dataGrid.UnselectAll(); };
+                unselectEvent.DataChanged += () => dataGrid.UnselectAllCells();
             }
         }
 

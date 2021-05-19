@@ -22,7 +22,7 @@ namespace ProgrammingParadigms
         private static int Indent = 0;
 
         static public void WriteLineIndent(string output)
-        {
+            {
             WriteLine(output);
             Indent++;
         }
@@ -36,9 +36,14 @@ namespace ProgrammingParadigms
         public static void Log<T>(this T A, string log)
         {
             string type = A.GetType().ToString();
-            string instanceName = A.GetType().GetField("InstanceName").GetValue(A)?.ToString() ?? "Default";
+            string instanceName = A.GetType().GetField("InstanceName")?.GetValue(A)?.ToString() ?? "Default";
 
-            Debug.WriteLine($"{type} {instanceName} {log}");  
+            System.Diagnostics.Debug.WriteLine($"{type} {instanceName} {log}");  
+        }
+
+        public static void Log<T>(this T A, string log, params object[] args)
+        {
+            Log(A, String.Format(log, args));
         }
     }
 }

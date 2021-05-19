@@ -1,0 +1,203 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4770ECD3-A732-493E-9B56-97D0EC90B2A6}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>DataLink_ALA</RootNamespace>
+    <AssemblyName>DataLink_ALA</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>portable</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
+    <RuntimeIdentifiers>win-x64;win7-x64</RuntimeIdentifiers>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Application.Application</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup>
+    <ApplicationIcon>
+    </ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Application\Application.cs" />
+    <Compile Include="Application\SCPSimulator.cs" />
+    <Compile Include="DomainAbstractions\ConvertEventToBoolean.cs" />
+    <Compile Include="DomainAbstractions\Arbitrator.cs" />
+    <Compile Include="DomainAbstractions\SCPDeviceSense.cs" />
+    <Compile Include="DomainAbstractions\SCPProtocol.cs" />
+    <Compile Include="DomainAbstractions\Timer.cs" />
+    <Compile Include="DomainAbstractions\ConvertToEvent.cs" />
+    <Compile Include="DomainAbstractions\CSVFileReaderWriter.cs" />
+    <Compile Include="DomainAbstractions\MainWindow.cs" />
+    <Compile Include="DomainAbstractions\Not.cs" />
+    <Compile Include="DomainAbstractions\SaveFileBrowser.cs" />
+    <Compile Include="DomainAbstractions\DataFlowGate.cs" />
+    <Compile Include="DomainAbstractions\Tool.cs" />
+    <Compile Include="Libraries\Constants.cs" />
+    <Compile Include="Libraries\FieldHeader.cs" />
+    <Compile Include="Libraries\Logging.cs" />
+    <Compile Include="ProgrammingParadigms\DebugControl.cs" />
+    <Compile Include="DomainAbstractions\Grid.cs" />
+    <Compile Include="DomainAbstractions\Horizontal.cs" />
+    <Compile Include="DomainAbstractions\Menu.cs" />
+    <Compile Include="DomainAbstractions\Menubar.cs" />
+    <Compile Include="DomainAbstractions\MenuItem.cs" />
+    <Compile Include="DomainAbstractions\OpenFileBrowser.cs" />
+    <Compile Include="DomainAbstractions\SessionDataSCP.cs" />
+    <Compile Include="DomainAbstractions\SessionListSCP.cs" />
+    <Compile Include="DomainAbstractions\Statusbar.cs" />
+    <Compile Include="DomainAbstractions\Text.cs" />
+    <Compile Include="DomainAbstractions\Toolbar.cs" />
+    <Compile Include="DomainAbstractions\Transact.cs" />
+    <Compile Include="DomainAbstractions\Vertical.cs" />
+    <Compile Include="DomainAbstractions\Wizard.cs" />
+    <Compile Include="DomainAbstractions\WizardItem.cs" />
+    <Compile Include="ProgrammingParadigms\EventConnector.cs" />
+    <Compile Include="DomainAbstractions\EventGate.cs" />
+    <Compile Include="ProgrammingParadigms\IArbitrator.cs" />
+    <Compile Include="ProgrammingParadigms\DataFlowConnector.cs" />
+    <Compile Include="ProgrammingParadigms\IRequestResponseDataFlow.cs" />
+    <Compile Include="ProgrammingParadigms\ITableDataFlow.cs" />
+    <Compile Include="ProgrammingParadigms\IUI.cs" />
+    <Compile Include="ProgrammingParadigms\IUIWizard.cs" />
+    <Compile Include="Libraries\Wiring.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Application\Resources\%24this.Icon.ico" />
+    <Resource Include="Application\Resources\5000Import.png" />
+    <Resource Include="%24this.Icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.6.1 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ExcelDataReader">
+      <Version>3.6.0</Version>
+    </PackageReference>
+    <PackageReference Include="Hardcodet.NotifyIcon.Wpf">
+      <Version>1.0.8</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.OData.Client">
+      <Version>7.8.1</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>12.0.3</Version>
+    </PackageReference>
+    <PackageReference Include="System.Data.SQLite">
+      <Version>1.0.112</Version>
+    </PackageReference>
+    <PackageReference Include="System.Net.Http">
+      <Version>4.3.4</Version>
+    </PackageReference>
+    <PackageReference Include="System.Reactive">
+      <Version>4.1.5</Version>
+    </PackageReference>
+    <PackageReference Include="WpfAnimatedGif">
+      <Version>1.4.18</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.WindowsAPICodePack-Shell">
+      <Version>1.1.0</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Connected Services\NaitServiceProduction\" />
+    <WCFMetadataStorage Include="Connected Services\NaitService\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+  </Target>
+</Project>

@@ -8,21 +8,23 @@ using System.Windows.Media.Imaging;
 namespace DomainAbstractions
 {
     /// <summary>
-    /// One of the radio buttons of a Wizard.
-    /// 
-    /// Boolean data output that is true for the selected radio button and false for the rest, and an event. 
-    /// Goes false when the wizard is cancelled or the whole operation completes.
+    /// Radio button of a Wizard.
+    /// ------------------------------------------------------------------------------------------------------------------
+    /// Ports:
+    /// 1. IUIWizard wpfElement: The input IUI for get the WPF element
+    /// 2. IDataFlow<bool> visible: Boolean data output that is true for the selected radio button and false for the rest
+    /// 3. IDataFlow<string> radioButtonText: sets the text for the radio button
+    /// 4. IEvent eventOutput: outputs an event to continue the next task
     /// </summary>
-    public class WizardItem : IUIWizard, IDataFlow<bool>, IDataFlow<string>
+    public class WizardItem : IUIWizard, IDataFlow<bool>, IDataFlow<string> // wpfElement, visible, radioButtonText
     {
         // properties
         public string InstanceName = "Default";
-        public string ContentText { set => checkRadioButton.Content = value; }
         public string ImageName { set => imageView.Source = new BitmapImage(new Uri(@"pack://application:,,,/" + Assembly.GetExecutingAssembly().GetName().Name + @";component/Application/" + string.Format("Resources/{0}", value), UriKind.Absolute)); }
         public bool Checked { get => (bool)checkRadioButton.IsChecked; set => checkRadioButton.IsChecked = value; }
         public bool Visible { set => SetVisibility(value); }
 
-        // outputs
+        // ports
         private IEvent eventOutput;
 
         // private fields

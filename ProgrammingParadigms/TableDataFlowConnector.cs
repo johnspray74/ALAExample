@@ -13,7 +13,7 @@ namespace ProgrammingParadigms
         // properties
         public string InstanceName = "Default";
 
-        // outputs
+        // ports
         private List<ITableDataFlow> tableDataFlowList = new List<ITableDataFlow>();
 
         /// <summary>

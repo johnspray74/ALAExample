@@ -20,17 +20,16 @@ namespace DomainAbstractions
     ///
     /// TODO: Move FileType and knowledge about header rows out into the application. Make it aware of header rows generally. Add a second ITable port to CSVFileReaderWriter. Currently it is comma separated in the TableName of ITable. The ITable has one row, and one column for each header info
     /// </summary>
-    public class CSVFileReaderWriter : ITableDataFlow, IDataFlow<string>, IDataFlow<int>
+    public class CSVFileReaderWriter : ITableDataFlow, IDataFlow<string>, IDataFlow<int>, IDataFlow<DateTime> // inputOutputTable, filePath, fileFormatIndex, creationDate
     {
         // properties
         public string InstanceName = "Default";
         public string FilePath { set => filePath = value; }
         public int FileType { set => fileFormatIndex = value; }
 
-        // outputs ----------------------------------------------------------------------------------------
+        // ports ----------------------------------------------------------------------------------------
         private IDataFlow<bool> dataFlowOpenOrCloseProgressWindow;
         private IDataFlow<string> dataFlowRecordsTotalCount;
-        private IDataFlow<string> dataFlowFilePath;
         private IEvent eventOutputSuccessWindow;
         private IDataFlow<DataTable> dataFlowTableHeader;
         private IDataFlow<string> dataFlowSessionId;
@@ -41,6 +40,7 @@ namespace DomainAbstractions
         private string[] contents;
         private int pageSize = 10;
         private int currentIndex = 0;
+        private DateTime creationDate;
 
         /// <summary>
         /// Reading records from csv file and writing records to csv file. 
@@ -214,6 +214,18 @@ namespace DomainAbstractions
                 default:
                     break;
             }
+
+            if (creationDate != default)
+            {
+                try
+                {
+                    File.SetCreationTime(filePath, creationDate);
+                }
+                catch (Exception e)
+                {
+                    this.Log($"error setting creation date: {e}");
+                }
+            }
         }
 
         private string mindaDate;
@@ -278,8 +290,6 @@ namespace DomainAbstractions
                 stringBuilder.Clear();
                 if (dataFlowOpenOrCloseProgressWindow != null)
                     dataFlowOpenOrCloseProgressWindow.Data = false;
-                if (dataFlowFilePath != null)
-                    dataFlowFilePath.Data = filePath;
                 eventOutputSuccessWindow?.Execute();
             }
         }
@@ -291,6 +301,9 @@ namespace DomainAbstractions
         // IDataFlow<int> implmentation ----------------------------------------------------------
         private int fileFormatIndex = 1;
         int IDataFlow<int>.Data { set => fileFormatIndex = value; }
+        
+        // IDataFlow<DateTime> implementation
+        DateTime IDataFlow<DateTime>.Data { set => creationDate = value; }
 
 
         /* File formats list, the fileFormatIndex will indicate wich format the CSV file will use.

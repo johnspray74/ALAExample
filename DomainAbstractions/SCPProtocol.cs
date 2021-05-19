@@ -1,9 +1,7 @@
 using ProgrammingParadigms;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using TruTest.Comms.Connection.Detection;
 
 namespace DomainAbstractions
 {
@@ -24,12 +22,12 @@ namespace DomainAbstractions
     /// 3. IDataFlow<string> scpCommand: string output of the SCP response from the device
     /// </summary>
 
-    public class SCPProtocol : IDataFlow<char>, IRequestResponseDataFlow_B<string, string> // charFromSource, SCPRequestResponse
+    public class SCPProtocol : IDataFlow<char>, IRequestResponseDataFlow<string, string> // charFromSource, SCPRequestResponse
     {
         //properties
         public string InstanceName;
 
-        // outputs
+        // ports
         private IDataFlow<string> scpCommand;
 
         // private fields
@@ -52,7 +50,7 @@ namespace DomainAbstractions
         }
 
         // IResponseDataFlow<string, string> implementation ------------------------------------
-        Task<string> IRequestResponseDataFlow_B<string, string>.SendRequest(string command)
+        Task<string> IRequestResponseDataFlow<string, string>.SendRequest(string command)
         {
             scpResponseTask = new TaskCompletionSource<string>();
 
@@ -85,7 +83,7 @@ namespace DomainAbstractions
                     }
                     break;
                 case '[':
-                        incomingBuffer = null;
+                    incomingBuffer = null;
                     break;
                 case ']':
                     {

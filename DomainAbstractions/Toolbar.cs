@@ -17,7 +17,7 @@ namespace DomainAbstractions
         public string InstanceName = "Default";
         public Thickness Margin { set => toolBarPanel.Margin = value; }
 
-        // outputs
+        // ports
         private List<IUI> children = new List<IUI>();
 
         // private fields

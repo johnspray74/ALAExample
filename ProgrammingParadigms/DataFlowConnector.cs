@@ -20,11 +20,11 @@ namespace ProgrammingParadigms
     public delegate void DataChangedDelegate();
 
     /// <summary>
-    /// A reversed IDataFlow, the IDataFlow pushes data to the destination whereas IDataFlowB pulls data from source.
+    /// A reversed IDataFlow, the IDataFlow pushes data to the destination whereas IDataFlow_B pulls data from source.
     /// However, the DataChanged event will notify the destination when change happens.
     /// </summary>
     /// <typeparam name="T">Generic data type</typeparam>
-    public interface IDataFlowB<T>
+    public interface IDataFlow_B<T>
     {
         T Data { get; }
         event DataChangedDelegate DataChanged;
@@ -36,20 +36,22 @@ namespace ProgrammingParadigms
     /// ----------------------------------------------------------------------------------------------
     /// Ports:
     /// 1. IDataFlow<T> IDataFlow<T>: incoming data which wants to be fanned out
-    /// 2. IDataFlowB<T> IDataFlow_B<T>: the 'b port' which listens for when data changed within this DataFlowConnector or acts as an IDataFlow<B> adapter
+    /// 2. IDataFlow_B<T> IDataFlow_B<T>: the 'b port' which listens for when data changed within this DataFlowConnector or acts as an IDataFlow<B> adapter. Note: this happens after the fanoutList
     /// 3. List<IDataFlow<T>> fanoutList: output port that fans out to every abstraction connected in order of wiring
+    /// 4. IDataFlow<T> last: output port that will output after the fanoutList and IDataFlow_B data changed event. This enables chaining of data flow and explicit execution of last to push the data flow.
     /// </summary>
     /// <typeparam name="T">Generic data type</typeparam>
-    public class DataFlowConnector<T> : IDataFlow<T>, IDataFlowB<T> // IDataFlow<T>, IDataFlow_B<T>
+    public class DataFlowConnector<T> : IDataFlow<T>, IDataFlow_B<T> // IDataFlow<T>, IDataFlow_B<T>
     {
         // properties
         public string InstanceName = "Default";
 
         // ports
         private List<IDataFlow<T>> fanoutList = new List<IDataFlow<T>>();
+        private IDataFlow<T> last;
 
         /// <summary>
-        /// Fans out a data flow to mutiple data flows, or connect IDataFlow and IDataFlowB
+        /// Fans out a data flow to mutiple data flows, or connect IDataFlow and IDataFlow_B
         /// </summary>
         public DataFlowConnector() { }
 
@@ -62,6 +64,7 @@ namespace ProgrammingParadigms
             data = value;
             foreach (var f in fanoutList) f.Data = value;
             DataChanged?.Invoke();
+            if(last != null) last.Data = value;
         }
 
         // IDataFlow<T> implementation ---------------------------------
@@ -69,8 +72,8 @@ namespace ProgrammingParadigms
 
         T IDataFlow<T>.Data { set => HandleData(value);  }
 
-        // IDataFlowB<T> implementation ---------------------------------
+        // IDataFlow_B<T> implementation ---------------------------------
         public event DataChangedDelegate DataChanged;
-        T IDataFlowB<T>.Data { get => data; }
+        T IDataFlow_B<T>.Data { get => data; }
     }
 }

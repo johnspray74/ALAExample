@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.IO;
+using Libraries;
+using System;
 
 namespace DomainAbstractions
 {
@@ -20,34 +22,24 @@ namespace DomainAbstractions
     /// 4. List<IDataFlow<string>> dataFlowOutputFilePaths: for output file paths
     /// 5. List<IDataFlow<string>> dataFlowOutputFilePathNames: for output file path names
     /// 6. IDataFlow<int> dataFlowFileFormatIndex: selected index for the filter
+    /// 7. IEvent fileSelected: Fired when a file has been selected.
     /// </summary>
     public class SaveFileBrowser : IEvent, IDataFlow<string> // showWindow, initialSaveFileName
     {
         // properties
         public string InstanceName = "Default";
+        public string Filter { set => saveFileDialog.Filter = value; }
+        public string FileName { set => saveFileDialog.FileName = value; }
 
-        // outputs
+        // ports
         private List<IDataFlow<string>> dataFlowOutputFileNames = new List<IDataFlow<string>>();
         private List<IDataFlow<string>> dataFlowOutputFilePaths = new List<IDataFlow<string>>();
         private List<IDataFlow<string>> dataFlowOutputFilePathNames = new List<IDataFlow<string>>();
         private IDataFlow<int> dataFlowFileFormatIndex;
+        private IEvent fileSelected;
 
         // private fields
         private SaveFileDialog saveFileDialog = new SaveFileDialog();
-        private Dictionary<string, string> filterTypes = new Dictionary<string, string>()
-        {
-            { "CSV", "Datamars CSV file(*.csv)|*.csv|" },
-            { "CSV No Header", "Datamars CSV file No Header(*.csv)|*.csv|" },
-            { "CSV 3000 Format", "Datamars CSV file 3000 format(*.csv)|*.csv|" },
-            { "CSV Minda Format", "Datamars CSV file Minda format(*.csv)|*.csv|" },
-            { "CSV EID only", "Datamars CSV file EID only(*.csv)|*.csv|" },
-            { "Excel 97-2003", "Microsoft Excel 97-2003 Worksheet(*.xls)|*.xls|" },
-            { "Excel Worksheet", "Microsoft Excel Worksheet(*.xlsx)|*.xlsx|" },
-            { "Excel 97-2003 from Template", "Microsoft Excel 97-2003 Worksheet from Template File(*.xls)|*.xls|" },
-            { "Datamars XML", "Datamars XML file(*.xml)|*.xml|" },
-            { "Tru-Test Favourite", "Tru- Test favourite file(*.ttfav)|*.ttfav|" },
-            { "All files", "All files(*.*)|*.*" }
-        };
 
         /// <summary>
         /// Opening a file browser and save a file or mutiple files to the folder path opened.
@@ -68,6 +60,8 @@ namespace DomainAbstractions
                 foreach (var i in dataFlowOutputFileNames) i.Data = Path.GetFileName(saveFileDialog.FileName);
                 foreach (var i in dataFlowOutputFilePaths) i.Data = Path.GetDirectoryName(saveFileDialog.FileName);
                 foreach (var i in dataFlowOutputFilePathNames) i.Data = saveFileDialog.FileName;
+
+                fileSelected?.Execute();
             };
         }
 
@@ -83,52 +77,35 @@ namespace DomainAbstractions
         //private method ---------------------------------------------------------
         private string customiseFilter(string filter)
         {
-            string customisedFilter = null;
+            List<string> filters = new List<string>();
 
             switch (filter)
             {
                 case "CSV": 
-                    customisedFilter += filterTypes["CSV"];
-                    break;
                 case "CSV No Header":
-                    customisedFilter += filterTypes["CSV No Header"];
-                    break;
                 case "CSV 3000 Format":
-                    customisedFilter += filterTypes["CSV 3000 Format"];
-                    break;
                 case "CSV Minda Format":
-                    customisedFilter += filterTypes["CSV Minda Format"];
-                    break;
                 case "CSV EID only":
-                    customisedFilter += filterTypes["CSV EID only"];
-                    break;
                 case "Excel 97-2003":
-                    customisedFilter += filterTypes["Excel 97-2003"];
-                    break;
                 case "Excel Worksheet":
-                    customisedFilter += filterTypes["Excel Worksheet"];
-                    break;
                 case "Excel 97-2003 from Template":
-                    customisedFilter += filterTypes["Excel 97-2003 from Template"];
-                    break;
                 case "Datamars XML":
-                    customisedFilter += filterTypes["Datamars XML"];
+                case "All files":
+                    filters.Add(Constants.FilterTypes[filter]);
                     break;
                 case "Tru-Test Favourite":
-                    customisedFilter += filterTypes["Tru-Test Favourite"] += filterTypes["All files"];
-                    break;
-                case "All files":
-                    customisedFilter += filterTypes["All files"];
+                    filters.Add(Constants.FilterTypes[filter]);
+                    filters.Add(Constants.FilterTypes["All files"]);
                     break;
                 case "Default":
-                    foreach(KeyValuePair<string,string> entry in filterTypes)
+                    foreach(KeyValuePair<string,string> entry in Constants.FilterTypes)
                     {
-                        customisedFilter += entry.Value;
+                        filters.Add(entry.Value);
                     }
                     break;
             }
 
-            return customisedFilter;
+            return String.Join("|", filters);
         }
     }
 }

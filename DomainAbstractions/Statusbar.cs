@@ -11,15 +11,15 @@ namespace DomainAbstractions
     /// It displays some text status by a giving LiteralString. Text color can be customized.
     /// ------------------------------------------------------------------------------------------------------------------
     /// Ports:
-    /// IUI "NEEDNAME": The input IUI for get WPF element.
-    /// List<IUI> "children": 
+    /// IUI wpfElement: The input IUI for get WPF element
+    /// List<IUI> children: output list of UI elements contained in this StatusBar (Note: wiring order determines order of position)
     /// </summary>
     public class Statusbar : IUI
     {
         // properties
         public string InstanceName = "Default";
 
-        // outputs
+        // ports
         private List<IUI> children = new List<IUI>();
 
         // private fields

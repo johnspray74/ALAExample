@@ -24,7 +24,7 @@ namespace DomainAbstractions
         public Visibility Visibility { set => gridPanel.Visibility = value;}
         public HorizontalAlignment? HorizAlignment;
 
-        // outputs
+        // ports
         private List<IUI> children = new List<IUI>();
 
         // private fields

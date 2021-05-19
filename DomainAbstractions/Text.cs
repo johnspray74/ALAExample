@@ -6,11 +6,14 @@ using System.Windows.Media;
 namespace DomainAbstractions
 {
     /// <summary>
-    /// A UI element, just like a label with a text string on it. Two inputs:
-    /// 1. IUI for getting the WPF element.
-    /// 2. IDataFlow<string> for inputting the text.
+    /// A UI element, just like a label with a text string on it. 
+    /// ---------------------------------------------------------
+    /// Ports: 
+    /// 1. IUI iui: Returns the IUI element.
+    /// 2. IDataFlow<string> text: Sets the value of the text field.
+    /// 3. IDataFlow<bool> visible: Sets the visibility of the text. 
     /// </summary>
-    public class Text : IUI, IDataFlow<string>, IDataFlow<bool>
+    public class Text : IUI, IDataFlow<string>, IDataFlow<bool> // iui, text, visible
     {
         // properties
         public string InstanceName = "Default";
@@ -37,6 +40,7 @@ namespace DomainAbstractions
         public FontWeight FontWeight { set => textBlock.FontWeight = value; }
         public FontStyle FontStyle { set => textBlock.FontStyle = value; }
         public double FontSize { set => textBlock.FontSize = value; }
+        public string Content { set => textBlock.Text = value; }
 
         // private fields
         private UIElement wpfElement;
@@ -48,7 +52,7 @@ namespace DomainAbstractions
         /// <param name="text">text displayed</param>
         /// <param name="visible">control the visibility of the text</param>
         /// <param name="wrap">whether the text should wrap</param>
-        public Text(string text = null, bool visible = true, bool wrap = false)
+        public Text(string text = null, bool visible = true, bool wrap = true)
         {
             textBlock.Text = text;
             textBlock.VerticalAlignment = VerticalAlignment.Center;
