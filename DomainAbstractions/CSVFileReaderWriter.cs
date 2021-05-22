@@ -304,20 +304,5 @@ namespace DomainAbstractions
         
         // IDataFlow<DateTime> implementation
         DateTime IDataFlow<DateTime>.Data { set => creationDate = value; }
-
-
-        /* File formats list, the fileFormatIndex will indicate wich format the CSV file will use.
-         * Here it ranges from 1 - 5.
-            "Datamars CSV file(*.csv)|*.csv|" +
-            "Datamars CSV file No Header(*.csv)|*.csv|" +
-            "Datamars CSV file 3000 format(*.csv)|*.csv|" +
-            "Datamars CSV file Minda format(*.csv)|*.csv|" +
-            "Datamars CSV file EID only(*.csv)|*.csv|" +
-            "Microsoft Excel 97-2003 Worksheet(*.xls)|*.xls|" +
-            "Microsoft Excel Worksheet(*.xlsx)|*.xlsx|" +
-            "Microsoft Excel 97-2003 Worksheet from Template File(*.xls)|*.xls|" +
-            "Datamars XML file(*.xml)|*.xml|" +
-            "All files(*.*)|*.*";
-        */
     }
 }

@@ -28,9 +28,9 @@ namespace DomainAbstractions
         /// </summary>
         public Toolbar()
         {
-            toolBarPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
+            toolBarPanel.HorizontalAlignment = HorizontalAlignment.Left;
             toolBarPanel.Background = new SolidColorBrush(Color.FromRgb(240, 240, 240));
-            toolBarPanel.Height = 55;
+            toolBarPanel.Height = 65;
         }
 
         // IUI implementation --------------------------------------------------------

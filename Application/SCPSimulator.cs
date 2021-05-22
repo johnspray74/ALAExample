@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace DataLink_ALA.Application
 {
-    public class SCPSimulator : IDataFlow<string>, IEvent, IDisposable
+    public class SCPSimulator : IDataFlow<string>, IEvent
     {
         public string InstanceName = "SCPSimulator";
 
@@ -14,7 +14,6 @@ namespace DataLink_ALA.Application
         private IDataFlow_B<string> selectedCOM;
 
         private Queue<string> scpCommands = new Queue<string>();
-        private bool isRunning = true;
 
         public SCPSimulator()
         {
@@ -109,10 +108,10 @@ namespace DataLink_ALA.Application
                         dataList.Add(data[index]);
 
                     var dataContent = string.Join(";", dataList.ToArray());
-                    _dataRowIndex = endIndex;
+                    _headerIndex = 0;
+                    _dataRowIndex = 0;
                     SendString(dataContent);
                 }
-
 
                 SendString($"Unknown command: {command}");
             }));
@@ -129,11 +128,6 @@ namespace DataLink_ALA.Application
 
             foreach (var c in dataString.ToCharArray())
                 charFromPort.Data = c;
-        }
-
-        void IDisposable.Dispose()
-        {
-            isRunning = false;
         }
 
         void IEvent.Execute()
@@ -158,19 +152,19 @@ namespace DataLink_ALA.Application
         private Dictionary<int, List<string>> contentData = new Dictionary<int, List<string>>()
         {
             {0, new List<string>() {
-                "FID00000000000000,EID0000000000000,300,0",
-                "FID00000000000001,EID0000000000001,303,1",
-                "FID00000000000002,EID0000000000002,298,2",
+                "0,FID00000000000000,EID0000000000000,300",
+                "1,FID00000000000001,EID0000000000001,303",
+                "2,FID00000000000002,EID0000000000002,298",
             }},
             {1, new List<string>() {
-                "FID11111111111110,EID11111111111110,200,0",
-                "FID11111111111111,EID11111111111112,203,1",
-                "FID11111111111112,EID11111111111112,198,2",
+                "0,FID11111111111110,EID11111111111110,200",
+                "1,FID11111111111111,EID11111111111112,203",
+                "2,FID11111111111112,EID11111111111112,198",
             }},
             {2, new List<string>() {
-                "FID22222222222220,EID2222222222220,320,0",
-                "FID22222222222221,EID2222222222221,253,1",
-                "FID22222222222222,EID2222222222222,299,2",
+                "0,FID22222222222220,EID2222222222220,320",
+                "1,FID22222222222221,EID2222222222221,253",
+                "2,FID22222222222222,EID2222222222222,299",
             }},
         };
 

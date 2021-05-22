@@ -89,11 +89,11 @@ namespace DomainAbstractions
                 case "Excel 97-2003":
                 case "Excel Worksheet":
                 case "Excel 97-2003 from Template":
-                case "Datamars XML":
+                case "XML":
                 case "All files":
                     filters.Add(Constants.FilterTypes[filter]);
                     break;
-                case "Tru-Test Favourite":
+                case "Favourite":
                     filters.Add(Constants.FilterTypes[filter]);
                     filters.Add(Constants.FilterTypes["All files"]);
                     break;

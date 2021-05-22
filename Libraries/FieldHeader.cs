@@ -17,7 +17,7 @@ namespace Libraries
     }
 
     /// <summary>
-    /// Describes a field header from a Tru-Test device.
+    /// Describes a field header from a device.
     /// All fields have a type (see FieldType), identifier (for device side) and a name (user friendly).
     /// </summary>
     class FieldHeader
@@ -41,7 +41,7 @@ namespace Libraries
         };
 
         /// <summary>
-        /// Describes a field header from a Tru-Test device.
+        /// Describes a field header from a device.
         /// All fields have a type (see FieldType), identifier (for device side) and a name (user friendly).
         /// </summary>
         private FieldHeader(string id, FieldType type, string name)

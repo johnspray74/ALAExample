@@ -10,8 +10,8 @@ namespace Libraries
 {
     public static class Logging
     {
-        public static string logFilePath = @"C:\ProgramData\Tru-Test\DataLink_ALA\DataLink_ALA.log";
-        public static string wiringLogFilePath = @"C:\ProgramData\Tru-Test\DataLink_ALA\wiringLog.txt";
+        public static string logFilePath = @"C:\ProgramData\Example_ALA\DataLink_ALA.log";
+        public static string wiringLogFilePath = @"C:\ProgramData\Example_ALA\wiringLog.txt";
         public static string lineSeparator = new string('-', 120) + "\n";
 
         public static string GetCurrentTime()

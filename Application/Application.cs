@@ -31,12 +31,12 @@ namespace Application
             var scpProtocal = new SCPProtocol();
             var arbitrator = new Arbitrator();
             var ignoredDataFlowConnector = new DataFlowConnector<string>();
-            var sessionListScp = new SessionListSCP();
-            var sessionDataScp = new SessionDataSCP();
-            var sessionListTransact = new Transact() { InstanceName = "session list transact", AutoLoadNextBatch = true };
-            var sessionDataTransact = new Transact() { InstanceName = "session data transact", AutoLoadNextBatch = true };
-            var saveToCsvFileTransact = new Transact() { InstanceName = "save to csv file transact", AutoLoadNextBatch = true };
-            var sessionDataGrid = new Grid() { InstanceName = "session data grid" };
+            var sessionListScp = new SCPSessions();
+            var sessionDataScp = new SCPData() { InstanceName = "forGrid" };
+            var sessionDataScpImport = new SCPData() { InstanceName = "import" };
+            var saveToCsvFileTransact = new Transfer() { InstanceName = "save to csv file transact", AutoLoadNextBatch = true };
+            var sessionListGrid = new Grid() { InstanceName = "sessions", RowHeight = 50, PrimaryKey = "index" };
+            var sessionDataGrid = new Grid() { InstanceName = "data" };
             var csvFileReaderWriter = new CSVFileReaderWriter();
 
             var scpSimulator = new SCPSimulator();
@@ -50,9 +50,7 @@ namespace Application
                             .WireTo(new MenuItem("Import from device")
                                 .WireTo(new Wizard("Where do you want to put it?")
                                     .WireTo(new WizardItem("Local CSV file")
-                                        .WireTo(saveFileBrowser
-                                            .WireTo(new CSVFileReaderWriter())
-                                        )
+                                        .WireTo(saveFileBrowser)
                                     )
                                     .WireTo(new WizardItem("Cloud"))
                                 )
@@ -69,7 +67,10 @@ namespace Application
                             .WireTo(saveFileBrowser
                                 .WireTo(csvFileReaderWriter, "dataFlowOutputFilePathNames")
                                 .WireTo(saveToCsvFileTransact
-                                    .WireTo(sessionDataScp, "tableDataFlowSource")
+                                    .WireTo(sessionDataScpImport
+                                        .WireTo(scpProtocal, "requestResponseDataFlow")
+                                        .WireTo(arbitrator, "arbitrator")
+                                    , "tableDataFlowSource")
                                     .WireTo(csvFileReaderWriter, "tableDataFlowDestination")
                                 , "fileSelected")
                             )
@@ -77,18 +78,17 @@ namespace Application
                     )
                 )
                 .WireTo(new Horizontal() { InstanceName = "mainPanel", Ratios = new int[] { 1, 3 } }
-                    .WireTo(new Grid() { InstanceName = "sessions", RowHeight = 50, PrimaryKey = "index" }
-                        .WireFrom(sessionListTransact, "tableDataFlowDestination")
-                        .WireTo(sessionDataScp, "dataFlowSelectedPrimaryKey")
-                        .WireTo(new EventConnector()
-                            .WireTo(sessionDataGrid)
-                            .WireTo(sessionDataTransact
-                                .WireTo(sessionDataGrid, "tableDataFlowDestination")
-                                .WireTo(sessionDataScp
-                                    .WireTo(scpProtocal, "requestResponseDataFlow")
-                                    .WireTo(arbitrator, "arbitrator")
-                                , "tableDataFlowSource")
-                            )
+                    .WireTo(sessionListGrid
+                        .WireTo(sessionListScp
+                            .WireTo(scpProtocal, "requestResponseDataFlow")
+                            .WireTo(arbitrator, "arbitrator")
+                        , "dataSource")
+                        .WireTo(sessionListScp, "dataFlowSelectedPrimaryKey")
+                        .WireTo(sessionDataGrid
+                            .WireTo(sessionDataScp
+                                .WireTo(scpProtocal, "requestResponseDataFlow")
+                                .WireTo(arbitrator, "arbitrator")
+                            , "dataSource")
                         , "eventRowSelected")
                     )
                     .WireTo(sessionDataGrid)
@@ -100,40 +100,23 @@ namespace Application
                     )
                 )
             )
-            .WireTo(new EventConnector()
-                .WireTo(new Timer() { Delay = 3000 }
-                    .WireTo(scpSimulator
-                        .WireTo(new SCPDeviceSense()
-                            .WireTo(arbitrator, "arbitrator")
-                            .WireTo(scpProtocal
-                                .WireTo(scpSimulator, "scpCommand")
-                            , "requestResponseDataFlow")
-                            .WireTo(new DataFlowConnector<string>(), "selectedCOMPort")
-                            .WireTo(ignoredDataFlowConnector, "connectedDeviceVersion")
-                            .WireTo(ignoredDataFlowConnector, "connectedDeviceSerialNumber")
-                            .WireTo(new ConvertToEvent<string>()
-                                .WireTo(new EventConnector()
-                                    .WireTo(new ConvertEventToBoolean() { KeepTrue = true }
-                                        .WireTo(new DataFlowConnector<bool>()
-                                            .WireTo(textConnected)
-                                            .WireTo(new Not()
-                                                .WireTo(textSearching)
-                                            )
-                                        )
-                                    )
-                                )
-                            , "connectedDeviceName")
-                        , "listOfPorts")
-                        .WireTo(scpProtocal, "charFromPort")
-                        .WireTo(new DataFlowConnector<string>(), "selectedCOM")
-                    )
-                )
-                .WireTo(sessionListTransact
-                    .WireTo(sessionListScp
-                        .WireTo(scpProtocal, "requestResponseDataFlow")
-                        .WireTo(arbitrator, "arbitrator")
-                        .WireTo(ignoredDataFlowConnector, "sessionListCount")
-                    , "tableDataFlowSource")
+            .WireTo(new Timer() { Delay = 3000 }
+                .WireTo(new SCPSense()
+                    .WireTo(arbitrator, "arbitrator")
+                    .WireTo(scpProtocal
+                        .WireTo(scpSimulator
+                            .WireTo(scpProtocal, "charFromPort")
+                        , "scpCommand")
+                    , "requestResponseDataFlow")
+                    .WireTo(new DataFlowConnector<bool>()
+                        .WireTo(textConnected)
+                        .WireTo(new Not()
+                            .WireTo(textSearching)
+                        )
+                        .WireTo(new ToEvent<bool>()
+                            .WireTo(sessionListGrid)
+                        )
+                    , "IsDeviceConnected")
                 )
             , "appStartsRun");
         }

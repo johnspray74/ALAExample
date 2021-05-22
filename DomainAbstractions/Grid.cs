@@ -38,7 +38,7 @@ namespace DomainAbstractions
     /// 9. IDataFlow<bool> dataFlowShowDownloadingStateTitle: boolean output to toggle the downloading state title
     /// </summary>
 
-    public class Grid : IUI, ITableDataFlow, IEvent, IDataFlow<bool>, IDataFlow<int> // inputUI, inputOutputTableData, clearTable, visible, gridSelectedIndex
+    public class Grid : IUI, IEvent // inputUI, fetchDataFromSource
     {
         // properties ---------------------------------------------------------------------
         public string InstanceName = "Default";
@@ -51,12 +51,7 @@ namespace DomainAbstractions
         // ports ---------------------------------------------------------------------
         private IEvent eventRowSelected;  
         private IDataFlow<string> dataFlowSelectedPrimaryKey;
-        private IDataFlow<string> dataFlowNumberOfRecords;
-
-        private IDataFlow<bool> dataFlowShowRecordStateTitle;
-        private IDataFlow<bool> dataFlowShowDownloadingStateTitle;
-
-        private List<IDataFlow_B<bool>> unselectAll = new List<IDataFlow_B<bool>>();
+        private ITableDataFlow dataSource;
 
         // private fields ---------------------------------------------------------------------
         private DataGrid dataGrid;
@@ -75,7 +70,6 @@ namespace DomainAbstractions
             dataGrid.IsReadOnly = true;
             dataGrid.CellStyle = GetCellStyle();
             dataGrid.SelectionChanged += RowSelectionChanged;
-            dataGrid.LoadingRow += GridRowloaded;
             dataGrid.Background = Brushes.White;
             dataGrid.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
             dataGrid.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
@@ -92,146 +86,25 @@ namespace DomainAbstractions
         }
 
         // IEvent implementation ---------------------------------------------------------
-        // this clears the table and grid 
+        // this ask data source to pull data
         void IEvent.Execute()
         {
-            dataTable.Rows.Clear();
-            dataTable.Columns.Clear();
-            dataGrid.Columns.Clear();
-            dataGrid.ItemsSource = dataTable.DefaultView;
-            //Debug.WriteLine($"Selected index is RESET TO: {selectedIndex}");
-            //selectedIndex = 0;
-            //dataGrid.SelectedIndex = 0;
+            var _fireAndForgot = FetchDataAsync();
         }
 
-        // IDataFlow<bool> implementation ---------------------------------------------------------
-        bool IDataFlow<bool>.Data { set => dataGrid.Visibility = value ? Visibility.Visible : Visibility.Collapsed; }
-        
-        // IDataFlow<int> implementation
-        int IDataFlow<int>.Data { set => dataGrid.SelectedIndex = value; }
-
-        // ITableDataFlow implementation ---------------------------------------------------------
-        GetNextPageDelegate getNextPageCalback;
-        private DataTable dataTable = new DataTable();
-        DataTable ITableDataFlow.DataTable => dataTable;
-        DataRow ITableDataFlow.CurrentRow
-        {
-            get
-            {
-                if (dataGrid.SelectedIndex >= 0)
-                    return dataTable.Rows[dataGrid.SelectedIndex];
-                return null;
-            }
-            set
-            {
-                if (value != null)
-                {
-                    dataTable.PrimaryKey = new DataColumn[] { dataTable.Columns[PrimaryKey] };
-                    int index = dataTable.Rows.IndexOf(dataTable.Rows.Find(value[PrimaryKey]));
-                    dataGrid.SelectedIndex = index;
-                }
-            }
-        }
-
-        bool ITableDataFlow.SupportQuery { get; }
-        bool ITableDataFlow.RequestQuerySupport()
-        {
-            throw new NotImplementedException();
-        }
-
-
-        private bool calledGetHeaderMethod = false;
-        async Task ITableDataFlow.GetHeadersFromSourceAsync(object queryOperation)
-        {
-            calledGetHeaderMethod = true;
-        }
-
-        async Task<Tuple<int, int>> ITableDataFlow.GetPageFromSourceAsync()
-        {
-            if (!calledGetHeaderMethod)
-            {
-                return new Tuple<int, int>(dataTable.Rows.Count, dataTable.Rows.Count);
-            }
-            else
-            {
-                calledGetHeaderMethod = false;
-                return new Tuple<int, int>(0, dataTable.Rows.Count);
-            }
-        }
-
-        async Task ITableDataFlow.PutHeaderToDestinationAsync()
+        private async Task FetchDataAsync()
         {
             dataGrid.Columns.Clear();
 
-            // generates data grid headers
-            foreach (DataColumn c in dataTable.Columns)
-            {
+            await dataSource.GetHeadersFromSourceAsync();
+            foreach (DataColumn c in dataSource.DataTable.Columns)
                 dataGrid.Columns.Add(GetInitializedColumn(c));
-            }
 
-            if (dataFlowShowRecordStateTitle != null && dataFlowShowDownloadingStateTitle != null)
-            {
-                dataFlowShowDownloadingStateTitle.Data = true;
-                dataFlowShowRecordStateTitle.Data = false;
-            }
-        }
+            var batch = await dataSource.GetPageFromSourceAsync();
+            while (batch.Item1 < batch.Item2)
+                batch = await dataSource.GetPageFromSourceAsync();
 
-        async Task ITableDataFlow.PutPageToDestinationAsync(
-            int firstRowIndex,
-            int lastRowIndex,
-            GetNextPageDelegate getNextPage)
-        {
-            // assign the data table source the grid
-            dataGrid.ItemsSource = dataTable.DefaultView;
-
-            // output the number of rows
-            if (dataFlowNumberOfRecords != null)
-            {
-                dataFlowNumberOfRecords.Data = dataTable.Rows.Count.ToString();
-            }
-
-            if (firstRowIndex >= lastRowIndex)
-            {
-                getNextPage?.Invoke();
-            }
-            else
-            {
-                getNextPageCalback = getNextPage;
-            }
-
-            if (dataFlowShowRecordStateTitle != null && dataFlowShowDownloadingStateTitle != null)
-            {
-                dataFlowShowDownloadingStateTitle.Data = false;
-                dataFlowShowRecordStateTitle.Data = true;
-            }
-
-            //if (dataTransactionCompleted != null && dataTransactionCompleted.Data)
-            //{
-            //    RefreshRowSelection();
-            //}
-
-        }
-
-
-        // private methods ---------------------------------------------------------------------------------
-        // data grid event - when a row is going to displaying
-        private void GridRowloaded(object sender, DataGridRowEventArgs e)
-        {
-            if (e.Row.GetIndex() == selectedIndex)
-            {
-                dataGrid.SelectedIndex = selectedIndex;
-                Debug.WriteLine($"{InstanceName} Selected index is SET: {dataGrid.SelectedIndex}");
-            }
-
-            if (e.Row.GetIndex() == dataTable.Rows.Count - 1)
-            {
-                if (dataFlowShowRecordStateTitle != null && dataFlowShowDownloadingStateTitle != null)
-                {
-                    dataFlowShowDownloadingStateTitle.Data = true;
-                    dataFlowShowRecordStateTitle.Data = false;
-                }
-                getNextPageCalback?.Invoke();
-            }            
+            dataGrid.ItemsSource = dataSource.DataTable.DefaultView;
         }
 
         // data grid row selection event - select a row manually or programactically
@@ -249,7 +122,7 @@ namespace DomainAbstractions
                 // output the primary key of the selected row
                 if (dataFlowSelectedPrimaryKey != null)
                 {
-                    dataFlowSelectedPrimaryKey.Data = dataTable.Rows[dataGrid.SelectedIndex][PrimaryKey].ToString();
+                    dataFlowSelectedPrimaryKey.Data = dataSource.DataTable.Rows[dataGrid.SelectedIndex][PrimaryKey].ToString();
                 }
                 eventRowSelected?.Execute();
             }
@@ -320,16 +193,5 @@ namespace DomainAbstractions
                 Visibility = "hide".Equals(column.Prefix) ? Visibility.Collapsed : Visibility.Visible
             };
         }
-
-
-        // listen to unselect request: unselect all
-        private void PostWiringInitialize()
-        {
-            foreach (var unselectEvent in unselectAll)
-            {
-                unselectEvent.DataChanged += () => dataGrid.UnselectAllCells();
-            }
-        }
-
     }
 }
