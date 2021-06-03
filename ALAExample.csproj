@@ -129,9 +129,9 @@
     <Compile Include="DomainAbstractions\Vertical.cs" />
     <Compile Include="DomainAbstractions\Wizard.cs" />
     <Compile Include="DomainAbstractions\WizardItem.cs" />
-    <Compile Include="ProgrammingParadigms\EventConnector.cs" />
+    <Compile Include="ProgrammingParadigms\IEvent.cs" />
     <Compile Include="ProgrammingParadigms\IArbitrator.cs" />
-    <Compile Include="ProgrammingParadigms\DataFlowConnector.cs" />
+    <Compile Include="ProgrammingParadigms\IDataFlow.cs" />
     <Compile Include="ProgrammingParadigms\IRequestResponseDataFlow.cs" />
     <Compile Include="ProgrammingParadigms\ITableDataFlow.cs" />
     <Compile Include="ProgrammingParadigms\IUI.cs" />
