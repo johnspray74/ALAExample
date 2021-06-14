@@ -39,7 +39,21 @@ namespace Application
             var sessionDataGrid = new Grid() { InstanceName = "data" };
             var csvFileReaderWriter = new CSVFileReaderWriter();
 
+            // This is a simulator abstraction that been initialized with mock data. In the real application, this is replaced with a SCP device
+            // to recieve command and return data.
             var scpSimulator = new SCPSimulator();
+            scpSimulator.AddSession("session0", "1/1/2021");
+            scpSimulator.AddSession("session1", "1/2/2021");
+            scpSimulator.AddSession("session2", "1/3/2021");
+            scpSimulator.AddSessionData(0, "FID00000000000000", "EID0000000000000", 300);
+            scpSimulator.AddSessionData(0, "FID00000000000001", "EID0000000000001", 301);
+            scpSimulator.AddSessionData(1, "FID00000000000010", "EID0000000000010", 302);
+            scpSimulator.AddSessionData(1, "FID00000000000011", "EID0000000000011", 303); 
+            scpSimulator.AddSessionData(1, "FID00000000000012", "EID0000000000012", 304);
+            scpSimulator.AddSessionData(2, "FID00000000000021", "EID0000000000021", 305); 
+            scpSimulator.AddSessionData(2, "FID00000000000022", "EID0000000000022", 306);
+            scpSimulator.AddSessionData(2, "FID00000000000023", "EID0000000000023", 307);
+            scpSimulator.AddSessionData(2, "FID00000000000024", "EID0000000000024", 308);
 
             mainWindow
             // UI

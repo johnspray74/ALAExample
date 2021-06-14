@@ -142,31 +142,30 @@ namespace DataLink_ALA.Application
             { "{SOCU}", "[0]" },
         };
 
-        private Dictionary<int, Tuple<string, string, string>> indexData = new Dictionary<int, Tuple<string, string, string>>()
+        public void AddSession(string name, string date)
         {
-            {0, new Tuple<string, string, string>("session0", "1/1/2021", "3")},
-            {1, new Tuple<string, string, string>("session1", "2/1/2021", "3")},
-            {2, new Tuple<string, string, string>("session2", "3/1/2021", "3")},
-        };
+            var index = indexData.Count;
+            indexData.Add(index, new Tuple<string, string, string>(name, date, "0"));
+        }
 
-        private Dictionary<int, List<string>> contentData = new Dictionary<int, List<string>>()
+        public void AddSessionData(int index, string fid, string eid, float weight)
         {
-            {0, new List<string>() {
-                "0,FID00000000000000,EID0000000000000,300",
-                "1,FID00000000000001,EID0000000000001,303",
-                "2,FID00000000000002,EID0000000000002,298",
-            }},
-            {1, new List<string>() {
-                "0,FID11111111111110,EID11111111111110,200",
-                "1,FID11111111111111,EID11111111111112,203",
-                "2,FID11111111111112,EID11111111111112,198",
-            }},
-            {2, new List<string>() {
-                "0,FID22222222222220,EID2222222222220,320",
-                "1,FID22222222222221,EID2222222222221,253",
-                "2,FID22222222222222,EID2222222222222,299",
-            }},
-        };
+            if (!contentData.ContainsKey(index))
+                contentData.Add(index, new List<string>());
+
+            var list = contentData[index];
+            var dataIndex = list.Count;
+            var data = $"{dataIndex},{fid},{eid},{weight}";
+            list.Add(data);
+
+            var indexDetails = indexData[index];
+            indexDetails = new Tuple<string, string, string>(indexDetails.Item1, indexDetails.Item2, (dataIndex + 1).ToString());
+            indexData[index] = indexDetails;
+        }
+
+        private Dictionary<int, Tuple<string, string, string>> indexData = new Dictionary<int, Tuple<string, string, string>>();
+
+        private Dictionary<int, List<string>> contentData = new Dictionary<int, List<string>>();
 
         private List<string> dataHeader = new List<string>()
         {
