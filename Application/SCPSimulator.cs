@@ -78,7 +78,8 @@ namespace DataLink_ALA.Application
 
                 if (command == "{FH}")
                 {
-                    var result = _headerIndex < dataHeader.Count ? dataHeader[_headerIndex++] : string.Empty;
+                    var dataHeader = headerData[_dataIndex];
+                    var result = _headerIndex < dataHeader.Length ? dataHeader[_headerIndex++] : string.Empty;
                     SendString(result);
                     return;
                 }
@@ -142,20 +143,26 @@ namespace DataLink_ALA.Application
             { "{SOCU}", "[0]" },
         };
 
-        public void AddSession(string name, string date)
+        public void AddSession(string name, string date, string[] header)
         {
             var index = indexData.Count;
             indexData.Add(index, new Tuple<string, string, string>(name, date, "0"));
+            headerData.Add(index, header);
         }
 
-        public void AddSessionData(int index, string fid, string eid, float weight)
+        public void AddSessionData(int index, string[] sessionData)
         {
             if (!contentData.ContainsKey(index))
                 contentData.Add(index, new List<string>());
 
             var list = contentData[index];
             var dataIndex = list.Count;
-            var data = $"{dataIndex},{fid},{eid},{weight}";
+            var data = $"{dataIndex}";
+            foreach (var dataDetails in sessionData)
+            {
+                data += $",{dataDetails}";
+            }
+            
             list.Add(data);
 
             var indexDetails = indexData[index];
@@ -167,11 +174,6 @@ namespace DataLink_ALA.Application
 
         private Dictionary<int, List<string>> contentData = new Dictionary<int, List<string>>();
 
-        private List<string> dataHeader = new List<string>()
-        {
-            "F01FID",
-            "F11EID",
-            "F10Weight"
-        };
+        private Dictionary<int, string[]> headerData = new Dictionary<int, string[]>();
     }
 }
