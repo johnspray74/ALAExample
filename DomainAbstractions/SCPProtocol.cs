@@ -56,12 +56,12 @@ namespace DomainAbstractions
 
             if (command.StartsWith("{") && command.EndsWith("}"))
             {
-                System.Diagnostics.Debug.WriteLine("Sending command: " + command);
+                System.Diagnostics.Debug.WriteLine("DeviceSimulator: Received command: " + command);
                 scpCommand.Data = command; // this line will tell COMPortAdapter to write to the Port
             }
             else
             {
-                throw new Exception("illegal command: " + command + ", command shoud start with '{' and end with '}'");
+                throw new Exception("DeviceSimulator: illegal command: " + command + ", command should start with '{' and end with '}'");
             }
 
             StartTimer(scpResponseTask);
@@ -90,7 +90,7 @@ namespace DomainAbstractions
                         string tempString = incomingBuffer;
                         incomingBuffer = null;
                         cancellationTokenSource?.Dispose();
-                        System.Diagnostics.Debug.WriteLine($"Response was: {tempString}");
+                        System.Diagnostics.Debug.WriteLine($"DeviceSimulator: Response: {tempString}");
                         scpResponseTask.TrySetResult(tempString);
                     }
                     break;

@@ -25,7 +25,8 @@ namespace DomainAbstractions
     public class SCPData : ITableDataFlow // clear, currentSessionIndex, inputOutputTableData
     {
         // properties
-        public string InstanceName = "Default";
+        public string InstanceName;
+        // public string InstanceName = "Default";
 
         // ports
         private IRequestResponseDataFlow<string, string> requestResponseDataFlow;

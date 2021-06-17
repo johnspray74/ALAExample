@@ -3,19 +3,22 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DataLink_ALA.Application
+namespace DomainAbstractions
 {
-    public class SCPSimulator : IDataFlow<string>, IEvent
+    public class DeviceSimulator : IDataFlow<string>, IEvent
     {
         public string InstanceName = "SCPSimulator";
 
         private IDataFlow<List<string>> listOfPorts;
         private IDataFlow<char> charFromPort;
-        private IDataFlow_B<string> selectedCOM;
+        // private IDataFlow_B<string> selectedCOM;
 
         private Queue<string> scpCommands = new Queue<string>();
 
-        public SCPSimulator()
+        private int ResponseDelay = 10;
+        // private int ResponseDelay = 0;
+
+        public DeviceSimulator()
         {
         }
 
@@ -29,7 +32,7 @@ namespace DataLink_ALA.Application
 
         private async Task SendResultAsync(string command)
         {
-            await System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            await System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(async () =>
             {
                 if (responseDic.ContainsKey(command))
                 {
@@ -42,6 +45,7 @@ namespace DataLink_ALA.Application
                 if (command == "{FGDD}")
                 {
                     _listIndex = 0;
+                    await Task.Delay(ResponseDelay);  // simulate delay in the device
                     charFromPort.Data = '^';
                     return;
                 }
@@ -50,11 +54,11 @@ namespace DataLink_ALA.Application
                 {
                     if (_listIndex >= indexData.Count)
                     {
-                        SendString("");
+                        await SendString("");
                     }
                     else
                     {
-                        SendString(_listIndex++.ToString());
+                        await SendString(_listIndex++.ToString());
                     }
                     return;
                 }
@@ -64,7 +68,7 @@ namespace DataLink_ALA.Application
                     var index = int.Parse(command.Trim('{').Trim('}').Substring(4));
                     var data = indexData[index];
                     var result = command.StartsWith("{FPNA") ? data.Item1 : command.StartsWith("{FPDA") ? data.Item2 : data.Item3;
-                    SendString(result);
+                    await SendString(result);
                     return;
                 }
 
@@ -72,6 +76,7 @@ namespace DataLink_ALA.Application
                 {
                     _dataIndex = int.Parse(command.Trim('{').Trim('}').Substring(2));
                     _headerIndex = 0;
+                    await Task.Delay(ResponseDelay);  // simulate delay in the device
                     charFromPort.Data = '^';
                     return;
                 }
@@ -80,13 +85,14 @@ namespace DataLink_ALA.Application
                 {
                     var dataHeader = headerData[_dataIndex];
                     var result = _headerIndex < dataHeader.Length ? dataHeader[_headerIndex++] : string.Empty;
-                    SendString(result);
+                    await SendString(result);
                     return;
                 }
 
                 if (command == "{FD}")
                 {
                     _dataRowIndex = 0;
+                    await Task.Delay(ResponseDelay);  // simulate delay in the device
                     charFromPort.Data = '^';
                     return;
                 }
@@ -94,6 +100,7 @@ namespace DataLink_ALA.Application
                 if (command.StartsWith("{FR"))
                 {
                     _dataRowIndex = int.Parse(command.Trim('{').Trim('}').Substring(2));
+                    await Task.Delay(ResponseDelay);  // simulate delay in the device
                     charFromPort.Data = '^';
                     return;
                 }
@@ -111,10 +118,11 @@ namespace DataLink_ALA.Application
                     var dataContent = string.Join(";", dataList.ToArray());
                     _headerIndex = 0;
                     _dataRowIndex = 0;
-                    SendString(dataContent);
+                    await SendString(dataContent);
+                    return;
                 }
 
-                SendString($"Unknown command: {command}");
+                await SendString($"Unknown command: {command}");
             }));
         }
 
@@ -123,12 +131,15 @@ namespace DataLink_ALA.Application
         private int _headerIndex = 0;
         private int _dataRowIndex = 0;
 
-        private void SendString(string data, bool addBrackets = true)
+        async private Task SendString(string data, bool addBrackets = true)
         {
             var dataString = addBrackets ? $"[{data}]" : data;
 
+            await Task.Delay(ResponseDelay);  // simulate delay in the device
             foreach (var c in dataString.ToCharArray())
+            {
                 charFromPort.Data = c;
+            }
         }
 
         void IEvent.Execute()

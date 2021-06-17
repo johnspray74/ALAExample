@@ -18,7 +18,8 @@ namespace DomainAbstractions
     public class SCPSessions : ITableDataFlow, IDataFlow<string> // inputOutputTableData
     {
         // properties
-        public string InstanceName = "Default";
+        // public string InstanceName = "Default";
+        public string InstanceName;
 
         // ports
         private IRequestResponseDataFlow<string, string> requestResponseDataFlow;

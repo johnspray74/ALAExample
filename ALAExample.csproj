@@ -99,7 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application\Application.cs" />
-    <Compile Include="Application\SCPSimulator.cs" />
+    <Compile Include="DomainAbstractions\DeviceSimulator.cs" />
     <Compile Include="DomainAbstractions\Arbitrator.cs" />
     <Compile Include="DomainAbstractions\SCPSense.cs" />
     <Compile Include="DomainAbstractions\SCPProtocol.cs" />
