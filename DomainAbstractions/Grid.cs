@@ -97,6 +97,8 @@ namespace DomainAbstractions
             dataGrid.Columns.Clear();
 
             await dataSource.GetHeadersFromSourceAsync();
+            
+            dataGrid.ItemsSource = null; // prevent the dataGrid from reading the source while we are changing its columns
             foreach (DataColumn c in dataSource.DataTable.Columns)
                 dataGrid.Columns.Add(GetInitializedColumn(c));
 

@@ -7,10 +7,14 @@ using ProgrammingParadigms;
 namespace DomainAbstractions
 {
     /// <summary>
-    /// Arbitrator class is in charge of allowing only one instance to be using the arbitrator resource at one time therefore allowing a order for e.g. SCP commands
-    /// Any incoming requests for the same arbitrator will enqueue at the end and once the current request is complete and released
-    /// it will be dequeued and therefore allowing the next following Task in the queue to begin.
-    /// It contains a timer to timeout after 5 seconds of no use and to release the resource. (By using cancellationToken)
+    /// Arbitrator class is an implementation of IArbitrator interface
+    /// See IArbitrator for explanation of teh abstraction and example usage of the interface by domain abstractions
+    /// It allows only one instance to be using a resource at one time.
+    /// A cononical example is an external hardware device that should have only one thing in the application talking to it at a time.
+    /// The arbitrator works with ASYNC/AWAIT - so if the resource is already busy, a requester waits without blocking the thread and coding is very easy.
+    /// Any incoming requests for the same arbitrator will queue and once the current request is released, it will be given teh resource
+    /// It contains a configurable timer to timeout after (default) 5 seconds of no use and to release the resource. (By using cancellationToken)
+    /// An application can have multiple resources.
     /// ------------------------------------------------------------------------------------------------------------------
     /// Ports:
     /// 1. IArbitrator arbitrator: interface for managing mutiple asynchronized resource requests
