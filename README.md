@@ -26,22 +26,23 @@ ALA (Abstraction Layered Architecture) always makes it clear what knowledge is n
 
 Knowledge of ALA comes from the Introduction and Chapter 2 of the web site <http://www.abstractionlayeredarchitecture.com>.
 
-In this solution, start with the *application* folder. It has Application.pdf and its hand tranlation into code, Application.cs.
-The dependencies only go down the abstraction layers as follows:
-The application uses classes in the *domain abstractions* folder.
+In this solution, start with the *application* folder. It has application.pdf and its hand tranlation into code, application.cs.
+The dependencies only go down abstraction layers as follows:
+The application.cs uses classes in the *domain abstractions* folder.
 The domain abstractions use interfaces in the *programming paradigms* folder.
-The application uses a *wireTo* exetension method in the *libraries* folder.
+The application.cs uses a *wireTo* extension method in the *libraries* folder.
 
 This example project is to show the actual working code for the Application, Domain Abstractions, Programming Paradigms layers.
 
-## Work-in-progress
-
-It is a work-in-progress to make it build and run.
-Will need a device simulator to run without a real device on the com port.
-Swift and Java versions to follow.
 
 ## Getting Started
 
+1. Clone this repository or download as a zip.
+2. Open the solution in Visual Studio
+3. When the application runs you will see data already loaded from a simulated real device.
+4. Click on the row on the left, and it will show data from different sessions on the right
+5. Click on File, Save to open a Wizard, Select Save Session, enter a filename to save data to a CSV file
+6. Click on the Toolbar icon to do the same thing
 
 ### Prerequisites
 
@@ -56,6 +57,10 @@ Swift and Java versions to follow.
 
 C#, Visual Studio 2019, GALADE v1.6.1
 
+
+## Future work
+
+Swift, Java, Python and Rust versions needed.
 
 ## Authors
 
