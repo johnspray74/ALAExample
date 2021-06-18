@@ -4,7 +4,11 @@ An example application of ALA (Abstraction Layered Architecture).
 Look at the diagram in the Application folder: *application diagram.pdf*. It describes a small desktop application (which, incidentally, displays data loaded from a device and saves it to a CSV file). Then download and execute the solution in Visual Studio to see the diagram itself actually run (it uses a software simulation of a real device).
 Then look at the code in *application.cs* to see how it was done.
 
-![application diagram]("/application/application diagram.pdf")
+![application diagram](application/application diagram.pdf)
+
+<!---
+![application diagram](application/application diagram.pdf)
+-->
 
 # Background
 
@@ -14,8 +18,6 @@ This research was to measure if this is true in paractice.
 
 The example Windows desktop application is a cutdown application used by farmers to get data to/from their EID readers, livestock weighing devices etc.
 The solution includes a simulated device so it actually gets some data off it, displays and can write it to a disk file.
-
-
 
 <!---
 [(Abstraction Layered Architecture)](http://www.abstractionlayeredarchitecture.com)
