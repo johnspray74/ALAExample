@@ -36,7 +36,7 @@ namespace DomainAbstractions
         public double Width { set => window.Width = value; }
 
         // ports
-        private List<IUIWizard> children = new List<IUIWizard>();
+        private List<IUISet> children = new List<IUISet>();
         private IEvent backEventOutput;
 
         // private fields
@@ -96,7 +96,7 @@ namespace DomainAbstractions
         {
             window.Hide();
 
-            children.Find(m => m.Checked).GenerateOutputEvent();
+            children.ForEach(m => m.Event());
         }
 
         private void CancelButtonClickedHandler(object sender, RoutedEventArgs e) => window.Hide();
@@ -155,23 +155,6 @@ namespace DomainAbstractions
             foreach (var c in children)  // fill in sub-elements
             {
                 contentPanel.Children.Add(c.GetWPFElement());
-
-                //UIElement element = c.GetWPFElement();
-                ////contentPanel.Children.Add((element => c.GetWPFElement()): contentPanel.Children.Remove(c.GetWPFElement()), element );
-
-                ////if(element)
-
-                ////contentPanel.Children
-                ////contentPanel.Children.Add(element { }
-                ////}
-                //if (contentPanel.Children.Contains(element))
-                //{
-                //    DependencyObject parent = VisualTreeHelper.GetParent(element);
-                //    Wizard wizardParent = parent as IUI;
-                //    contentPanel.Children.Remove(element);
-                //}
-                //contentPanel.Children.Add(element);
-
             }
         }
     }

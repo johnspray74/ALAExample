@@ -128,14 +128,14 @@
     <Compile Include="DomainAbstractions\Transfer.cs" />
     <Compile Include="DomainAbstractions\Vertical.cs" />
     <Compile Include="DomainAbstractions\Wizard.cs" />
-    <Compile Include="DomainAbstractions\WizardItem.cs" />
+    <Compile Include="DomainAbstractions\RadioButton.cs" />
     <Compile Include="ProgrammingParadigms\IEvent.cs" />
     <Compile Include="ProgrammingParadigms\IArbitrator.cs" />
     <Compile Include="ProgrammingParadigms\IDataFlow.cs" />
     <Compile Include="ProgrammingParadigms\IRequestResponseDataFlow.cs" />
     <Compile Include="ProgrammingParadigms\ITableDataFlow.cs" />
     <Compile Include="ProgrammingParadigms\IUI.cs" />
-    <Compile Include="ProgrammingParadigms\IUIWizard.cs" />
+    <Compile Include="ProgrammingParadigms\IUISet.cs" />
     <Compile Include="Libraries\Wiring.cs" />
   </ItemGroup>
   <ItemGroup>

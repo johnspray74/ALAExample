@@ -17,39 +17,44 @@ namespace Libraries
         public static event OutputDelegate Output;
 
         /// <summary>
-        /// Important method that wires and connects all the classes and interfaces together to run the application.
-        /// If object A (this) has a private field of an interface, and object B implements the interface, then wire them together. Returns this for fluent style programming.
+        /// Important method that wires and connects instances of classes that have ports by matching interfaces (with optional port names).
+        /// If object A (this) has a private field of an interface, and object B implements the interface, then wire them together using reflection.
+        /// Returns this for fluent style programming.
+        /// Also looks for a method: "private void PostWiringInitialize()" in either or both objects being wired.
+        /// This method is added to a list of such methods, and all are called once when our method "public static void PostWiringInitialize()" is called (which should be called immediately after all wiring code has executed).
+        /// PostWiringInitialize() methods are typically used to attach C# event handler to any C# events that are in programming paradigm interfaces.
         /// ------------------------------------------------------------------------------------------------------------------
         /// WireTo methods five important keys:
-        /// 1. wires match interfaces, A (calls interface) and B (implements)
-        /// 2. interfaces must be all private for matching to happen
-        /// 3. can wire multiple matching interfaces
+        /// 1. only wires compatible interfaces, A uses the interface and B implements the interface
+        /// 2. interface field must be private (this prevents confusion when using the abstraction of seeing a public field) 
+        /// 3. can only wire a single matching interface (wires the first one it finds starting at the top of the class)
         /// 4. wires in order form top to bottom of not yet wired
         /// 5. can ovveride order by specifying port names as second parameter
-        /// 6. looks for list as well (be careful of blocking other interfaces from wiring)
+        /// 6. looks for list as well (be careful of a list of interface blocking other fields of the same interfaces type lower down from ever being wired)
         /// ------------------------------------------------------------------------------------------------------------------
         /// </summary>
         /// <param name="A">
-        /// The object on which the method is called is the object being wired from
+        /// The object on which the method is called is the object being wired from. It must have a private field of the interface type.
         /// </param> 
-        /// <param name="B">The object being wired to (must implement the interface)</param> 
+        /// <param name="B">The object being wired to. It must implement the interface)</param> 
         /// <returns></returns>
         /// <remarks>
         /// If A has two private fields of the same interface, the first compatible B object wired goes to the first one and the second compatible B object wired goes to the second.
         /// If A has multiple private interfaces of different types, only the first matching interface that B implements will be wired.
-        /// In other words, by default, only one interface is wired between A and B
+        /// By default, only one interface is wired between A and B
         /// To override this behaviour you can get give multiple interfaces in A a prefix "Pn_" where n is 0..9:
-        /// Then a single wiring operation will wire all fieldnames with a consistent port prefix to the same B.
+        /// Then all fields with the same prfix are considered to be a single logical port.
+        /// Then a single wiring operation will wire all fields with a consistent port prefix to the same B object.
         /// These remarks apply only to single fields, not Lists.
         /// e.g.
-        /// private IOneable client1Onabale;
-        /// private ITwoable client1Twoable;
-        /// private IThreeable client2;
-        /// Clearly we want to wire two different clients. But if the first client wired implements all three interfaces, it will be wired to all three fields.
-        /// So name the field like this:
-        /// private IOneable P1_clientOnabale;
-        /// private ITwoable P1_clientTwoable;
-        /// private IThreeable P2_client;
+        /// private IX client1X;
+        /// private IY client1Y;
+        /// private IZ client2;
+        /// Here we want to wire the first two fields to the same object.
+        /// So name the fields like this:
+        /// private IX P1_client1X;
+        /// private IY P1_client1Y;
+        /// private IZ client2;
         /// </remarks>
         public static T WireTo<T>(this T A, object B, string APortName = null, bool reverse = false)
         {
