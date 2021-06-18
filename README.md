@@ -8,7 +8,7 @@ Then look at the code in Application.cs to see how it was done.
 # Background
 
 ALAExample is a sample of a research project for a software Reference Architecture called ALA (Abstraction Layered Architecture) <http://www.abstractionlayeredarchitecture.com>.
-ALA is theretically optimized for the maintainabilty quality attribute.
+ALA is theroetically optimized for the maintainabilty quality attribute.
 This research was to measure if this is true in paractice.
 
 The example Windows desktop application is a cutdown application used by farmers to get data to/from their EID readers, livestock weighing devices etc.
