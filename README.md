@@ -1,29 +1,51 @@
 # ALAExample
 
-ALAExample is a sample of a research project for a software Reference Architecture called ALA [(Abstraction Layered Architecture)](abstractionlayeredarchitecture.com).
-Abstraction Layered Architecture is theretically optimized for the maintainabilty quality attribute.
+An example application of ALA (Abstraction Layered Architecture).
+Look at the diagram in the Application folder: *application diagram.pdf*. It describes a small desktop application (which, incidentally, displays data loaded from a device and saves it to a CSV file). Then download and execute the solution in Visual Studio to see the diagram itself actually run (it uses a software simulation of a real device).
+Then look at the code in *application.cs* to see how it was done.
+
+![application diagram](application/application diagram.pdf)
+
+<!---
+![application diagram](application/application diagram.pdf)
+-->
+
+# Background
+
+ALAExample is a sample of a research project for a software Reference Architecture called ALA [(Abstraction Layered Architecture)](http://www.abstractionlayeredarchitecture.com).
+ALA is theroetically optimized for the maintainabilty quality attribute.
 This research was to measure if this is true in paractice.
 
-The example Windows desktop application procides inter-communication between a hyperthetical device, the user interface, disk files.
+The example Windows desktop application is a cutdown application used by farmers to get data to/from their EID readers, livestock weighing devices etc.
+The solution includes a simulated device so it actually gets some data off it, displays and can write it to a disk file.
 
-This example code is just used to show how an ALA diagram, Domain Abstractions, Programming Paradigms and WireTo work.
+<!---
+[(Abstraction Layered Architecture)](http://www.abstractionlayeredarchitecture.com)
+-->
 
-## Work-in-progress
+# Knowledge dependencies
 
-It is a work-in-progress to make it build and run.
-Will need a device simulator to run without a real device on the com port.
-Swift and Java versions to follow.
+ALA (Abstraction Layered Architecture) always makes it clear what knowledge is needed to understand a given piece of code.
 
-## Getting Started
+Knowledge of ALA comes from the Introduction and Chapter 2 of the web site <http://www.abstractionlayeredarchitecture.com>.
+
+In this solution, start with the *application* folder. It has application.pdf and its hand tranlation into code, application.cs.
+The dependencies only go down abstraction layers as follows:
+The application.cs uses classes in the *domain abstractions* folder.
+The domain abstractions use interfaces in the *programming paradigms* folder.
+The application.cs uses a *wireTo* extension method in the *libraries* folder.
+
+This example project is to show the actual working code for the Application, Domain Abstractions, Programming Paradigms layers.
 
 
-### Prerequisites
+## To run the example application
 
-
-### Installing
-
-
-### Running the code
+1. Clone this repository or download as a zip.
+2. Open the solution in Visual Studio 2019 or later
+3. When the application runs you will see data already loaded from a simulated real device.
+4. Click on the row on the left, and it will show data from different sessions on the right.
+5. Click on File, Import from Device, to open a Wizard, then select Local CSV File, then enter a filename to save data to a CSV file.
+6. Click on the Toolbar icon to do the same thing.
 
 
 ### Built With
@@ -31,13 +53,18 @@ Swift and Java versions to follow.
 C#, Visual Studio 2019, GALADE v1.6.1
 
 
+## Future work
+
+Swift, Java, Python and Rust versions needed.
+
 ## Authors
 
-John Spray, Roopak Sinha, Rosman Cheng
+Rosman Cheng, John Spray, Roopak Sinha, Arnab Sen
 
 
 ## License
 
+No Liciense. Use as you please.
 
 ## Acknowledgments
 
