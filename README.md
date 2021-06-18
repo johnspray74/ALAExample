@@ -18,7 +18,7 @@ The solution includes a simulated device so it actually gets some data off it, d
 
 ALA (Abstraction Layered Architecture) always makes it clear what knowledge is needed to understand a given piece of code.
 
-Knowledge of ALA comes from the Introduction and Chapter 2 of the web site  [(https://abstractionlayeredarchitecture.com)](abstractionlayeredarchitecture.com)
+Knowledge of ALA comes from the Introduction and Chapter 2 of the web site  [(https://www.abstractionlayeredarchitecture.com)](abstractionlayeredarchitecture.com)
 
 In this solution, start with the *application* folder. It has Application.pdf and its hand tranlation into code, Application.cs.
 The dependencies only go down the abstraction layers as follows:
