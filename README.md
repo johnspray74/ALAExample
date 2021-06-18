@@ -7,7 +7,7 @@ Then look at the code in Application.cs to see how it was done.
 
 # Background
 
-ALAExample is a sample of a research project for a software Reference Architecture called ALA [(Abstraction Layered Architecture)](http://www.abstractionlayeredarchitecture.com)
+ALAExample is a sample of a research project for a software Reference Architecture called ALA [(Abstraction Layered Architecture)](http://www.abstractionlayeredarchitecture.com).
 ALA is theroetically optimized for the maintainabilty quality attribute.
 This research was to measure if this is true in paractice.
 
