@@ -5,20 +5,43 @@ using System.Threading.Tasks;
 
 namespace DomainAbstractions
 {
-    public class DeviceSimulator : IDataFlow<string>, IEvent
+    /// <summary>
+    /// DeviceSimulator is an ALA domain abstraction
+    /// Abstraction description follows:
+    /// DeviceSimulator simulates a real device that a farmer uses so that an example application can still execute.
+    /// The real devices are Electronic ID readers or livestock weighing scales or other devices that measure or collect data.
+    /// These device organise their data by sessions (which are equivalent to files with homogeneous rows of data).
+    /// They are called sessions becasue teh farmer has a session of handling his livestock one by one.
+    /// Here we create a soft version of such a device and configure it with data.
+    /// The real devices connect to a PC's COM port and use a serial protocol called SCP (Serial Command Protocol)
+    /// The commands themselves come from a long history of actual commands that were implemented on these embedded devices going back 25 years so dont worry about the details of them too much.
+    /// ------------------------------------------------------------------------------------------------------------------
+    /// Configurations: (configurations are for use by the application when it instantiates a domain abstraction)
+    ///     AddSession: See the function. Use it to add sessions and define the sessions's fields
+    ///     AddSessionData: See the function. Use it to add data to sessions
+    ///     InstanceName property: As with all domain abstractions, we have an instance name. (Because there can be multiple instances of this abstraction, the application gives us an object name which is not generally used by the abstraction internal logic. It is only used during debugging so you can tell which object you are break-pointed on.
+    /// ------------------------------------------------------------------------------------------------------------------
+    /// Ports:
+    ///     commandInput (IDataFlow<string>): Receives serial commands
+    ///     responseOutput (IDataFlow<char>): Send responses to serial comamnds.
+    /// Both these ports should be wired to/from the same domain abstraction. We implement than as a separate char stream in each direction to beter simulate a connection to a real serial COM port.
+    /// Future generalization:
+    ///     Add capabilities to get its data from a disk files
+    ///     Add capabilities to receive data uploaded to it
+    ///     Add capabilities to allow it to be used for accptance testing, including scenarios such as with badly formatted data, not responding to commands, etc
+    /// </summary>
+    public class RealFarmingDeviceSimulator : IDataFlow<string>, IEvent  // commandInput (IEvent not relevant to this abstraction to be removed) // also commandInput should be changed to IDataFlow<char> to better simulate a serial communications
     {
-        public string InstanceName = "SCPSimulator";
+        public string InstanceName { get; set; } = "SCPDevice";
 
-        private IDataFlow<List<string>> listOfPorts;
-        private IDataFlow<char> charFromPort;
-        // private IDataFlow_B<string> selectedCOM;
+        private IDataFlow<List<string>> listOfPorts;  // not relevant to this abstraction to be removed
+        private IDataFlow<char> responseOutput;
 
         private Queue<string> scpCommands = new Queue<string>();
 
-        private int ResponseDelay = 10;
-        // private int ResponseDelay = 0;
+        private int ResponseDelay = 10;   // This makes the simulated device respond asynchronously and slowly to SCP commands to better simulate a real device
 
-        public DeviceSimulator()
+        public RealFarmingDeviceSimulator()
         {
         }
 
@@ -38,7 +61,7 @@ namespace DomainAbstractions
                 {
                     var response = responseDic[command];
                     foreach (var c in response.ToCharArray())
-                        charFromPort.Data = c;
+                        responseOutput.Data = c;
                     return;
                 }
 
@@ -46,7 +69,7 @@ namespace DomainAbstractions
                 {
                     _listIndex = 0;
                     await Task.Delay(ResponseDelay);  // simulate delay in the device
-                    charFromPort.Data = '^';
+                    responseOutput.Data = '^';
                     return;
                 }
 
@@ -77,7 +100,7 @@ namespace DomainAbstractions
                     _dataIndex = int.Parse(command.Trim('{').Trim('}').Substring(2));
                     _headerIndex = 0;
                     await Task.Delay(ResponseDelay);  // simulate delay in the device
-                    charFromPort.Data = '^';
+                    responseOutput.Data = '^';
                     return;
                 }
 
@@ -93,7 +116,7 @@ namespace DomainAbstractions
                 {
                     _dataRowIndex = 0;
                     await Task.Delay(ResponseDelay);  // simulate delay in the device
-                    charFromPort.Data = '^';
+                    responseOutput.Data = '^';
                     return;
                 }
 
@@ -101,7 +124,7 @@ namespace DomainAbstractions
                 {
                     _dataRowIndex = int.Parse(command.Trim('{').Trim('}').Substring(2));
                     await Task.Delay(ResponseDelay);  // simulate delay in the device
-                    charFromPort.Data = '^';
+                    responseOutput.Data = '^';
                     return;
                 }
 
@@ -138,7 +161,7 @@ namespace DomainAbstractions
             await Task.Delay(ResponseDelay);  // simulate delay in the device
             foreach (var c in dataString.ToCharArray())
             {
-                charFromPort.Data = c;
+                responseOutput.Data = c;
             }
         }
 

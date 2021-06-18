@@ -10,35 +10,46 @@ namespace Libraries
     {
 
         private delegate void InitializeDelegate();
+        public delegate void PostWiringInitializeDelegate();
         public delegate void OutputDelegate(string output);
 
         private static string firstPortName;
         private static event InitializeDelegate Initialize;
         public static event OutputDelegate Output;
 
-        /// <summary>
+        /// <Summary>
+        /// wireTo is an extension method on the type object
         /// Important method that wires and connects instances of classes that have ports by matching interfaces (with optional port names).
         /// If object A (this) has a private field of an interface, and object B implements the interface, then wire them together using reflection.
         /// Returns this for fluent style programming.
-        /// Also looks for a method: "private void PostWiringInitialize()" in either or both objects being wired.
-        /// This method is added to a list of such methods, and all are called once when our method "public static void PostWiringInitialize()" is called (which should be called immediately after all wiring code has executed).
-        /// PostWiringInitialize() methods are typically used to attach C# event handler to any C# events that are in programming paradigm interfaces.
-        /// ------------------------------------------------------------------------------------------------------------------
-        /// WireTo methods five important keys:
-        /// 1. only wires compatible interfaces, A uses the interface and B implements the interface
-        /// 2. interface field must be private (this prevents confusion when using the abstraction of seeing a public field) 
-        /// 3. can only wire a single matching interface (wires the first one it finds starting at the top of the class)
-        /// 4. wires in order form top to bottom of not yet wired
-        /// 5. can ovveride order by specifying port names as second parameter
-        /// 6. looks for list as well (be careful of a list of interface blocking other fields of the same interfaces type lower down from ever being wired)
-        /// ------------------------------------------------------------------------------------------------------------------
         /// </summary>
+        /// ------------------------------------------------------------------------------------------------------------------
+        /// WireTo method understanding what it doess:
         /// <param name="A">
         /// The object on which the method is called is the object being wired from. It must have a private field of the interface type.
         /// </param> 
         /// <param name="B">The object being wired to. It must implement the interface)</param> 
-        /// <returns></returns>
+        /// <returns>this to support fluent programming style which allows multiple wiring to the same A object with dot operators</returns>
         /// <remarks>
+        /// 1. only wires compatible interfaces, A uses the interface and B implements the interface
+        /// 2. interface field must be private (this prevents confusion when using the abstraction of seeing a public field) 
+        /// 3. can only wire a single matching interface per call (wires the first one it finds in class A starting at the top of the class)
+        /// 4. skips ports in class A that are already wired
+        /// 5. you can overide the above order by specifying port names as a second parameter to the wireTo method
+        /// 6. looks for list as well (be careful of a list of interface blocking other fields of the same interfaces type lower down from ever being wired)
+        /// ------------------------------------------------------------------------------------------------------------------
+        /// Also looks for a method: "private void PostWiringInitialize()" in either or both objects being wired.
+        /// This method is added to a list of such methods, and all are called once when our method "public static void PostWiringInitialize()" is called (which should be called immediately after all wiring code has executed).
+        /// PostWiringInitialize() methods are used to complete any initializaation that needs to be done inside a domain abstraction instance after all the wiring has been completed but before the application begins running.
+        /// [Note that PostWiringInitialize methods in different domain abstraction instances are called in a uncontrolled order, so only do things that don't interact with other instances.
+        /// Intialization that needs to be done in an ordered fashion: suggest they should be done using Initialize ports on domain abstractions.
+        /// Instances of these can then be explicitly wired in the application diagram to a chain of IEvent connectors (Activity diagram programming paradigm).
+        /// Alternatively these domain abstractions could have an Initialize input port and an Initialize output port which can then be wired in a chain (the approach of function blocks)]
+        /// ------------------------------------------------------------------------------------------------------------------
+        /// Whenever a port is wired on the A side, it looks for a private method with the name of the port and ending with the word "Initialize" and calls that method immediately after doing the wiring.
+        /// For example if a port exists "private IEvent output", and a method exists "private void outputInitialize()" then outputInitialize gets called after output has been assigned to its wired object B.
+        /// These methods are typically used in the domain abstraction to attach a C# event handler to any C# events that are in programming paradigm interface that has just been wired to.
+        /// ------------------------------------------------------------------------------------------------------------------
         /// If A has two private fields of the same interface, the first compatible B object wired goes to the first one and the second compatible B object wired goes to the second.
         /// If A has multiple private interfaces of different types, only the first matching interface that B implements will be wired.
         /// By default, only one interface is wired between A and B
@@ -56,29 +67,35 @@ namespace Libraries
         /// private IY P1_client1Y;
         /// private IZ client2;
         /// </remarks>
+        /// Future owrk: Should WireTo be an extension method on an object called "DomainAbstraction" just so it doesn't become available to call on all other normal objects?
+        /// This would mean that all DomainAbstraction classes must inherit from the completely empty abstract class "DomainAbstraction", which wouldn't be so bad.
         public static T WireTo<T>(this T A, object B, string APortName = null, bool reverse = false)
         {
             string multiportExceptionMessage = $"The following wiring failed because the two instances are already wired together by another port.";
             multiportExceptionMessage += "\nPlease use a new WireTo with this additional port name specified:";
 
+            // Get the two instance name first for the Debug Output WriteLines
+            var AinstanceName = A?.GetType().GetProperties().FirstOrDefault(f => f.Name == "InstanceName")?.GetValue(A);
+            if (AinstanceName == null) AinstanceName = A?.GetType().GetFields().FirstOrDefault(f => f.Name == "InstanceName")?.GetValue(A);
+            var BinstanceName = B?.GetType().GetProperties().FirstOrDefault(f => f.Name == "InstanceName")?.GetValue(B);
+            if (BinstanceName == null) BinstanceName = B?.GetType().GetFields().FirstOrDefault(f => f.Name == "InstanceName")?.GetValue(B);
+
+            string DiagnosticLine = $"Failed to wire {A?.GetType().Name}[{AinstanceName}].{APortName} to {B?.GetType().Name}[{BinstanceName}]";
+
             if (A == null)
             {
-                throw new ArgumentException("A cannot be null");
+                throw new ArgumentException("A cannot be null " + DiagnosticLine);
             }
             if (B == null)
             {
-                throw new ArgumentException("B cannot be null");
+                throw new ArgumentException("B cannot be null " + DiagnosticLine);
             }
+
+
 
             // achieve the following via reflection
             // A.field = (<type of interface>)B;
             // A.list.Add( (<type of interface>)B );
-
-            // Get the two instance name first for the Debug Output WriteLines
-            var AinstanceName = A.GetType().GetProperties().FirstOrDefault(f => f.Name == "instanceName")?.GetValue(A);
-            if (AinstanceName == null) AinstanceName = A.GetType().GetFields().FirstOrDefault(f => f.Name == "instanceName")?.GetValue(A);
-            var BinstanceName = B.GetType().GetProperties().FirstOrDefault(f => f.Name == "instanceName")?.GetValue(B);
-            if (BinstanceName == null) BinstanceName = B.GetType().GetFields().FirstOrDefault(f => f.Name == "instanceName")?.GetValue(B);
 
 
             var BType = B.GetType();
@@ -110,6 +127,15 @@ namespace Libraries
                             
                         AfieldInfo.SetValue(A, B);  // do the wiring
                         wiredSomething = true;
+
+                        // see if there is a PostWiring function associated with the port and call it.
+                        var m = A.GetType().GetMethod($"{AfieldInfo.Name}Initialize", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                        if (m != null)
+                        {
+                            PostWiringInitializeDelegate handler = (PostWiringInitializeDelegate)Delegate.CreateDelegate(typeof(PostWiringInitializeDelegate), A, m);
+                            handler();
+                        }
+
                         WriteLine($"{A.GetType().Name}[{AinstanceName}].{AfieldInfo.Name} wired to {BType.Name}[{BinstanceName}]");
                         Logging.WriteToWiringLog(A, B, AfieldInfo);
                     }
@@ -152,6 +178,15 @@ namespace Libraries
 
                         AListFieldValue.GetType().GetMethod("Add").Invoke(AListFieldValue, new[] { B });
                         wiredSomething = true;
+
+                        // see if there is a PostWiringInitialize function associated with the port and call it.
+                        var m = A.GetType().GetMethod($"{AlistFieldInfo.Name}Initialize", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                        if (m != null)
+                        {
+                            PostWiringInitializeDelegate handler = (PostWiringInitializeDelegate)Delegate.CreateDelegate(typeof(PostWiringInitializeDelegate), A, m);
+                            handler();
+                        }
+
                         WriteLine($"{A.GetType().Name}[{AinstanceName}].{AlistFieldInfo.Name} wired to {BType.Name}[{BinstanceName}]");
                         Logging.WriteToWiringLog(A, B, AlistFieldInfo);
                         break;
@@ -170,7 +205,7 @@ namespace Libraries
                     var AfieldInfo = AfieldInfos.FirstOrDefault();
                     if (AfieldInfo?.GetValue(A) != null) throw new Exception($"Port already wired {A.GetType().Name}[{AinstanceName}].{APortName} to {BType.Name}[{BinstanceName}]");
                 }
-                //throw new Exception($"Failed to wire {A.GetType().Name}[{AinstanceName}].{APortName} to {BType.Name}[{BinstanceName}]");
+                throw new Exception($"Failed to wire {A.GetType().Name}[{AinstanceName}].{APortName} to {BType.Name}[{BinstanceName}]");
             }
 
             var method = A.GetType().GetMethod("PostWiringInitialize", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
@@ -261,5 +296,6 @@ namespace Libraries
         {
             Output?.Invoke(output);
         }
+
     }
 }

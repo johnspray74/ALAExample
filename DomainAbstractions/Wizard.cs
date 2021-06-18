@@ -1,12 +1,9 @@
-﻿using ProgrammingParadigms;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
+using ProgrammingParadigms;
 
 namespace DomainAbstractions
 {
@@ -30,7 +27,7 @@ namespace DomainAbstractions
     public class Wizard : IEvent // open
     {
         // properties 
-        public string InstanceName = "Default";
+        public string InstanceName { get; set; } = "Default";
         public string SecondTitle { set => titleTextBlock.Text = value; } 
         public bool ShowBackButton { set => InitializeBackButton(value); }
         public double Width { set => window.Width = value; }

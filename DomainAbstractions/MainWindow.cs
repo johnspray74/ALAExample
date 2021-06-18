@@ -1,43 +1,57 @@
-﻿using ProgrammingParadigms;
-using System;
-using System.Reflection;
+﻿using System;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.IO;
+using ProgrammingParadigms;
 using Libraries;
-using System.Windows.Forms;
 
 namespace DomainAbstractions
 {
     /// <summary>
-    /// This is the main window of the application. The output IUI in it takes the responsibility of getting the WPF UIElements 
-    /// in a hierarchical calling order as it goes deeper in the abstrations wired to it. The output IEvent starts to execute once 
-    /// the app starts running, which informs the abstraction who implements it to do the things it wants.
+    /// MainWindow is an ALA domain abstraction
+    /// Abstraction description follows:
+    /// This is the main window of an application.
+    /// The IUI port should be wired to children UI domain abstractions that are to be displayed inside the main window. 
+    /// The output IEvent port appStart fires once the MainWindow is running and displayed
+    /// ------------------------------------------------------------------------------------------------------------------
+    /// Configurations: (configurations are for use by the application when it instantiates a domain abstraction)
+    ///     title (parameter of the constructor): is for the application to configure the title for the title bar of the main window
+    ///     InstanceName property: As with all domain abstractions, we have an instance name. (Because there can be multiple instances of this abstraction, the application gives us an object name which is not generally used by the abstraction internal logic. It is only used during debugging so you can tell which object you are break-pointed on.
+    ///     The public method "Run" is unusual for a domain abstraction. It should be called by the application after all wiring and initialization is complete to start the application actually running.
     /// ------------------------------------------------------------------------------------------------------------------
     /// Ports:
-    /// 1. IEvent shutdown: input for close the window (exits the application)
-    /// 2. IDataFlow<bool> enable: to enable(true) or disable(false, grey out) the UI
-    /// 3. IUI iuiStructure: all the IUI contained within the MainWindow
-    /// 4. IEvent appStartsRun: IEvent that is pushed out once window has been loaded
+    ///     close (IEvent): input to close the window and exit the application
+    ///     enable (IDataFlow<bool>): input false disables (greys out) the UI
+    ///     children (IUI): all the IUI children of the MainWindow
+    ///     appStart (IEvent): outputs an event once the window is loaded
+    ///     appClosing (IEvent): outputs and event when the window is closing
     /// <summary>
 
-    public class MainWindow : IEvent, IDataFlow<bool> // shutdown, enable
+    public class MainWindow : IEvent, IDataFlow<bool> // close, enable
     {
         // properties -----------------------------------------------------------------
-        public string InstanceName = "Default";
+        public string InstanceName { get; set; } = "Default";
+
+
+
 
         // ports -----------------------------------------------------------------
         private IUI iuiStructure;
-        private IEvent appStartsRun;
+        private IEvent appStart;
         private IEvent appClosing;
         private IEventB restoreWindow;
+
+
+
 
         // private fields -----------------------------------------------------------------
         private Window window;
 
+
+
+
         /// <summary>
-        /// Generates the main UI window of the application and emits a signal that the Application starts running.
+        /// Constructor instantiates a main UI window for the application.
         /// </summary>
         /// <param name="title">title of the window</param>
         public MainWindow(string title = null, string logArchiveFilePath = "")
@@ -58,7 +72,7 @@ namespace DomainAbstractions
             window.Loaded += (object sender, RoutedEventArgs e) =>
             {
                 this.HandleStateChanged(sender, e);
-                appStartsRun?.Execute();
+                appStart?.Execute();
             };
 
             window.Closing += (s, e) =>
@@ -70,30 +84,46 @@ namespace DomainAbstractions
             window.Closed += (object sender, EventArgs e) => ((IEvent)this).Execute();
         }
 
-        // private method -------------------------------------------------------
-        private void PostWiringInitialize()
+
+
+
+        // This method is the main entry point to start the application. Call after all wiring and initilization is completed.
+        public void Run()
         {
-            if (restoreWindow != null) restoreWindow.EventHappened += () =>
+            window.Content = iuiStructure.GetWPFElement();
+            System.Windows.Application app = new System.Windows.Application();
+            Console.WriteLine("MainWindow Running");
+            app.Run(window);
+        }
+
+
+
+
+        // By having this name convention, this method gets called by WireTo immediately after the correspeonding port is wired
+        private void restoreWindowInitialize()
+        {
+            restoreWindow.EventHappened += () =>
             {
                 if (window.WindowState == WindowState.Minimized) window.WindowState = WindowState.Normal;
                 else if (window.WindowState == WindowState.Normal) window.WindowState = WindowState.Minimized;
             };
         }
 
-        public void Run()
-        {
-            window.Content = iuiStructure.GetWPFElement();
-            System.Windows.Application app = new System.Windows.Application();
-            app.Run(window);
-        }
+
 
         private void HandleStateChanged(object sender, EventArgs e)
         {
             window.ShowInTaskbar = !(window.WindowState == WindowState.Minimized);
         }
 
+
+
+
         // IEvent implementation -------------------------------------------------------
         void IEvent.Execute() => System.Windows.Application.Current.Shutdown();
+
+
+
 
         // IDataFlow<bool> implementation ----------------------------------------------
         bool IDataFlow<bool>.Data { set => window.IsEnabled = value; }

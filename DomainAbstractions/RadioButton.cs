@@ -1,9 +1,9 @@
-﻿using ProgrammingParadigms;
-using System;
+﻿using System;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using ProgrammingParadigms;
 
 namespace DomainAbstractions
 {
@@ -29,7 +29,7 @@ namespace DomainAbstractions
     public class RadioButton : IUISet, IDataFlow<bool> // UIparent, visible
     {
         // properties
-        public string InstanceName = "Default";
+        public string InstanceName { get; set; } = "Default";
         public string ImageName { set => imageView.Source = new BitmapImage(new Uri(@"pack://application:,,,/" + Assembly.GetExecutingAssembly().GetName().Name + @";component/Application/" + string.Format("Resources/{0}", value), UriKind.Absolute)); }
     
         // ports

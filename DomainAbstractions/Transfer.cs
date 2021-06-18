@@ -59,9 +59,11 @@ namespace DomainAbstractions
         /// </summary>
         public Transfer() { }
 
-        private void PostWiringInitialize()
+
+        // This method is called by WireTo after it wires something to the port "cancel".
+        private void cancelInitialize()
         {
-           if (cancel != null) cancel.EventHappened += Cancel_EventHappened;
+            cancel.EventHappened += Cancel_EventHappened;
         }
 
         // -----------------------------------------------------------------------------------------

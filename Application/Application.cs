@@ -27,7 +27,7 @@ namespace Application
             var saveFileBrowser = new SaveFileBrowser("Save file", "CSV");
             var textConnected = new Text("Connected") { Color = Brushes.Green };
             var textSearching = new Text("Searching for a device") { Color = Brushes.Red };
-            var scpProtocal = new SCPProtocol();
+            var scpProtocol = new SCPProtocol();
             var arbitrator = new Arbitrator() { InstanceName = "scpDevice"};
             var ignoredDataFlowConnector = new DataFlowConnector<string>();
             var sessionListScp = new SCPSessions() { InstanceName = "sessionList" };
@@ -42,7 +42,7 @@ namespace Application
             // This simulated device is wired to the 
             // In the real application, this would be a real farming device connected to the physical COM port of the PC.
             // to recieve command and return data.
-            var scpSimulator = new DeviceSimulator();
+            var scpSimulator = new RealFarmingDeviceSimulator();
             scpSimulator.AddSession(name:"session0", date:"2021-02-28", new[] { "F01FID","F11EID" });
             scpSimulator.AddSession("session1", "2021-03-31", new[] { "F01FID", "F11EID", "F10Weight" });
             scpSimulator.AddSession("session2", "2021-04-30", new[] { "F01FID", "F11EID", "F10Weight", "F12Remark" });
@@ -83,7 +83,7 @@ namespace Application
                                 .WireTo(csvFileReaderWriter, "dataFlowOutputFilePathNames")
                                 .WireTo(saveToCsvFileTransact
                                     .WireTo(sessionDataScpImport
-                                        .WireTo(scpProtocal, "requestResponseDataFlow")
+                                        .WireTo(scpProtocol, "requestResponseDataFlow")
                                         .WireTo(arbitrator, "arbitrator")
                                     , "tableDataFlowSource")
                                     .WireTo(csvFileReaderWriter, "tableDataFlowDestination")
@@ -95,13 +95,13 @@ namespace Application
                 .WireTo(new Horizontal() { InstanceName = "mainPanel", Ratios = new int[] { 1, 3 } }
                     .WireTo(sessionListGrid
                         .WireTo(sessionListScp
-                            .WireTo(scpProtocal, "requestResponseDataFlow")
+                            .WireTo(scpProtocol, "requestResponseDataFlow")
                             .WireTo(arbitrator, "arbitrator")
                         , "dataSource")
                         .WireTo(sessionListScp, "dataFlowSelectedPrimaryKey")
                         .WireTo(sessionDataGrid
                             .WireTo(sessionDataScp
-                                .WireTo(scpProtocal, "requestResponseDataFlow")
+                                .WireTo(scpProtocol, "requestResponseDataFlow")
                                 .WireTo(arbitrator, "arbitrator")
                             , "dataSource")
                         , "eventRowSelected")
@@ -118,9 +118,9 @@ namespace Application
             .WireTo(new Timer() { Delay = 3000 }
                 .WireTo(new SCPSense() { InstanceName = "scpSence"}
                     .WireTo(arbitrator, "arbitrator")
-                    .WireTo(scpProtocal
+                    .WireTo(scpProtocol
                         .WireTo(scpSimulator
-                            .WireTo(scpProtocal, "charFromPort")
+                            .WireTo(scpProtocol, "responseOutput")
                         , "scpCommand")
                     , "requestResponseDataFlow")
                     .WireTo(new DataFlowConnector<bool>()
@@ -133,7 +133,7 @@ namespace Application
                         )
                     , "IsDeviceConnected")
                 )
-            , "appStartsRun");
+            , "appStart");
         }
     }
 }

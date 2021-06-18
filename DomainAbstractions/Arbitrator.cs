@@ -22,7 +22,7 @@ namespace DomainAbstractions
     public class Arbitrator : IArbitrator // arbitrator
     {
         //properties ---------------------------------------------------------------
-        public string InstanceName;
+        public string InstanceName { get; set; } = "default";
 
         // private fields ---------------------------------------------------------------
         private Queue<Tuple<string, TaskCompletionSource<object>>> waitingQueue = new Queue<Tuple<string, TaskCompletionSource<object>>>();

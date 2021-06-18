@@ -20,7 +20,9 @@ namespace DomainAbstractions
     public class MenuItem : IUI, IDataFlow<bool> // wpfElement, visible
     {
         // properties
-        public string InstanceName = "Default";
+        public string InstanceName { get; set; }  = "Default";
+
+
         public string IconName
         {
             set
@@ -38,8 +40,8 @@ namespace DomainAbstractions
         }
 
         // ports
-        private IEvent eventOutput;
-        private IDataFlow_B<bool> dataFlowBOutput;
+        private IEvent output;
+        private IDataFlow_B<bool> enableInput;  // greys out the menu item when disabled
 
         // private fields
         private System.Windows.Controls.MenuItem menuItem;
@@ -55,20 +57,18 @@ namespace DomainAbstractions
             menuItem.VerticalAlignment = VerticalAlignment.Center;
             menuItem.Foreground = new SolidColorBrush(Color.FromRgb(0, 0, 0));
             menuItem.FontSize = 14;
-            menuItem.Click += (object sender, RoutedEventArgs e) => eventOutput?.Execute();
+            menuItem.Click += (object sender, RoutedEventArgs e) => output?.Execute();
             menuItem.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        private void PostWiringInitialize()
+        // By having this name convention, this method gets called by WireTo immediately after the correspeonding port is wired
+        private void enableInputInitialize()
         {
-            if (dataFlowBOutput != null)
-            {
-                dataFlowBOutput.DataChanged += () =>
+                enableInput.DataChanged += () =>
                 {
-                    menuItem.IsEnabled = dataFlowBOutput.Data;
+                    menuItem.IsEnabled = enableInput.Data;
                     menuItem.Foreground = menuItem.IsEnabled ? new SolidColorBrush(Color.FromRgb(0, 0, 0)) : Brushes.DarkGray;
                 };
-            }
         }
 
         // IUI implmentation -----------------------------------------------------------

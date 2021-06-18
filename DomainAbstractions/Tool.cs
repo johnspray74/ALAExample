@@ -15,13 +15,13 @@ namespace DomainAbstractions
     public class Tool : IUI, IDataFlow<bool>
     {
         // properties
-        public string InstanceName = "Default";
-        public string ToolTip;
+        public string InstanceName { get; set; } = "Default";
+        public string ToolTip { get; set; }
 
         // ports
         private IEvent eventOutput;
         private IUI iuiStructure;
-        private IDataFlow_B<bool> dataFlowBOutput;
+        private IDataFlow_B<bool> enableInput;
 
         // private fields
         private System.Windows.Controls.Button toolButton = new System.Windows.Controls.Button();
@@ -41,16 +41,14 @@ namespace DomainAbstractions
             toolButton.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        private void PostWiringInitialize()
+        // By having this name convention, this method gets called by WireTo immediately after the correspeonding port is wired
+        private void enableInputInitialize()
         {
-            if (dataFlowBOutput != null)
-            {
-                dataFlowBOutput.DataChanged += () =>
+                enableInput.DataChanged += () =>
                 {
-                    toolButton.IsEnabled = dataFlowBOutput.Data;
+                    toolButton.IsEnabled = enableInput.Data;
                     toolButton.Foreground = toolButton.IsEnabled ? new SolidColorBrush(Color.FromRgb(0, 0, 0)) : Brushes.DarkGray;
                 };
-            }
         }
 
         // IUI implementation -----------------------------------------------------------

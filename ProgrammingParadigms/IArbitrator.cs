@@ -8,9 +8,11 @@ namespace ProgrammingParadigms
     /// during this period any request will be paused and stored in an execution queue. After the previous resource being released,
     /// the first request in the queue will be dequeued and executed and it occupies the resource again.
     /// example:
-    ///    await arbitrator.Request(InstanceName);
-    ///    response = await requestResponseDataFlow.SendRequest("{ZA1}");
-    ///    arbitrator.Release(InstanceName);
+    ///    if in some domain abstraction, a port called "arbitrator" of type IArbitrator is wired to an instance of Arbitrator,
+    ///    and a port called scpDevice is wired to some slow device which can only handle one request at a time:
+    ///    await arbitrator.Request("ID");
+    ///    response = await scpDevice.SendRequest("{ZA1}");
+    ///    arbitrator.Release("ID");
     /// </summary>
 public interface IArbitrator
     {
