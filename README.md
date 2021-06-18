@@ -70,7 +70,7 @@ Rosman Cheng, John Spray, Roopak Sinha, Arnab Sen
 
 ## License
 
-This project is licensed under the terms of the MIT license. See License.txt
+This project is licensed under the terms of the MIT license. See [License.txt](License.txt)
 
 ## Acknowledgments
 
