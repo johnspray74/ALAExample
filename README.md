@@ -7,22 +7,24 @@ Then look at the code in Application.cs to see how it was done.
 
 # Background
 
-ALAExample is a sample of a research project for a software Reference Architecture called ALA <http://www.abstractionlayeredarchitecture.com>.
+ALAExample is a sample of a research project for a software Reference Architecture called ALA (Abstraction Layered Architecture) <http://www.abstractionlayeredarchitecture.com>.
 ALA is theretically optimized for the maintainabilty quality attribute.
 This research was to measure if this is true in paractice.
 
 The example Windows desktop application is a cutdown application used by farmers to get data to/from their EID readers, livestock weighing devices etc.
 The solution includes a simulated device so it actually gets some data off it, displays and can write it to a disk file.
 
+[(Abstraction Layered Architecture)](http://www.abstractionlayeredarchitecture.com)
+
 <!---
-[(Abstraction Layered Architecture)](abstractionlayeredarchitecture.com)
+[(Abstraction Layered Architecture)](http://www.abstractionlayeredarchitecture.com)
 -->
 
 # Knowledge dependencies
 
 ALA (Abstraction Layered Architecture) always makes it clear what knowledge is needed to understand a given piece of code.
 
-Knowledge of ALA comes from the Introduction and Chapter 2 of the web site  [(https://www.abstractionlayeredarchitecture.com)](abstractionlayeredarchitecture.com)
+Knowledge of ALA comes from the Introduction and Chapter 2 of the web site <http://www.abstractionlayeredarchitecture.com>.
 
 In this solution, start with the *application* folder. It has Application.pdf and its hand tranlation into code, Application.cs.
 The dependencies only go down the abstraction layers as follows:
