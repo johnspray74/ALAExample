@@ -17,8 +17,6 @@ The brown user stories of the diagram get data off the device and write it to a 
 
 Question for thought: How many applications could you read the source code and understand it like we have just done right here in the readme? This diagram is not just documentation, it is source code. In this case we have hand translated the diagram into readable code which you can see in Application.cs. We have done this to connect the dots on how we get the diagram to execute without any magic. However, if the application gets much larger, we would want to auto-generate the code.
 
-(We have a tool called GALADE (not used for this example) but would love help to do other graphical tools in Visual Studio and Eclipse working. GALADE features automatic layout of the entire diagram so that the developer can concentrate on expressing user stories and inventing the needed abstractions.)
-
 To see the diagram executing, just download and execute the solution in Visual Studio. You will be able to use the application as shown by the gif below. (Not shown in the diagram is that we have wired in a software simulation of a real device to the COM port).
 
 ![Application screenshot](Application/Application-demo.gif)
@@ -84,6 +82,14 @@ C#, Visual Studio 2019, GALADE v1.6.1
 ### Future work
 
 Swift, Java, Python and Rust versions needed.
+
+We have a graphical tool called GALADE (Graphical ALA development environment) (not used for this example) written by Arnab Sen here [https://github.com/arnab-sen/GALADE](https://github.com/arnab-sen/GALADE).
+
+GALADE automatically generates code of course. GALADE also features automatic layout when drawing the diagram so that the developer can concentrate on expressing user stories and inventing the needed abstractions - feature that we find critcally important becasue most drawing packages ask you to spend too much time working on layout. It also presents the boxes representing instances of domain abstractions with their configuration constructor parameters and properties ready to be filled in. It also shows all the ports ready to be wired. Importantly, it acheives this by reading the code in the classes in the DomainAbstractions folder. This is really powerful and supports round trip of both the application wiring code and the domain abstractions code.
+ 
+We would love help to further develop GALADE to support ALA development, for example, to show errors for illegal dependecies according to the ALA fundmental rules.
+
+We would also love to see other graphical tools in based on Visual Studio and Eclipse graphical environments to gnerally support ALA and specifically to generate wiring code.
 
 ### Authors
 
