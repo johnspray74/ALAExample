@@ -1,7 +1,7 @@
 # ALAExample
 
 An example application of ALA [(Abstraction Layered Architecture)](http://www.abstractionlayeredarchitecture.com).
-Look at the source diagram in the Application folder: *application diagram.pdf* also shown below. (You can click on the diagram to get a clearer view.) It describes the user stories of a small desktop application, and is executable.
+Look at the source diagram in the Application folder: *application diagram.pdf* also shown below. (You can click on the diagram to get a clearer view.) It describes the user stories of a small desktop application, and is executable. The point of the diagram is not the user stories themselves, but to show how an ALA diagram can work. 
 
 ![Application diagram](Application/Application-diagram.png)
 
