@@ -70,7 +70,9 @@ Rosman Cheng, John Spray, Roopak Sinha, Arnab Sen
 
 ## License
 
-This project is licensed under the terms of the MIT license. See License.txt
+This project is licensed under the terms of the MIT license. See [License.txt](License.txt)
+
+[![GitHub license](https://img.shields.io/github/license/johnspray74/ALAExample)](https://github.com/johnspray74/ALAExample/blob/master/License.txt)
 
 ## Acknowledgments
 
