@@ -7,7 +7,11 @@ Look at the diagram in the Application folder: *application diagram.pdf* also sh
 
 Then download and execute the solution in Visual Studio to see the diagram itself actually run (it uses a software simulation of a real device).
 
+![Application screenshot](Application/Application-demo.gif)
+
+<!---
 ![Application screenshot](Application/Application-screenshot.png)
+-->
 
 Then look at the code in *application.cs* to see how it was done by using [(Abstraction Layered Architecture)](http://www.abstractionlayeredarchitecture.com)
 
