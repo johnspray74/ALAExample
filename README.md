@@ -18,7 +18,7 @@ Then look at the code in *application.cs* to see how it was done by using [(Abst
 
 ### Background
 
-ALAExample is a cutdown example of an application used by farmers to get data to/from their EID readers, livestock weighing devices etc.
+ALAExample is a cut-down example of an application used by farmers to get data to/from their EID readers, livestock weighing devices, etc.
 
 The full Windows PC desktop application was a research project for a software reference architecture called ALA [(Abstraction Layered Architecture)](http://www.abstractionlayeredarchitecture.com). ALA is theoretically optimized for the maintainabilty quality attribute by telling you how to organise code. This research was to measure if this is true in paractice.
 
