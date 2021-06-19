@@ -35,9 +35,9 @@ The project was done by a masters student and internship students over two inter
 ALA (Abstraction Layered Architecture) always makes it clear what knowledge is needed to understand a given unit of code.
 
 Knowledge of ALA comes from the Introduction and Chapter 2 of the web site <http://www.abstractionlayeredarchitecture.com>.
-In ALA, the only unit of code is an abstraction. Dependenies must be on abstractions that are more abstract. This gives rise to abstraction layers as follows.
+In ALA, the only unit of code is an abstraction. Dependencies must be on abstractions that are more abstract. This gives rise to abstraction layers as follows.
 
-In this solution, start with the *application* folder which is the top layer. It has application.pdf and its hand tranlation into code, application.cs.
+In this solution, start with the *application* folder which is the top layer. It has application.pdf and its hand translation into code, application.cs.
 The application.cs uses classes in the *domain abstractions* folder, which is the second layer.
 The domain abstractions use interfaces in the *programming paradigms* folder, which is the third layer.
 The application.cs uses a *wireTo* extension method in the *libraries* folder, which is the bottom layer.
