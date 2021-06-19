@@ -51,7 +51,7 @@ This example project is to show the actual working code for the Application, Dom
 
 1. Clone this repository or download as a zip.
 2. Open the solution in Visual Studio 2019 or later
-3. When the application runs you will see data already loaded from a simulated real device.
+3. When the application runs, you will see data already loaded from a simulated real device.
 4. Click on the row on the left, and it will show data from different sessions on the right.
 5. Click on File, Import from Device, to open a Wizard, then select Local CSV File, then enter a filename to save data to a CSV file.
 6. Click on the Toolbar icon to do the same thing.
