@@ -16,7 +16,7 @@ Then download and execute the solution in Visual Studio to see the diagram itsel
 Then look at the code in *application.cs* to see how it was done by using [(Abstraction Layered Architecture)](http://www.abstractionlayeredarchitecture.com)
 
 
-# Background
+### Background
 
 ALAExample is a cutdown example a Windows desktop application used by farmers to get data to/from their EID readers, livestock weighing devices etc.
 The solution includes a simulated device so it can run without a real hardware device attached. 
@@ -31,7 +31,7 @@ The project was done by a masters student and internship students over two inter
 [(Abstraction Layered Architecture)](http://www.abstractionlayeredarchitecture.com)
 -->
 
-# Knowledge dependencies
+### Knowledge dependencies
 
 ALA (Abstraction Layered Architecture) always makes it clear what knowledge is needed to understand a given unit of code.
 
@@ -48,7 +48,7 @@ There are no dependencies within layers, so all abstractions are like standalone
 This example project is to show the actual working code for the Application, Domain Abstractions, Programming Paradigms and Libraries layers.
 
 
-## To run the example application
+### To run the example application
 
 1. Clone this repository or download as a zip.
 2. Open the solution in Visual Studio 2019 or later
@@ -62,7 +62,7 @@ This example project is to show the actual working code for the Application, Dom
 
 C#, Visual Studio 2019, GALADE v1.6.1
 
-## Contributing
+### Contributing
 
 1. Fork it (<https://github.com/johnspray74/ALAExample/fork>)
 2. Create your feature branch (`git checkout -b feature/fooBar`)
@@ -71,21 +71,21 @@ C#, Visual Studio 2019, GALADE v1.6.1
 5. Create a new Pull Request
 
 
-## Future work
+### Future work
 
 Swift, Java, Python and Rust versions needed.
 
-## Authors
+### Authors
 
 Rosman Cheng, John Spray, Roopak Sinha, Arnab Sen
 
 
-## License
+### License
 
 This project is licensed under the terms of the MIT license. See [License.txt](License.txt)
 
 [![GitHub license](https://img.shields.io/github/license/johnspray74/ALAExample)](https://github.com/johnspray74/ALAExample/blob/master/License.txt)
 
-## Acknowledgments
+### Acknowledgments
 
 
