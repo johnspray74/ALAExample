@@ -1,7 +1,7 @@
 # ALAExample
 
-An example application of ALA (Abstraction Layered Architecture).
-Look at the diagram in the Application folder: *application diagram.pdf* also shown below. It describes the user stories of a small desktop application, and is executable.
+An example application of ALA [(Abstraction Layered Architecture)](http://www.abstractionlayeredarchitecture.com).
+Look at the source diagram in the Application folder: *application diagram.pdf* also shown below. It describes the user stories of a small desktop application, and is executable.
 
 ![Application diagram](Application/Application-diagram.png)
 
@@ -25,8 +25,6 @@ To this diagram executing, just download and execute the solution in Visual Stud
 ![Application screenshot](Application/Application-screenshot.png)
 -->
 
-Then look at the code in *application.cs* to see how it was done by using [(Abstraction Layered Architecture)](http://www.abstractionlayeredarchitecture.com)
-
 
 ### Background
 
@@ -34,19 +32,13 @@ ALAExample is a cut-down example of an application used by farmers to get data t
 
 The full Windows PC desktop application was a research project for a software reference architecture called ALA [(Abstraction Layered Architecture)](http://www.abstractionlayeredarchitecture.com). ALA is theoretically optimized for the maintainabilty quality attribute by telling you how to organise code. This research was to measure if this is true in paractice.
 
-The project was done by a masters student and internship students over two internships. By using the architecture they were able to write quality code to replace a legacy degenerate application with approximately 2 man-years of effort compared with approximately 12 man-years of effort for the legacy application. To give an idea of size, the ALA version contains 55 KLOC and the legacy version 70 KLOC for approximately the same functionality.
-
-
+The project was done by a masters student and internship students over two internships. By using the architecture, they were able to write quality code to replace a legacy degenerate application with approximately 2 man-years of effort compared with approximately 12 man-years of effort for the legacy application. To give an idea of size, the ALA version contains 55 KLOC and the legacy version 70 KLOC for approximately the same functionality.
 
 <!---
 [(Abstraction Layered Architecture)](http://www.abstractionlayeredarchitecture.com)
 -->
 
-### Knowledge dependencies
-
-ALA (Abstraction Layered Architecture) always makes it clear what knowledge is needed to understand a given unit of code.
-
-Knowledge of ALA comes from the Introduction and Chapter 2 of the web site <http://www.abstractionlayeredarchitecture.com>.
+### Abstraction Layered Architecture brief description
 
 In ALA, the only unit of code is an abstraction. Dependencies must be on abstractions that are more abstract. This gives rise to abstraction layers as follows:
 
@@ -55,7 +47,11 @@ The application.cs uses classes in the *domain abstractions* folder, which is th
 The domain abstractions use interfaces in the *programming paradigms* folder, which is the third layer. Programming paradigms must be even more abstract (and therefore even more reusable) than domain abstractions. 
 The application.cs uses a *wireTo* extension method in the *libraries* folder, which is the bottom layer. wireTo supports this whole pattern of expressing user stories through instances of domain abstractions wired togther using programming paradigms. This pattern is one way to conform to the constraints provided by the fundamental rules of ALA.
 
-There are no dependencies within layers, so all abstractions are like standalone programs given knowledge of the abstractions they use. Through the use of abstraction, the internals of all abstractions are zero-coupled, even going down the layers.
+There are no dependencies within layers, so all abstractions are like standalone programs given knowledge of the abstractions they use. Through the use of abstraction, the internals of all abstractions are zero-coupled in ALA, even going down the layers.
+
+ALA (Abstraction Layered Architecture) always makes it clear what knowledge is needed to understand a given unit of code.
+
+Knowledge of ALA itself comes from the Introduction and Chapter 2 of the web site <http://www.abstractionlayeredarchitecture.com>.
 
 The only purpose of this example project is to show the actual working code for an application conforming to ALA. 
 
