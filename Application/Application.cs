@@ -8,11 +8,23 @@ namespace Application
 {
     public class Application
     {
+        // Application is an abstraction in the top most concrete layer of ALA.
+        // Actually the diagram (in the same folder) is the source code - read that instead.
+        // This Application.cs class is just hand compiled wiring code following that diagram.
+
+        // (ALA is Abstraction Layered Architecture - see www.abstractionlayeredarchitecture.com)
+        // It knows all the specifics and details of the requirements of the application (but no implementation)
+        // Its job is to express the user stories and requirements by instantiating domain abstractions and wiring them together.
+        // This class has a line of code in Main() to instnatiate this Application class, which causes all the instantiating and wiring to be done in its constructor, then do any other initialization that is needed, then start the MainWindow.
+        // That's pretty much all there is apart from the details in the constructor below, but you only need to read that to see how it faithfully follows the diagram.
+        // Go back to the diagram to see how the application user stories work.
+
         private MainWindow mainWindow = new MainWindow("ALAExample");
 
         [STAThread]
         public static void Main()
         {
+            // fairly standard way of starting an ALA application that uses windows.
             new Application().Initialize().mainWindow.Run();
         }
 
@@ -24,6 +36,8 @@ namespace Application
 
         private Application()
         {
+            // First instantiate any domain abstractions that we can't leave anonymous because the wiring diagram has loops in it.
+
             var saveFileBrowser = new SaveFileBrowser("Save file", "CSV");
             var textConnected = new Text("Connected") { Color = Brushes.Green };
             var textSearching = new Text("Searching for a device") { Color = Brushes.Red };
@@ -38,11 +52,16 @@ namespace Application
             var sessionDataGrid = new Grid() { InstanceName = "data" };
             var csvFileReaderWriter = new CSVFileReaderWriter();
 
+
+
+
             // This is a simulator abstraction that we configure with mock data.
-            // This simulated device is wired to the 
+            // This simulated device is wired to the COMPort abstraction but is not itself part of the application. 
             // In the real application, this would be a real farming device connected to the physical COM port of the PC.
-            // to recieve command and return data.
+            // to receive command and return data.
             var scpSimulator = new RealFarmingDeviceSimulator();
+
+            // Configure the simulated device with soem data
             scpSimulator.AddSession(name:"session0", date:"2021-02-28", new[] { "F01FID","F11EID" });
             scpSimulator.AddSession("session1", "2021-03-31", new[] { "F01FID", "F11EID", "F10Weight" });
             scpSimulator.AddSession("session2", "2021-04-30", new[] { "F01FID", "F11EID", "F10Weight", "F12Remark" });
@@ -55,6 +74,9 @@ namespace Application
             scpSimulator.AddSessionData(2, new[] { "1023", "EID0000000000022", "376", "pregnant" });
             scpSimulator.AddSessionData(2, new[] { "0412", "EID0000000000023", "354", "black spot" });
             scpSimulator.AddSessionData(2, new[] { "0219", "EID0000000000024", "395", "lame" });
+
+
+
 
             mainWindow
             // UI
