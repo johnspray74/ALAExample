@@ -62,6 +62,14 @@ This example project is to show the actual working code for the Application, Dom
 
 C#, Visual Studio 2019, GALADE v1.6.1
 
+## Contributing
+
+1. Fork it (<https://github.com/johnspray74/ALAExample/fork>)
+2. Create your feature branch (`git checkout -b feature/fooBar`)
+3. Commit your changes (`git commit -am 'Add some fooBar'`)
+4. Push to the branch (`git push origin feature/fooBar`)
+5. Create a new Pull Request
+
 
 ## Future work
 
