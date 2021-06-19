@@ -5,10 +5,10 @@ Look at the diagram in the Application folder: *application diagram.pdf* also sh
 
 ![Application diagram](Application/Application-diagram.png)
 
-An ALA diagram simply expresses user stories in terms of instances of domain abstraction (the boxes in teh diagram) wired together by their ports, which are programming paradigms implemented as interfaces.
+An ALA diagram simply expresses user stories in terms of instances of domain abstraction (the boxes in the diagram) wired together by their ports, which are programming paradigms implemented as interfaces.
 
 The yellow part of the diagram expresses the base UI layout. The Exit menu item coses the application.
-
+The green part of the diagram senses if a device is connected and displays "Searching for a device" or "Connected in the statusbar". SCPSense knows how to send an SCP (Serial Command Protocol) command outon the serial port to poll for the presence of a device. It does this every 3 seconds when it gets an event from the timer.
 
 
 Then download and execute the solution in Visual Studio to see the diagram itself actually run (it uses a software simulation of a real device).
