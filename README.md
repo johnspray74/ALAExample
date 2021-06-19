@@ -1,7 +1,7 @@
 # ALAExample
 
 An example application of ALA [(Abstraction Layered Architecture)](http://www.abstractionlayeredarchitecture.com).
-Look at the source diagram in the Application folder: *application diagram.pdf* also shown below. It describes the user stories of a small desktop application, and is executable.
+Look at the source diagram in the Application folder: *application diagram.pdf* also shown below. (You can click on the diagram to get a clearer view.) It describes the user stories of a small desktop application, and is executable.
 
 ![Application diagram](Application/Application-diagram.png)
 
@@ -15,7 +15,7 @@ The blue user stories display data from the device. When the sessions grid gets 
 
 The brown user stories of the diagram get data off the device and write it to a CSV file. There is an "Import from device" menu item in the File menu, which when clicked outputs an event. This event opens up a Wizard which contains RadioButtons for selecting where the data is to go. When the user makes his selection, the relevant RadioButton outputs an event which opens a SaveFileBrowser. When the filepath is selected it informs a CSVFileReaderWriter. It also causes an event to go to a Transfer domain abstraction that knows how to pull all the rows and columns from a table-data-flow, and push it to another table-data-flow. table-data-flow supports both pull and push modes, but does so in small batches in case there is a lot of data. 
 
-Question for thought: How many applications could you read the source code and understand it like we have just done right here in the readme? This diagram is not just documentation, it is source code. In this case we have hand translated the diagram into readable code which you can see in Application.cs. We have done this to connect the dots on how we get the diagram to execute without any magic. However, if the application gets much larger, we would want to auto-generate the code.
+Question for thought: How many applications could you read the source code and understand it like we have just done right here in the readme? This diagram is not just documentation, it is source code. In this case we have hand translated the diagram into readable code which you can see in Application.cs. We have done this to connect the dots on how we get the diagram to execute without any magic. However, if the application diagram gets very larger, we would want to make things even easier by auto-generating the wiring code.
 
 To see the diagram executing, just download and execute the solution in Visual Studio. You will be able to use the application as shown by the gif below. (Not shown in the diagram is that we have wired in a software simulation of a real device to the COM port).
 
