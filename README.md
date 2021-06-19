@@ -1,9 +1,15 @@
 # ALAExample
 
 An example application of ALA (Abstraction Layered Architecture).
-Look at the diagram in the Application folder: *application diagram.pdf* also shown below. It describes a small desktop application (which, incidentally, displays data loaded from a device and saves it to a CSV file).
+Look at the diagram in the Application folder: *application diagram.pdf* also shown below. It describes a small desktop application.
 
 ![Application diagram](Application/Application-diagram.png)
+
+An ALA diagram simply expresses user stories in terms of instances of domain abstraction (the boxes in teh diagram) wired together by their ports, which are programming paradigms implemented as interfaces.
+
+The yellow part of the diagram expresses the base UI layout. The Exit menu item coses the application.
+
+
 
 Then download and execute the solution in Visual Studio to see the diagram itself actually run (it uses a software simulation of a real device).
 
