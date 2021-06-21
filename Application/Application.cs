@@ -8,8 +8,9 @@ namespace Application
 {
     public class Application
     {
-        // Application is an abstraction in the top most concrete layer of ALA.
-        // Actually the diagram (in the same folder) is the source code - read that instead.
+        // Application is an abstraction in the top most concrete layer of ALA (Abstraction Layered Architecture)
+        // (for bmore background refer https://www.github.com/johnspray74/ALAExample http://www.abstractionlayeredarchitecture.com)
+        // Actually the diagram (application-diagram in the same folder) is the source code - read that instead.
         // This Application.cs class is just hand compiled wiring code following that diagram.
 
         // (ALA is Abstraction Layered Architecture - see www.abstractionlayeredarchitecture.com)
