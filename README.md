@@ -49,7 +49,7 @@ The application uses classes in the...
 
 *Programming paradigms layer:* The programming paradigms layer and folder is the third layer. Programming paradigms must be even more abstract (and therefore even more reusable) than domain abstractions. The application.cs uses a *wireTo* extension method in the...
 
-*libraries layer:* The libraries layer and folder is the bottom layer. It contains the wireTo extension method. wireTo supports this whole pattern of expressing user stories through instances of domain abstractions wired together using programming paradigms. This pattern is one way to conform to the constraints provided by the fundamental rules of ALA.
+*Libraries layer:* The libraries layer and folder is the bottom layer. It contains the wireTo extension method used by Application.cs to implement each line in application-diagram. wireTo supports this whole pattern of expressing user stories through instances of domain abstractions wired together using programming paradigms. This pattern is one way to conform to the constraints provided by the fundamental rules of ALA.
 
 There are no dependencies within layers, so all abstractions are like standalone programs given knowledge of the abstractions they use. Through the use of abstraction, the internals of all abstractions are zero-coupled in ALA, even going down the layers.
 
