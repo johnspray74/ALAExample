@@ -89,11 +89,11 @@ We have a graphical tool called GALADE (Graphical ALA development environment) (
 
 GALADE automatically generates code of course. GALADE also features automatic layout when drawing the diagram so that the developer can concentrate on expressing user stories and inventing the needed abstractions - a feature that we find critcally important because most drawing packages ask you to spend too much effort on layout. It also presents the boxes representing instances of domain abstractions with their configuration constructor parameters and properties ready to be filled in. It also shows all the ports ready to be wired. Importantly, it acheives this by reading the code in the classes in the DomainAbstractions folder. This is really powerful integration with your C# code, and supports round trip of both the application wiring code and the domain abstractions code.
  
-We need to ALAExamlpe in GALADE in a branch so you can see what the diagram looks like and also the code it generates in Application.cs. 
+We need to do ALAExamlpe in GALADE in a branch so you can see what the diagram looks like and also the code it generates in Application.cs. 
  
 We would love help to further develop GALADE to support ALA development, for example, a routing algorithm for its wiring, or to show errors for illegal dependencies according to the ALA fundmental rules.
 
-We would also like to see other graphical tools based on Visual Studio and Eclipse graphical environments to generally support and specifically to generate the wiring code from the diagram.
+We would also like to see other graphical tools based on Visual Studio and Eclipse graphical environments to generally support ALA and specifically to generate the wiring code from the diagram.
 
 ### Authors
 
