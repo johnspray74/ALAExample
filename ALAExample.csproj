@@ -99,6 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application\Application.cs" />
+    <Compile Include="DomainAbstractions\ComPort.cs" />
     <Compile Include="DomainAbstractions\RealFarmingDeviceSimulator.cs" />
     <Compile Include="DomainAbstractions\Arbitrator.cs" />
     <Compile Include="DomainAbstractions\SCPSense.cs" />

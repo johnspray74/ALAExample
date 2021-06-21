@@ -45,18 +45,19 @@ namespace Application
             var scpSimulator = new RealFarmingDeviceSimulator();
 
             // Configure the simulated device with soem data
-            scpSimulator.AddSession(name: "session0", date: "2021-02-28", new[] { "F01FID", "F11EID" });
-            scpSimulator.AddSession("session1", "2021-03-31", new[] { "F01FID", "F11EID", "F10Weight" });
-            scpSimulator.AddSession("session2", "2021-04-30", new[] { "F01FID", "F11EID", "F10Weight", "F12Remark" });
-            scpSimulator.AddSessionData(0, new[] { "1", "EID0000000000000" });
-            scpSimulator.AddSessionData(0, new[] { "2", "EID0000000000001" });
-            scpSimulator.AddSessionData(1, new[] { "013", "EID0000000000010", "342" });
-            scpSimulator.AddSessionData(1, new[] { "001", "EID0000000000011", "373" });
-            scpSimulator.AddSessionData(1, new[] { "002", "EID0000000000012", "304" });
-            scpSimulator.AddSessionData(2, new[] { "0123", "EID0000000000021", "405", "healthy" });
-            scpSimulator.AddSessionData(2, new[] { "1023", "EID0000000000022", "376", "pregnant" });
-            scpSimulator.AddSessionData(2, new[] { "0412", "EID0000000000023", "354", "black spot" });
-            scpSimulator.AddSessionData(2, new[] { "0219", "EID0000000000024", "395", "lame" });
+            scpSimulator.AddSession(name: "session0", date: "2021-02-28", columns: new[] { "F01FID", "F11EID" });
+            scpSimulator.AddSession(name: "session1", date: "2021-03-31", columns: new[] { "F01FID", "F11EID", "F10Weight" });
+            scpSimulator.AddSession(name: "session2", date: "2021-04-30", columns: new[] { "F01FID", "F11EID", "F10Weight", "F12Remark" });
+            scpSimulator.AddSessionData(index: 0, sessionData: new[] { "1", "EID0000000000000" });
+            scpSimulator.AddSessionData(index: 0, sessionData: new[] { "2", "EID0000000000001" });
+            scpSimulator.AddSessionData(index: 1, sessionData: new[] { "013", "EID0000000000010", "342" });
+            scpSimulator.AddSessionData(index: 1, sessionData: new[] { "001", "EID0000000000011", "373" });
+            scpSimulator.AddSessionData(index: 1, sessionData: new[] { "002", "EID0000000000012", "304" });
+            scpSimulator.AddSessionData(index: 2, sessionData: new[] { "0123", "EID0000000000021", "405", "healthy" });
+            scpSimulator.AddSessionData(index: 2, sessionData: new[] { "1023", "EID0000000000022", "376", "pregnant" });
+            scpSimulator.AddSessionData(index: 2, sessionData: new[] { "0412", "EID0000000000023", "354", "black spot" });
+            scpSimulator.AddSessionData(index: 2, sessionData: new[] { "0219", "EID0000000000024", "395", "lame" });
+
 
 
 
@@ -75,8 +76,8 @@ namespace Application
             // First instantiate any domain abstractions that we can't leave anonymous because the wiring diagram has loops in it:
 
             var saveFileBrowser = new SaveFileBrowser("Save file", "CSV");
-            var textConnected = new Text("Connected") { Color = Brushes.Green };
-            var textSearching = new Text("Searching for a device") { Color = Brushes.Red };
+            var textConnected = new Text("Connected", false) { Color = Brushes.Green };
+            var textSearching = new Text("Searching for a device...") { Color = Brushes.Red };
             var scpProtocol = new SCPProtocol();
             var arbitrator = new Arbitrator() { InstanceName = "scpDevice"};
             var ignoredDataFlowConnector = new DataFlowConnector<string>();
@@ -87,6 +88,7 @@ namespace Application
             var sessionListGrid = new Grid() { InstanceName = "sessions", RowHeight = 50, PrimaryKey = "index" };
             var sessionDataGrid = new Grid() { InstanceName = "data" };
             var csvFileReaderWriter = new CSVFileReaderWriter();
+            var comPort = new COMPort();
 
 
             // Now do all the wiring of the diagram
@@ -158,8 +160,11 @@ namespace Application
                 .WireTo(new SCPSense() { InstanceName = "scpSence"}
                     .WireTo(arbitrator, "arbitrator")
                     .WireTo(scpProtocol
-                        .WireTo(scpSimulator
-                            .WireTo(scpProtocol, "responseOutput")
+                        .WireTo(comPort
+                            .WireTo(scpProtocol, "charFromPort")
+                            .WireTo(scpSimulator
+                                .WireTo(comPort, "responseOutput")
+                            , "charToPort")
                         , "scpCommand")
                     , "requestResponseDataFlow")
                     .WireTo(new DataFlowConnector<bool>()

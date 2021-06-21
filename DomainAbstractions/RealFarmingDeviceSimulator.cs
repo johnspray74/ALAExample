@@ -1,6 +1,7 @@
 ﻿using ProgrammingParadigms;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DomainAbstractions
@@ -30,31 +31,49 @@ namespace DomainAbstractions
     ///     Add capabilities to receive data uploaded to it
     ///     Add capabilities to allow it to be used for accptance testing, including scenarios such as with badly formatted data, not responding to commands, etc
     /// </summary>
-    public class RealFarmingDeviceSimulator : IDataFlow<string>, IEvent  // commandInput (IEvent not relevant to this abstraction to be removed) // also commandInput should be changed to IDataFlow<char> to better simulate a serial communications
+    public class RealFarmingDeviceSimulator : IDataFlow<char>, IEvent  // commandInput (IEvent not relevant to this abstraction to be removed) // also commandInput should be changed to IDataFlow<char> to better simulate a serial communications
     {
         public string InstanceName { get; set; } = "SCPDevice";
 
         private IDataFlow<List<string>> listOfPorts;  // not relevant to this abstraction to be removed
         private IDataFlow<char> responseOutput;
 
-        private Queue<string> scpCommands = new Queue<string>();
-
         private int ResponseDelay = 10;   // This makes the simulated device respond asynchronously and slowly to SCP commands to better simulate a real device
+        private string _commandBuffer;
+
+        private bool _shouldResponse;
 
         public RealFarmingDeviceSimulator()
         {
+            var cts = new CancellationTokenSource(5000);
+            cts.Token.Register(() =>
+            {
+                _shouldResponse = true;
+            });
         }
 
-        string IDataFlow<string>.Data 
+        char IDataFlow<char>.Data 
         {
             set
             {
-                SendResultAsync(value);
+                if (value == '{')
+                {
+                    _commandBuffer = value.ToString();
+                    return;
+                }
+
+                _commandBuffer += value;
+
+                if (value == '}')
+                    SendResultAsync(_commandBuffer);
             }
         }
 
         private async Task SendResultAsync(string command)
         {
+            if (!_shouldResponse) 
+                return;
+
             await System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(async () =>
             {
                 if (responseDic.ContainsKey(command))
@@ -177,11 +196,11 @@ namespace DomainAbstractions
             { "{SOCU}", "[0]" },
         };
 
-        public void AddSession(string name, string date, string[] header)
+        public void AddSession(string name, string date, string[] columns)
         {
             var index = indexData.Count;
             indexData.Add(index, new Tuple<string, string, string>(name, date, "0"));
-            headerData.Add(index, header);
+            headerData.Add(index, columns);
         }
 
         public void AddSessionData(int index, string[] sessionData)

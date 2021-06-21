@@ -62,9 +62,7 @@ namespace DomainAbstractions
         // IEvent implementation ---------------------------------------------------------
         void IEvent.Execute()
         {
-
             var _fireAndForget = RunDelayedEventLoopAsync(LoopTimes);
-
         }
     }
 }
