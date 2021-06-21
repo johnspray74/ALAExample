@@ -15,7 +15,7 @@ The blue user stories display data from the device. When the sessions grid gets 
 
 The brown user stories of the diagram get data off the device and write it to a CSV file. There is an "Import from device" menu item in the File menu, which when clicked outputs an event. This event opens up a Wizard which contains RadioButtons for selecting where the data is to go. When the user makes his selection, the relevant RadioButton outputs an event which opens a SaveFileBrowser. When the filepath is selected it informs a CSVFileReaderWriter. It also causes an event to go to a Transfer domain abstraction that knows how to pull all the rows and columns from a table-data-flow, and push it to another table-data-flow. table-data-flow supports both pull and push modes, but does so in small batches in case there is a lot of data. 
 
-Question for thought: How many applications could you read the source code and understand it like we have just done right here in the readme? This diagram is not just documentation, it is source code. In this case we have hand translated the diagram into readable code which you can see in Application.cs. We have done this to connect the dots on how we get the diagram to execute without any magic. However, if the application diagram gets very larger, we would want to make things even easier by auto-generating the wiring code.
+Question for thought: How many applications could you read the source code and understand it like we have just done right here in the readme? This diagram is not just documentation, it is source code. In this case we have hand translated the diagram into readable code which you can see in Application.cs. We have done this to connect the dots on how we get the diagram to execute without any magic. However, if the application diagram gets very large, we would want to make things even easier by auto-generating the wiring code.
 
 To see the diagram executing, just download and execute the solution in Visual Studio. You will be able to use the application as shown by the gif below. (Not shown in the diagram is that we have wired in a software simulation of a real device to the COM port).
 
@@ -42,10 +42,14 @@ The project was done by a masters student and internship students over two inter
 
 In ALA, the only unit of code is an abstraction. Dependencies must be on abstractions that are more abstract. This gives rise to abstraction layers as follows:
 
-Start with the *application* folder which is the top layer. It has application.pdf and its hand translation into code, application.cs.
-The application.cs uses classes in the *domain abstractions* folder, which is the second layer. Domain abstractions must be more abstract (and therefore more reuseable) than the specific application. We even use multiple instances of some of them in the same diagram.
-The domain abstractions use interfaces in the *programming paradigms* folder, which is the third layer. Programming paradigms must be even more abstract (and therefore even more reusable) than domain abstractions. 
-The application.cs uses a *wireTo* extension method in the *libraries* folder, which is the bottom layer. wireTo supports this whole pattern of expressing user stories through instances of domain abstractions wired togther using programming paradigms. This pattern is one way to conform to the constraints provided by the fundamental rules of ALA.
+*Application layer* The application layer and folder is the top layer. It contains application-diagram.pdf and its hand translation into code, application.cs.
+The application uses classes in the... 
+
+*Domain abstractions layer* and folder, which is the second layer. Domain abstractions must be more abstract (and therefore more reuseable) than the specific application. We even use multiple instances of some of them in the same diagram. The application and the domain abstractions use interfaces in the...
+
+*Programming paradigms layer* and folder, which is the third layer. Programming paradigms must be even more abstract (and therefore even more reusable) than domain abstractions. The application.cs uses a *wireTo* extension method in the...
+
+*libraries layer* and folder, which is the bottom layer. wireTo supports this whole pattern of expressing user stories through instances of domain abstractions wired together using programming paradigms. This pattern is one way to conform to the constraints provided by the fundamental rules of ALA.
 
 There are no dependencies within layers, so all abstractions are like standalone programs given knowledge of the abstractions they use. Through the use of abstraction, the internals of all abstractions are zero-coupled in ALA, even going down the layers.
 
