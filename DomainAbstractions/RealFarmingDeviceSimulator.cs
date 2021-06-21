@@ -1,6 +1,7 @@
 ﻿using ProgrammingParadigms;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DomainAbstractions
@@ -40,8 +41,15 @@ namespace DomainAbstractions
         private int ResponseDelay = 10;   // This makes the simulated device respond asynchronously and slowly to SCP commands to better simulate a real device
         private string _commandBuffer;
 
+        private bool _shouldResponse;
+
         public RealFarmingDeviceSimulator()
         {
+            var cts = new CancellationTokenSource(5000);
+            cts.Token.Register(() =>
+            {
+                _shouldResponse = true;
+            });
         }
 
         char IDataFlow<char>.Data 
@@ -63,6 +71,9 @@ namespace DomainAbstractions
 
         private async Task SendResultAsync(string command)
         {
+            if (!_shouldResponse) 
+                return;
+
             await System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(async () =>
             {
                 if (responseDic.ContainsKey(command))

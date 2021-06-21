@@ -6,7 +6,6 @@ namespace DomainAbstractions
 {
     /// <summary>
     /// ComPort abstraction is in charge of detecting the COM ports with device connected to it, writing to the selected COM port and reading from the selected COM port.
-    /// It sends a list of COM ports and in return will receive a selected COM port to be initialised for communication to the COM port.
     /// </summary>
     public class COMPort : IDataFlow<string>, IDataFlow<char> // scpCommand, scpResult
     {
@@ -14,7 +13,6 @@ namespace DomainAbstractions
         public string InstanceName = "Default";
 
         //ports ---------------------------------------------------------------
-        private IDataFlow<List<string>> listOfPorts;
         private IDataFlow<char> charFromPort;
         private IDataFlow<char> charToPort;
 

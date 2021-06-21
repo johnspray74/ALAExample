@@ -76,8 +76,8 @@ namespace Application
             // First instantiate any domain abstractions that we can't leave anonymous because the wiring diagram has loops in it:
 
             var saveFileBrowser = new SaveFileBrowser("Save file", "CSV");
-            var textConnected = new Text("Connected") { Color = Brushes.Green };
-            var textSearching = new Text("Searching for a device") { Color = Brushes.Red };
+            var textConnected = new Text("Connected", false) { Color = Brushes.Green };
+            var textSearching = new Text("Searching for a device...") { Color = Brushes.Red };
             var scpProtocol = new SCPProtocol();
             var arbitrator = new Arbitrator() { InstanceName = "scpDevice"};
             var ignoredDataFlowConnector = new DataFlowConnector<string>();
