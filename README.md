@@ -42,22 +42,20 @@ The project was done by a masters student and internship students over two inter
 
 In ALA, the only unit of code is an abstraction. Dependencies must be on abstractions that are more abstract. This gives rise to abstraction layers as follows:
 
-*Application layer* The application layer and folder is the top layer. It contains application-diagram.pdf and its hand translation into code, application.cs.
+*Application layer:* The application layer and folder is the top layer. It contains application-diagram.pdf and its hand translation into code, application.cs.
 The application uses classes in the... 
 
-*Domain abstractions layer* and folder, which is the second layer. Domain abstractions must be more abstract (and therefore more reuseable) than the specific application. We even use multiple instances of some of them in the same diagram. The application and the domain abstractions use interfaces in the...
+*Domain abstractions layer:* The domain abstractions layer and folder is the second layer. Domain abstractions must be more abstract (and therefore more reuseable) than the specific application. We even use multiple instances of some of them in the same diagram. The application and the domain abstractions use interfaces in the...
 
-*Programming paradigms layer* and folder, which is the third layer. Programming paradigms must be even more abstract (and therefore even more reusable) than domain abstractions. The application.cs uses a *wireTo* extension method in the...
+*Programming paradigms layer:* The programming paradigms layer and folder is the third layer. Programming paradigms must be even more abstract (and therefore even more reusable) than domain abstractions. The application.cs uses a *wireTo* extension method in the...
 
-*libraries layer* and folder, which is the bottom layer. wireTo supports this whole pattern of expressing user stories through instances of domain abstractions wired together using programming paradigms. This pattern is one way to conform to the constraints provided by the fundamental rules of ALA.
+*libraries layer:* The libraries layer and folder is the bottom layer. It contains the wireTo extension method. wireTo supports this whole pattern of expressing user stories through instances of domain abstractions wired together using programming paradigms. This pattern is one way to conform to the constraints provided by the fundamental rules of ALA.
 
 There are no dependencies within layers, so all abstractions are like standalone programs given knowledge of the abstractions they use. Through the use of abstraction, the internals of all abstractions are zero-coupled in ALA, even going down the layers.
 
-ALA (Abstraction Layered Architecture) always makes it clear what knowledge is needed to understand a given unit of code.
+Knowledge of ALA itself is needed to understand the architecture of the code. Further details can be found in the Introduction and Chapter 2 of the web site <http://www.abstractionlayeredarchitecture.com>.
 
-Knowledge of ALA itself comes from the Introduction and Chapter 2 of the web site <http://www.abstractionlayeredarchitecture.com>.
-
-The only purpose of this example project is to show the actual working code for an application conforming to ALA. 
+The only purpose of this example project is to show the actual working code for an example application conforming to ALA. 
 
 
 ### To run the example application
@@ -89,13 +87,13 @@ Swift, Java, Python and Rust versions needed.
 
 We have a graphical tool called GALADE (Graphical ALA development environment) (not used for this example) written by Arnab Sen here [https://github.com/arnab-sen/GALADE](https://github.com/arnab-sen/GALADE).
 
-GALADE automatically generates code of course. GALADE also features automatic layout when drawing the diagram so that the developer can concentrate on expressing user stories and inventing the needed abstractions - feature that we find critcally important becasue most drawing packages ask you to spend too much time working on layout. It also presents the boxes representing instances of domain abstractions with their configuration constructor parameters and properties ready to be filled in. It also shows all the ports ready to be wired. Importantly, it acheives this by reading the code in the classes in the DomainAbstractions folder. This is really powerful and supports round trip of both the application wiring code and the domain abstractions code.
+GALADE automatically generates code of course. GALADE also features automatic layout when drawing the diagram so that the developer can concentrate on expressing user stories and inventing the needed abstractions - a feature that we find critcally important because most drawing packages ask you to spend too much effort on layout. It also presents the boxes representing instances of domain abstractions with their configuration constructor parameters and properties ready to be filled in. It also shows all the ports ready to be wired. Importantly, it acheives this by reading the code in the classes in the DomainAbstractions folder. This is really powerful integration with your C# code, and supports round trip of both the application wiring code and the domain abstractions code.
  
-We need the Galade version doing in a branch so you can see the two types of lines of code its generates. 
+We need to ALAExamlpe in GALADE in a branch so you can see what the diagram looks like and also the code it generates in Application.cs. 
  
 We would love help to further develop GALADE to support ALA development, for example, a routing algorithm for its wiring, or to show errors for illegal dependencies according to the ALA fundmental rules.
 
-We would also love to see other graphical tools in based on Visual Studio and Eclipse graphical environments to gnerally support ALA and specifically to generate wiring code.
+We would also like to see other graphical tools based on Visual Studio and Eclipse graphical environments to generally support and specifically to generate the wiring code from the diagram.
 
 ### Authors
 
