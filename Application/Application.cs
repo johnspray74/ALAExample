@@ -1,25 +1,25 @@
 using System;
 using System.Windows.Media;
 using DomainAbstractions;
-using Libraries;
 using ProgrammingParadigms;
+using Libraries;
 
 namespace Application
 {
     public class Application
     {
-        // Application.cs is code hand-generated from Application-diagram in the same folder. They are the real source code.
-        // This class is an abstraction in the top most concrete layer of ALA (Abstraction Layered Architecture)
-        // (for bmore background refer https://www.github.com/johnspray74/ALAExample http://www.abstractionlayeredarchitecture.com)
-        // Actually the diagram (application-diagram in the same folder) is the source code - read that instead.
-        // This Application.cs class is just hand compiled wiring code following that diagram.
+        // Application.cs is code hand-generated from Application-diagram (in the same folder). The diagram is the real source.
+        // The application diagram is an abstraction in the top most concrete layer of ALA (see AbstractionLayeredArchitecture.md for more details)
+        // The diagram expresses the user stories and all the specific details of the requirements (but no implementation).
+        // In ALA, implementation must be inside domain abstractions.
 
-        // (ALA is Abstraction Layered Architecture - see www.abstractionlayeredarchitecture.com)
-        // It knows all the specifics and details of the requirements of the application (but no implementation)
-        // Its job is to express the user stories and requirements by instantiating domain abstractions and wiring them together.
-        // This class has a line of code in Main() to instnatiate this Application class, which causes all the instantiating and wiring to be done in its constructor, then do any other initialization that is needed, then start the MainWindow.
-        // That's pretty much all there is apart from the details in the constructor below, but you only need to read that to see how it faithfully follows the diagram.
-        // Go back to the diagram to see how the application user stories work.
+        // The code in the constructor of this class is just hand-compiled wiring code accurately following that diagram.
+        // The diagram does its job by a composition of configured instances of domain abstractions.
+        // Hence the constructor code just instantiates domain abstractions, configures them with constructor arguments or properties, and wires them together according to the diagram, nothing more.
+        // This class is also where you will find the main() entry point to the application, however all it does is instantiate this class to get the constructor run, which does all the work.
+        // Then main simply tells the MainWindow instance to Run. 
+        // As far as the code inside the constructor below is concerned, it is not meant to be human readable from the point of view of what it does - use the application-diagram for that plus its accompanying application.md explanation.
+        // However, the code in the constructor below does need to be human readable from the point of view of being an accurate reflection of the diagram.
 
         private MainWindow mainWindow = new MainWindow("ALAExample");
 
@@ -38,13 +38,17 @@ namespace Application
 
         private Application()
         {
-            // This is a real farming device simulator abstraction that we configure with mock data.
-            // This simulated device gets wired to the COMPort abstraction but is not itself part of the application. 
+
+            // First part of the code is to set up a real farming device simulator instance that we configure with mock data.
             // In the real application, this would be a real farming device connected to the physical COM port of the PC.
-            // to receive command and return data.
+            // This simulated device gets wired to the COMPort abstraction and pretends to be connected to a real serial COM port.
+            // The simulated device is not part of the application, so is not shown on the application-diagram even though we instantiate and configure it here.
+            // The simulated device emulates the real devices ability to receive SCP commands and respond to them.
+
             var scpSimulator = new RealFarmingDeviceSimulator();
 
-            // Configure the simulated device with soem data
+            // Configure the simulated device with some session data
+            // farmer call their files inside devices "sessions". Thay can configure the fields that they want to use, so here we have three sessions, each with different fields.
             scpSimulator.AddSession(name: "session0", date: "2021-02-28", columns: new[] { "F01FID", "F11EID" });
             scpSimulator.AddSession(name: "session1", date: "2021-03-31", columns: new[] { "F01FID", "F11EID", "F10Weight" });
             scpSimulator.AddSession(name: "session2", date: "2021-04-30", columns: new[] { "F01FID", "F11EID", "F10Weight", "F12Remark" });
@@ -64,16 +68,16 @@ namespace Application
 
 
             // -------------------------- CODE MANUALLY GENERATED FROM DIAGRAM --------------------------------------------------------------
-            // The following code has been manually generated from the diagram in application-diagram.drawio, also in application-diagram.pdf
+            // The following code has been manually generated from the diagram in application-diagram.drawio (read-only in application-diagram.pdf)
             // Refer to the diagram for how the application works, not this code.
             // Also application.md is a commentary on reading the diagram.
             // Take an interest in this code if
             // 1. You want to understand how the diagram was hand-coded
-            // 2. You want to know how the ALA diagram was made to actually execute
+            // 2. You want to know all the mechanics of how the ALA diagram was made to actually execute
             // 3. You have modified the diagram and need to correspondingly modify this code
 
 
-            // First instantiate any domain abstractions that we can't leave anonymous because the wiring diagram has loops in it:
+            // First instantiate any domain abstractions that we can't instantiate anonymously in the later code they need to be referred to by name, because the wiring diagram has loops in it:
 
             var saveFileBrowser = new SaveFileBrowser("Save file", "CSV");
             var textConnected = new Text("Connected", false) { Color = Brushes.Green };
@@ -93,10 +97,10 @@ namespace Application
 
             // Now do all the wiring of the diagram
             // Note any instances of domain abstractions not already instantiated above are anonymous in this code.
-            // Note that a.wireTo(b) is an extension method that uses reflection to wire 'a' to 'b' via 'ports'. The ports on 'a' and 'b' must be of the same interface type. 'a' must have a private field of the interface and 'b' must implement the interface.
+            // Note that a.wireTo(b) is an extension method that uses reflection to wire 'a' to 'b' via 'ports'. The ports on 'a' and 'b' must be a programmming paradigm interface of the same interface type - 'a' must have a private field of the interface and 'b' must implement the interface.
             // Note that the fluent style is used: wireTo returns its first argument, allowing you to call wireTo again to wire in another instance of a domain abstraction.
-            // Note that InstanceName properties are not needed by the code - they are just to help when debugging becasue they give instances of the same domain abstraction in different places different names.
-            // Sometime wireTo has a second parameter which is the name of the specific port it is wiring to.
+            // Note that InstanceName properties are not needed by the code - they are just to help when debugging because if there are multiple instances of the same domain abstraction you often dont know ehich instance you have break-pointed into.
+            // Sometimes wireTo has a second parameter which is the name of the specific port it is wiring to. This ensures wiring to the correct port is there is more than one port of a given type.
             mainWindow
             // UI
             .WireTo(new Vertical(true) { Layouts = new int[] { 0, 0, 2, 0 } }

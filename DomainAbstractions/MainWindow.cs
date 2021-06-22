@@ -8,7 +8,7 @@ using Libraries;
 namespace DomainAbstractions
 {
     /// <summary>
-    /// MainWindow is an ALA domain abstraction
+    /// MainWindow is an ALA domain abstraction (see AbstractionLayeredArchitecture.md for more details)
     /// Abstraction description follows:
     /// This is the main window of an application.
     /// The IUI port should be wired to children UI domain abstractions that are to be displayed inside the main window. 

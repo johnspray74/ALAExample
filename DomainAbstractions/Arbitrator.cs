@@ -6,7 +6,10 @@ using ProgrammingParadigms;
 
 namespace DomainAbstractions
 {
+
     /// <summary>
+    /// MainWindow is an ALA domain abstraction (see AbstractionLayeredArchitecture.md for more details)
+    /// Abstraction description follows:
     /// Arbitrator class is an implementation of IArbitrator interface
     /// See IArbitrator for explanation of teh abstraction and example usage of the interface by domain abstractions
     /// It allows only one instance to be using a resource at one time.
@@ -15,6 +18,8 @@ namespace DomainAbstractions
     /// Any incoming requests for the same arbitrator will queue and once the current request is released, it will be given teh resource
     /// It contains a configurable timer to timeout after (default) 5 seconds of no use and to release the resource. (By using cancellationToken)
     /// An application can have multiple resources.
+    /// ------------------------------------------------------------------------------------------------------------------
+    /// Configurations: (configurations are for use by the application when it instantiates a domain abstraction)
     /// ------------------------------------------------------------------------------------------------------------------
     /// Ports:
     /// 1. IArbitrator arbitrator: interface for managing mutiple asynchronized resource requests
