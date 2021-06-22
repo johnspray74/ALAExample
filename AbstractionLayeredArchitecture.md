@@ -27,7 +27,7 @@ Say you have two domain abstractions A and B, which you know can be wired togeth
 
 We can then write the application layer code:
 
----
+```
 using DomainAbstractions;
 using ProgrammingParadigms;
 using Libraries;
@@ -42,13 +42,13 @@ namespace Application
         }
     }
 }
----
+```
     
 This code will instantiate an A and B and wire them together.
 Let's say the event-driven programming paradigm we are wiring with is implemented by IEvent:
 
 
----
+```
 namespace ProgrammingParadigms
 {
     public interface IEvent
@@ -56,13 +56,13 @@ namespace ProgrammingParadigms
         void Execute();
     }
 }
----
+```
 
 
 Now the code for our two classes will have complementary ports of that programming paradigm as follows:
 
 
----
+```
 using ProgrammingParadigms;
 namespace DomainAbstractions
 {
@@ -75,10 +75,10 @@ namespace DomainAbstractions
         }
     }
 }
----
+```
 
 
----
+```
 using ProgrammingParadigms;
 namespace DomainAbstractions
 {
@@ -90,7 +90,7 @@ namespace DomainAbstractions
         }
     }
 }
----
+```
 
 
 The WireTo operator is an extension method on all objects. It uses reflection to find a private field in A that has the same interface type as an interface implemented by B. If it find such an interface, it casts the B to the interface type and assigns that to the field in A. 
