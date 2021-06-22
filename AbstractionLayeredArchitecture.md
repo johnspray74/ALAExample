@@ -32,19 +32,19 @@ ALA layers will have abstarctions that tend to have characteristic, so we name t
 
 ### Application layer
 
-The application layer and folder is the top layer. It typically contains code that formally expresses all the user stories and other details of requirements, but no implementation. It is typically in the form of a diagram, simply because of the many cohesive relationships implicit in requirements. All implementation is inside *domain abstractions*, each of which provides a conceptual piece of functionality. The application works by instantiating, configuring and wiring together a composition of domain abstractions.
+The application layer and folder is the top layer. It typically contains code that formally expresses all the user stories and other details of requirements, but no implementation. It is often in the form of a diagram, simply because of the many cohesive relationships implicit in requirements. All implementation is inside *domain abstractions*, each of which provides a conceptual piece of functionality. The application works by configuring and composing instances of domain abstractions.
 
 ### Domain abstractions layer
 
-The domain abstractions layer and folder is the second layer. Domain abstractions must be more abstract (and therefore more reusable) than the specific application. We even use multiple instances of some of them in the application. Domain abstractions are usually implemented as classes with *ports*. Ports allow instances of domain abstractions to be wired together.
+The domain abstractions layer and folder is the second layer. Domain abstractions must be more abstract (and therefore more reusable) than the specific application. We even use multiple instances of some of them in the application. Domain abstractions are usually implemented as classes, but may be functions. In ALA it is ok for abstraction instances to have state.
 
 ### Programming paradigms layer
 
-The programming paradigms layer and folder is the third layer. Programming paradigms must be even more abstract (and therefore even more reusable) than domain abstractions. Ports  are instances of programming paradigms. Different wirings in the diagrams can have different meanings which is why they are called programming paradigms. Programming paradigms are often implemented as interfaces, which allows the ports to be wired by the diagram.
+The programming paradigms layer and folder is the third layer. Programming paradigms must be even more abstract (and therefore even more reusable) than domain abstractions. They are called programming paradigms becasue at this level of abstractions they are setting in place patterns for how we will use domain abstarctions to create programs. Programming paradigms will often encompass an *execution model*, which controls how the programming paradigm actullay works in terms of its execution by the CPU.
 
 ### Libraries layer
 
-The libraries layer and folder is the bottom layer. It contains the *WireTo* extension method used by Application.cs to implement each wiring in application-diagram. WireTo supports this whole pattern of expressing user stories through instances of domain abstractions wired together using programming paradigms. Here is the actual mechanics:
+The libraries layer and folder is the bottom layer. It contains generic and widely reusable abstractions.
 
 ## Wiring pattern
 
@@ -74,7 +74,8 @@ namespace Application
 ```
     
 This code will instantiate an A and B and wire them together.
-Let's say the event-driven programming paradigm we are using is implemented by IEvent:
+The WireTo method is an extension method implemented in the libraries layer.
+Let's say the event-driven programming paradigm we are using is a simple synchronous execution model and is implemented by IEvent:
 
 
 ```
@@ -122,18 +123,18 @@ namespace DomainAbstractions
 ```
 
 
-The WireTo operator is an extension method on all objects. It uses reflection to find a private field in A that has the same interface type as an interface implemented by B. If it finds such an interface, it casts the B to the interface type and assigns it to the field in A. 
+The WireTo operator is an extension method on all objects. It uses reflection to find a private field in A that has the same interface type as an interface implemented by B. If it finds such an interface, it casts the B to the interface type and assigns it to the field in A. You can see that way ports are done depends on knowledge of the WireTo abstraction that will look for them. 
 
-WireTo has an optional second parameter which is the name of the port in A. This is used when we needto ensure that the correct port is wired.
+WireTo has an optional second parameter which is the name of the port in A. This is used when we need to ensure that the correct port is wired.
 A port can also be a list of interfaces to support fanout. The field in A is private because we don't want anything else to see it - only the WireTo operator.
 
 This wiring pattern is one way to conform to the constraints provided by the fundamental rules of ALA, but we use it extensively.
 
 ## Conclusion
 
-Now that you understand the fundamental principles of ALA, and the emergent layers and wiring pattern, you will be able to understand the ALAexample application, why it is organised into the folders it has, and ow the whole things actually executes.
+Now that you understand the fundamental principles of ALA, and the emergent layers and wiring pattern, you will be able to understand the ALAexample application, why it is organised into the folders it has, and how the whole things actually executes.
 
-There is a bit more to the philosophy and design behing the ALA architecture. Further details can be found in the Introduction and Chapter 2 of the web site <http://www.abstractionlayeredarchitecture.com>.
+There is a bit more to the philosophy and design behind the ALA architecture. Further details can be found in the Introduction and Chapter 2 of the web site <http://www.abstractionlayeredarchitecture.com>.
 
 
 
