@@ -1,13 +1,13 @@
 
-# Abstraction Layered Architecture brief description
+# Abstraction Layered Architecture
 
+**A brief description**
 [(Abstraction Layered Architecture)](http://www.abstractionlayeredarchitecture.com)
 
 
-## Two fundamental constraints
+## The two fundamental constraints of ALA
 
 In ALA, the only unit of code is an abstraction, which is different from a module or class.
-
 ALA has two fundamental constraints for these abstractions. 
 
 1. Dependencies must be on abstractions that are more abstract.
