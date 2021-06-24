@@ -1,4 +1,4 @@
-An ALA diagram simply expresses user stories in terms of instances of domain abstractions (the boxes in the diagram) wired together by their ports, which are programming paradigms implemented as interfaces. An ALA diagram is polyglot in programming paradigms so some wires represent an event-driven programming paradigm, some represent a UI layout programming paradigm, some represent a data-flow programming paradigm, etc. 
+An ALA diagram simply expresses user stories in terms of instances of domain abstractions (the boxes in the diagram) wired together by their ports, which are programming paradigms implemented as interfaces. An ALA diagram is polyglot in programming paradigms so some wires represent an event-driven programming paradigm, some represent a UI layout programming paradigm, some represent a data-flow programming paradigm, etc. You will see the different programming paradigms at play as we look at how each user story works in the diagram:
 
 The yellow user stories of the diagram express the base UI layout and the Exit menu item causes the application to close.
 
