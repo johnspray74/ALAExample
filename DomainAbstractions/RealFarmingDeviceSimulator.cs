@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace DomainAbstractions
 {
     /// <summary>
-    /// DeviceSimulator is an ALA domain abstraction
+    /// DeviceSimulator is an ALA domain abstraction  (see AbstractionLayeredArchitecture.md for more details)
     /// Abstraction description follows:
     /// DeviceSimulator simulates a real device that a farmer uses so that an example application can still execute.
     /// The real devices are Electronic ID readers or livestock weighing scales or other devices that measure or collect data.

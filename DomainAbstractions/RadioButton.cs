@@ -8,7 +8,7 @@ using ProgrammingParadigms;
 namespace DomainAbstractions
 {
     /// <summary>
-    /// Radio button is an ALA domain abstraction
+    /// Radio button is an ALA domain abstraction (see AbstractionLayeredArchitecture.md for more details)
     /// Abstraction description follows:
     /// Radio button is typically one of a set of radio buttons. They are mutually excluive to each other - the user selects one.
     /// When the parent UI element sends us an event that selection is complete, the radio button that is selected outputs an event.
