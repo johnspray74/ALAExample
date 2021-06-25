@@ -16,7 +16,7 @@
 # About the project
 
 This purpose of this project is an example application of ALA
-[(Abstraction Layered Architecture)]((abstractionlayeredarchitecture.md)
+([Abstraction Layered Architecture](abstractionlayeredarchitecture.md))
 [(AbstractionLayeredArchitecture.com)](http://www.abstractionlayeredarchitecture.com).
 It's not for what the application does, but to show how an ALA application diagram directly expresses user stories and executes them.
 
