@@ -8,18 +8,22 @@ namespace Application
 {
     public class Application
     {
-        // Application.cs is code hand-generated from Application-diagram (in the same folder). The diagram is the real source.
-        // The application diagram is an abstraction in the top most concrete layer of ALA (see AbstractionLayeredArchitecture.md for more details)
-        // The diagram expresses the user stories and all the specific details of the requirements (but no implementation).
-        // In ALA, implementation must be inside domain abstractions.
+        // Application.cs is code hand-generated from Application-diagram (in the same folder).
+        // Application-diagram is the real source along with its commentary document, Application-diagram.md
+        // Application-diagram is drawn in draw.io bt can be seen in the pdf version.
+        // Application-diagram is an abstraction in the top most concrete layer of ALA (see AbstractionLayeredArchitecture.md)
 
         // The code in the constructor of this class is just hand-compiled wiring code accurately following that diagram.
-        // The diagram does its job by a composition of configured instances of domain abstractions.
-        // Hence the constructor code just instantiates domain abstractions, configures them with constructor arguments or properties, and wires them together according to the diagram, nothing more.
-        // This class is also where you will find the main() entry point to the application, however all it does is instantiate this class to get the constructor run, which does all the work.
-        // Then main simply tells the MainWindow instance to Run. 
+        // The constructor code instantiates domain abstractions, configures them with constructor arguments or properties from details in the boxes on the diagram,
+        // and wires them together according to the diagram.
+        // This class is also where you will find the main() entry point to the application, however all it does is instantiate this class to get the constructor run,
+        // which does all the work.
+        // Then main() simply tells the MainWindow instance to Run. 
         // As far as the code inside the constructor below is concerned, it is not meant to be human readable from the point of view of what it does - use the application-diagram for that plus its accompanying application.md explanation.
         // However, the code in the constructor below does need to be human readable from the point of view of being an accurate reflection of the diagram.
+        //
+        // _Always_ modify the diagram first, then this code.
+
 
         private MainWindow mainWindow = new MainWindow("ALAExample");
 
