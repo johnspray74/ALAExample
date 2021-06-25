@@ -5,6 +5,7 @@
     <li><a href="#about-the-project">About the project</a></li>
     <li><a href="#the-diagram">The diagram</a></li>
     <li><a href="#The-diagram-executing"> The diagram executin</a></li>
+    <li><a href="#background">Background</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -16,9 +17,9 @@
 # About the project
 
 This purpose of this project is an example application of ALA
-(brief explanation: [Abstraction Layered Architecture.md](abstractionlayeredarchitecture.md)
-web site [(AbstractionLayeredArchitecture.com)](http://www.abstractionlayeredarchitecture.com)).
-It's not for what the application does, but to show how an ALA application diagram directly expresses user stories and executes them.
+(brief explanation: [Abstraction Layered Architecture.md](abstractionlayeredarchitecture.md),
+web site: [(AbstractionLayeredArchitecture.com)](http://www.abstractionlayeredarchitecture.com)).
+It's not about what the application itself does, it's about how to make a diagram that directly express user stories and then how that diagram executes.
 
 ## The diagram
 
