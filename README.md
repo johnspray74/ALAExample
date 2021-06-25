@@ -27,11 +27,13 @@
 
 This purpose of this project is an example application of ALA ([Abstraction Layered Architecture](AbstractionLayeredArchitecture.md)).
 
-It's not about what the application itself does, it's about how to make an application that directly expresses user stories and then how that application executes.
+It's not about what the application itself does, it's about how all the code mechanics of an application conforming to this architecture works by example.
+
+
 
 ### The diagram
 
-ALA often uses a diagram becasue user stories themselves contain a network of relationships.
+An ALA application expresses user stories in an executable way. It often uses a diagram because user stories themselves contain a network of relationships.
 
 Consider the diagram below, which is the application's source code. (You can click on the diagram to get a clearer view.)  
 
@@ -39,7 +41,7 @@ It describes the user stories of a small desktop application.
 
 ![Application diagram](Application/Application-diagram.png)
 
-An ALA diagram expresses user stories in terms of instances of domain abstractions, which are the boxes in the diagram. They are wired together by their ports, which are programming paradigms implemented as interfaces. An ALA diagram is polyglot in programming paradigms so some wires represent an event-driven programming paradigm, some represent a UI layout programming paradigm, some represent a data-flow programming paradigm, etc. 
+An ALA diagram expresses the user stories in terms of instances of *domain abstractions*, which are the boxes in the diagram. They are wired together by *ports*, which are *programming paradigms* implemented as interfaces. An ALA diagram is polyglot in programming paradigms, so some wires represent an event-driven programming paradigm, some represent a UI layout programming paradigm, some represent a data-flow programming paradigm, etc. 
 
 The yellow user stories of the diagram express the base UI layout and the Exit menu item causes the application to close.
 
@@ -53,7 +55,7 @@ Question for thought: How many applications could you read the source code and u
 
 ### The diagram executing
 
-To see the diagram executing, just download and execute the solution in Visual Studio. You will be able to use the application as shown by the gif below. (Not shown in the diagram is that we have wired in a software simulation of a real device to the COM port).
+To see the diagram executing, you can just download and execute the solution in Visual Studio. You will be able to use the application as shown by the gif below. (Not shown in the diagram is that we have wired in a software simulation of a real device to the COM port).
 
 ![Application screenshot](Application/Application-demo.gif)
 
