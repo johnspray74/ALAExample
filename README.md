@@ -6,10 +6,7 @@
     <ul>
         <li><a href="#the-diagram">The diagram</a></li>
         <li><a href="#The-diagram-executing"> The diagram executing</a></li>
-    </ul>
-    <li><a href="#background">Background</a></li>
-    <ul>
-        <li><a href="#Abstraction-Layered-Architecture-brief-description">Abstraction Layered Architecture brief description</a></li>
+        <li><a href="#How-it-works">How it works</a></li>
     </ul>
     <li><a href="#To-run-the-example-application">To run the example application</a></li>
     <li><a href="#Built-with">Built with</a></li>
@@ -17,6 +14,7 @@
     <ul>
         <li><a href="#Future-work">Future work</a></li>
     </ul>
+    <li><a href="#background">Background</a></li>
     <li><a href="#Authors">Authors</a></li>
     <li><a href="#license">License</a></li>
   </ol>
@@ -64,38 +62,28 @@ To see the diagram executing, you can just download and execute the solution in 
 -->
 
 
-## Background
+### How it works
 
-ALAExample is a cut-down example of an application used by farmers to get data to/from their EID readers, livestock weighing devices, etc.
+Knowledge of ALA itself is needed to understand the architecture of the code.
+A brief explanation of ALA can be read here ([Abstraction Layered Architecture](AbstractionLayeredArchitecture.md)).
+An in-depth explanation of ALA and theory can be found in the web site <http://www.abstractionlayeredarchitecture.com>.
 
-The full Windows PC desktop application was a research project for a software reference architecture called ALA [(Abstraction Layered Architecture)](http://www.abstractionlayeredarchitecture.com). ALA is theoretically optimized for the maintainabilty quality attribute by telling you how to organise code. This research was to measure if this is true in paractice.
+Regardsless of all the teory behind the roganisation of the code into folders, the code itself is quite simple in how it works.
 
-The project was done by a masters student and internship students over two internships. By using the architecture, they were able to write quality code to replace a legacy degenerate application with approximately 2 man-years of effort compared with approximately 12 man-years of effort for the legacy application. To give an idea of size, the ALA version contains 55 KLOC and the legacy version 70 KLOC for approximately the same functionality.
+The *Application* folder contains application-diagram.drawio (the source) and its hand translation into code, application.cs.
 
-<!---
-[(Abstraction Layered Architecture)](http://www.abstractionlayeredarchitecture.com)
--->
+the constructor in Application.cs instantiates classes in the *DomainAbstractions* folder. It configures them with any details from inside the boxes on the diagram via constructor parameters and properties. Then it wires them together using interfaces in the *ProgrammingParadigms* folder. One instance has field of the type of the interface and the other implements the interface. On both instances these are called ports.
 
-### Abstraction Layered Architecture brief description
+The wiring is done by a *WireTo* method, which is an extension method in the *Libraries* folder. WireTo uses reflection to find matching ports, and assigns the second instance,  casted as the interface, to the first instance. This is like dependency injection without using constructor parameters or setters. The dependency injection is directed by the  diagram. We say like dependeny injection, because they are not really dependencies. The domain abstarctions only depend on their own ports, not on each other. The actual dependency is only on an abstract interface which we think of as at the abtraction level of a programming paradigm.
 
-In ALA, the only unit of code is an abstraction. Dependencies must be on abstractions that are more abstract. This gives rise to abstraction layers as follows:
-
-*Application layer:* The application layer and folder is the top layer. It contains application-diagram.pdf and its hand translation into code, application.cs.
-The application uses classes in the... 
-
-*Domain abstractions layer:* The domain abstractions layer and folder is the second layer. Domain abstractions must be more abstract (and therefore more reuseable) than the specific application. We even use multiple instances of some of them in the same diagram. The application and the domain abstractions use interfaces in the...
-
-*Programming paradigms layer:* The programming paradigms layer and folder is the third layer. Programming paradigms must be even more abstract (and therefore even more reusable) than domain abstractions. The application.cs uses a *wireTo* extension method in the...
-
-*Libraries layer:* The libraries layer and folder is the bottom layer. It contains the wireTo extension method used by Application.cs to implement each line in application-diagram. wireTo supports this whole pattern of expressing user stories through instances of domain abstractions wired together using programming paradigms. This pattern is one way to conform to the constraints provided by the fundamental rules of ALA.
-
-There are no dependencies within layers, so all abstractions are like standalone programs given knowledge of the abstractions they use. Through the use of abstraction, the internals of all abstractions are zero-coupled in ALA, even going down the layers.
-
-Knowledge of ALA itself is needed to understand the architecture of the code. Further details can be found in the Introduction and Chapter 2 of the web site <http://www.abstractionlayeredarchitecture.com>.
-
-The only purpose of this example project is to show the actual working code for an example application conforming to ALA. 
+Once all the instances of domain abstractions are wired according to the diagram, they can communicate at run-time because they have ordinary fields with references to each other of the types of the interfaces in the programming paradigms folder. These interfaces, being at an abstraction level below that of the domain abstractions, are not APIs of specific domain abstractions, but rather just generic ways to communicate. For example IDataflow<T> is used everywhere that a piece of data needs to be pushed from one instance to another. One example in the diagram is the wire connecting the SaveFileBrowser to the CSVFileReaderWriter. When the instance of SaveFileBrowser has the filepath from the user, it pushes it out via its port called simply "output" which has type IDataflow<string> that has been set to reference the instance of the CSVFileReaderWriter. It arrives at the CSVFileReaderWriter because CSVFileReaderWriter implements Idataflow<string> as its port.
+  
+The IUI interface in the programming paradigms folder is used to wire parent UI elements to their children. The IUI interface has a method that asks each child for its underlying WPF (Windows Presentation Foundation) widget. So after the wiring code has all run, and MainWindow is told to run, the first thing it does is to ask its children for their WPF objects. Those children do the same, and so the WPF tree structure is built according to the wiring of the domain abstractions.
+  
+After that is done, the WPF UI starts responding to user events, but also MainWindow outputs a appStart event which is wired to an instance of a domain abstarction called Timer, which then generates events every 3 seconds for SCPSence.
 
 
+  
 ## To run the example application
 
 1. Clone this repository or download as a zip.
@@ -135,6 +123,18 @@ GALADE automatically generates code of course. GALADE also features automatic la
 We would love help to further develop GALADE to support ALA development, for example, a routing algorithm for its wiring, or to show errors for illegal dependencies according to the ALA fundmental rules.
 
 We would also like to see other graphical tools based on Visual Studio and Eclipse graphical environments to generally support ALA and specifically to generate the wiring code from the diagram.
+
+## Background
+
+ALAExample is a cut-down example of an application used by farmers to get data to/from their EID readers, livestock weighing devices, etc.
+
+The full Windows PC desktop application was a research project for a software reference architecture called ALA [(Abstraction Layered Architecture)](http://www.abstractionlayeredarchitecture.com). ALA is theoretically optimized for the maintainabilty quality attribute by telling you how to organise code. This research was to measure if this is true in paractice.
+
+The project was done by a masters student and internship students over two internships. By using the architecture, they were able to write quality code to replace a legacy degenerate application with approximately 2 man-years of effort compared with approximately 12 man-years of effort for the legacy application. To give an idea of size, the ALA version contains 55 KLOC and the legacy version 70 KLOC for approximately the same functionality.
+
+<!---
+[(Abstraction Layered Architecture)](http://www.abstractionlayeredarchitecture.com)
+-->
 
 ## Authors
 
