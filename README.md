@@ -5,13 +5,20 @@
     <li><a href="#about-the-project">About the project</a></li>
     <ul>
     <li><a href="#the-diagram">The diagram</a></li>
-    <li><a href="#The-diagram-executing"> The diagram executin</a></li>
+    <li><a href="#The-diagram-executing"> The diagram executing</a></li>
     </ul>
     <li><a href="#background">Background</a></li>
+    <ul>
+    <li><a href="#Abstraction-Layered-Architecture-brief-description">Abstraction Layered Architecture brief description</a></li>
+    </ul>
+    To run the example application
+    <li><a href="#To-run-the-example-application">To run the example application</a></li>
+    <li><a href="#Built-with">Built with</a></li>
     <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#Future-work">Future work</a></li>
+    <li><a href="#Authors">Authors</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgements">Acknowledgements</a></li>
   </ol>
 </details>
 
@@ -22,7 +29,7 @@ This purpose of this project is an example application of ALA ([Abstraction Laye
 
 It's not about what the application itself does, it's about how to make an application that directly expresses user stories and then how that application executes.
 
-## The diagram
+### The diagram
 
 ALA often uses a diagram becasue user stories themselves contain a network of relationships.
 
@@ -44,7 +51,7 @@ The brown user stories of the diagram get data off the device and write it to a 
 
 Question for thought: How many applications could you read the source code and understand it like we have just done right here in the readme? This diagram is not just documentation, it is source code. In this case we have hand translated the diagram into readable code which you can see in Application.cs. We have done this to connect the dots on how we get the diagram to execute without any magic. However, if the application diagram gets very large, we would want to make things even easier by auto-generating the wiring code.
 
-## The diagram executing
+### The diagram executing
 
 To see the diagram executing, just download and execute the solution in Visual Studio. You will be able to use the application as shown by the gif below. (Not shown in the diagram is that we have wired in a software simulation of a real device to the COM port).
 
@@ -55,7 +62,7 @@ To see the diagram executing, just download and execute the solution in Visual S
 -->
 
 
-### Background
+## Background
 
 ALAExample is a cut-down example of an application used by farmers to get data to/from their EID readers, livestock weighing devices, etc.
 
@@ -87,7 +94,7 @@ Knowledge of ALA itself is needed to understand the architecture of the code. Fu
 The only purpose of this example project is to show the actual working code for an example application conforming to ALA. 
 
 
-### To run the example application
+## To run the example application
 
 1. Clone this repository or download as a zip.
 2. Open the solution in Visual Studio 2019 or later
@@ -97,11 +104,11 @@ The only purpose of this example project is to show the actual working code for 
 6. Click on the Toolbar icon to do the same thing.
 
 
-### Built With
+## Built with
 
 C#, Visual Studio 2019
 
-### Contributing
+## Contributing
 
 1. Fork it (<https://github.com/johnspray74/ALAExample/fork>)
 2. Create your feature branch (`git checkout -b feature/fooBar`)
