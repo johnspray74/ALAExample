@@ -33,7 +33,7 @@ It's not about what the application itself does, it's about how to make an appli
 
 ALA often uses a diagram becasue user stories themselves contain a network of relationships.
 
-Consider the diagram below, which is our source code. (You can click on the diagram to get a clearer view.)  
+Consider the diagram below, which is the application's source code. (You can click on the diagram to get a clearer view.)  
 
 It describes the user stories of a small desktop application. 
 
