@@ -1,14 +1,22 @@
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
+<!-- TABLE OF CONTENTS -->
+<details open="open">
+  <summary>Table of Contents</summary>
+  <ol>
+    <li><a href="#about-the-project">About the project</a></li>
+    <li><a href="#the-diagram">The diagram</a></li>
+    <li><a href="#The-diagram-executing"> The diagram executin</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#acknowledgements">Acknowledgements</a></li>
+  </ol>
+</details>
 
 
-# ALAExample
+# About the project
 
-This project is an example application of ALA [(Abstraction Layered Architecture)](http://www.abstractionlayeredarchitecture.com).
-The purpose is not what the application does, but to show how an ALA application diagram directly expresses user stories and executes them.
+This purpose of this project is an example application of ALA [(Abstraction Layered Architecture)](http://www.abstractionlayeredarchitecture.com).
+It's not for what the application does, but to show how an ALA application diagram directly expresses user stories and executes them.
 
 ## The diagram
 
