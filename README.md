@@ -1,21 +1,22 @@
-<!-- TABLE OF CONTENTS -->
+
 <details open="open">
   <summary>Table of Contents</summary>
   <ol>
     <li><a href="#about-the-project">About the project</a></li>
     <ul>
-    <li><a href="#the-diagram">The diagram</a></li>
-    <li><a href="#The-diagram-executing"> The diagram executing</a></li>
+        <li><a href="#the-diagram">The diagram</a></li>
+        <li><a href="#The-diagram-executing"> The diagram executing</a></li>
     </ul>
     <li><a href="#background">Background</a></li>
     <ul>
-    <li><a href="#Abstraction-Layered-Architecture-brief-description">Abstraction Layered Architecture brief description</a></li>
+        <li><a href="#Abstraction-Layered-Architecture-brief-description">Abstraction Layered Architecture brief description</a></li>
     </ul>
-    To run the example application
     <li><a href="#To-run-the-example-application">To run the example application</a></li>
     <li><a href="#Built-with">Built with</a></li>
     <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#Future-work">Future work</a></li>
+    <ul>
+        <li><a href="#Future-work">Future work</a></li>
+    </ul>
     <li><a href="#Authors">Authors</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -131,17 +132,22 @@ We would love help to further develop GALADE to support ALA development, for exa
 
 We would also like to see other graphical tools based on Visual Studio and Eclipse graphical environments to generally support ALA and specifically to generate the wiring code from the diagram.
 
-### Authors
+## Authors
 
 Rosman Cheng, John Spray, Roopak Sinha, Arnab Sen
 
+### Contact
 
-### License
+John Spray - johnspray274@gmail.com
+
+
+
+## License
 
 This project is licensed under the terms of the MIT license. See [License.txt](License.txt)
 
 [![GitHub license](https://img.shields.io/github/license/johnspray74/ALAExample)](https://github.com/johnspray74/ALAExample/blob/master/License.txt)
 
-### Acknowledgments
+## Acknowledgments
 
 
