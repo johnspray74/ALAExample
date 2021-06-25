@@ -65,7 +65,7 @@ To see the diagram executing, you can just download and execute the solution in 
 ### How it works
 
 Knowledge of ALA itself is needed to understand the architecture of the code.
-A brief explanation of ALA can be read here ([Abstraction Layered Architecture](AbstractionLayeredArchitecture.md)).
+A brief explanation of ALA can be read here ([Abstraction Layered Architecture.md](AbstractionLayeredArchitecture.md)).
 An in-depth explanation of ALA and theory can be found in the web site <http://www.abstractionlayeredarchitecture.com>.
 
 Regardsless of all the teory behind the roganisation of the code into folders, the code itself is quite simple in how it works.
