@@ -18,18 +18,21 @@
 
 # About the project
 
-This purpose of this project is an example application of ALA.
-([Abstraction Layered Architecture](AbstractionLayeredArchitecture.md)).
+This purpose of this project is an example application of ALA ([Abstraction Layered Architecture](AbstractionLayeredArchitecture.md)).
 
-It's not about what the application itself does, it's about how to make a diagram that directly express user stories and then how that diagram executes.
+It's not about what the application itself does, it's about how to make an application that directly expresses user stories and then how that application executes.
 
 ## The diagram
 
-Look at the source diagram in the Application folder: *application diagram.pdf* also shown below. (You can click on the diagram to get a clearer view.) It describes the user stories of a small desktop application, and is executable. The point of the diagram is not the user stories themselves, but to show how an ALA diagram can work. 
+ALA often uses a diagram becasue user stories themselves contain a network of relationships.
+
+Consider the diagram below, which is our source code. (You can click on the diagram to get a clearer view.)  
+
+It describes the user stories of a small desktop application. 
 
 ![Application diagram](Application/Application-diagram.png)
 
-An ALA diagram simply expresses user stories in terms of instances of domain abstractions (the boxes in the diagram) wired together by their ports, which are programming paradigms implemented as interfaces. An ALA diagram is polyglot in programming paradigms so some wires represent an event-driven programming paradigm, some represent a UI layout programming paradigm, some represent a data-flow programming paradigm, etc. 
+An ALA diagram expresses user stories in terms of instances of domain abstractions, which are the boxes in the diagram. They are wired together by their ports, which are programming paradigms implemented as interfaces. An ALA diagram is polyglot in programming paradigms so some wires represent an event-driven programming paradigm, some represent a UI layout programming paradigm, some represent a data-flow programming paradigm, etc. 
 
 The yellow user stories of the diagram express the base UI layout and the Exit menu item causes the application to close.
 
