@@ -3,8 +3,10 @@
   <summary>Table of Contents</summary>
   <ol>
     <li><a href="#about-the-project">About the project</a></li>
+    <ul>
     <li><a href="#the-diagram">The diagram</a></li>
     <li><a href="#The-diagram-executing"> The diagram executin</a></li>
+    </ul>
     <li><a href="#background">Background</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
@@ -17,7 +19,7 @@
 # About the project
 
 This purpose of this project is an example application of ALA.
-(Abstraction Layered Architecture](AbstractionLayeredArchitecture.md)).
+([Abstraction Layered Architecture](AbstractionLayeredArchitecture.md)).
 
 It's not about what the application itself does, it's about how to make a diagram that directly express user stories and then how that diagram executes.
 
