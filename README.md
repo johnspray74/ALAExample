@@ -1,11 +1,45 @@
-# ALAExample
 
-An example application of ALA [(Abstraction Layered Architecture)](http://www.abstractionlayeredarchitecture.com).
-Look at the source diagram in the Application folder: *application diagram.pdf* also shown below. (You can click on the diagram to get a clearer view.) It describes the user stories of a small desktop application, and is executable. The point of the diagram is not the user stories themselves, but to show how an ALA diagram can work. 
+<details open="open">
+  <summary>Table of Contents</summary>
+  <ol>
+    <li><a href="#about-the-project">About the project</a></li>
+    <ul>
+        <li><a href="#the-diagram">The diagram</a></li>
+        <li><a href="#The-diagram-executing"> The diagram executing</a></li>
+        <li><a href="#How-it-works">How it works</a></li>
+    </ul>
+    <li><a href="#To-run-the-example-application">To run the example application</a></li>
+    <li><a href="#Built-with">Built with</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <ul>
+        <li><a href="#Future-work">Future work</a></li>
+    </ul>
+    <li><a href="#background">Background</a></li>
+    <li><a href="#Authors">Authors</a></li>
+    <li><a href="#license">License</a></li>
+  </ol>
+</details>
+
+
+# About the project
+
+This purpose of this project is an example application of ALA ([Abstraction Layered Architecture](AbstractionLayeredArchitecture.md)).
+
+It's not about what the application itself does, it's about how all the code mechanics of an application conforming to this architecture work.
+
+
+
+### The diagram
+
+An ALA application expresses user stories in an executable way. It often uses a diagram because user stories themselves contain a network of relationships.
+
+Consider the diagram below, which is the application's source code. (You can click on the diagram to get a clearer view.)  
+
+It describes the user stories of a small desktop application. 
 
 ![Application diagram](Application/Application-diagram.png)
 
-An ALA diagram simply expresses user stories in terms of instances of domain abstractions (the boxes in the diagram) wired together by their ports, which are programming paradigms implemented as interfaces. An ALA diagram is polyglot in programming paradigms so some wires represent an event-driven programming paradigm, some represent a UI layout programming paradigm, some represent a data-flow programming paradigm, etc. 
+An ALA diagram expresses the user stories in terms of instances of *domain abstractions*, which are the boxes in the diagram. They are wired together by *ports*, which are *programming paradigms* implemented as interfaces. An ALA diagram is polyglot in programming paradigms, so some wires represent an event-driven programming paradigm, some represent a UI layout programming paradigm, some represent a data-flow programming paradigm, etc. 
 
 The yellow user stories of the diagram express the base UI layout and the Exit menu item causes the application to close.
 
@@ -17,7 +51,9 @@ The brown user stories of the diagram get data off the device and write it to a 
 
 Question for thought: How many applications could you read the source code and understand it like we have just done right here in the readme? This diagram is not just documentation, it is source code. In this case we have hand translated the diagram into readable code which you can see in Application.cs. We have done this to connect the dots on how we get the diagram to execute without any magic. However, if the application diagram gets very large, we would want to make things even easier by auto-generating the wiring code.
 
-To see the diagram executing, just download and execute the solution in Visual Studio. You will be able to use the application as shown by the gif below. (Not shown in the diagram is that we have wired in a software simulation of a real device to the COM port).
+### The diagram executing
+
+To see the diagram executing, you can just download and execute the solution in Visual Studio. You will be able to use the application as shown by the gif below. (Not shown in the diagram is that we have wired in a software simulation of a real device to the COM port).
 
 ![Application screenshot](Application/Application-demo.gif)
 
@@ -26,7 +62,71 @@ To see the diagram executing, just download and execute the solution in Visual S
 -->
 
 
-### Background
+### How it works
+
+Some knowledge of ALA itself is needed to understand the architecture of the code.
+A brief explanation of ALA can be read here ([Abstraction Layered Architecture.md](AbstractionLayeredArchitecture.md)).
+An in-depth explanation of ALA and theory can be found in the web site <http://www.abstractionlayeredarchitecture.com>.
+
+Regardless of the theory behind the organisation of the code into folders, the code itself is really quite simple.
+
+The *Application* folder contains application-diagram.drawio (the source) and its hand translation into code, application.cs.
+
+The constructor in Application.cs instantiates classes in the *DomainAbstractions* folder. It configures them with any details from inside the boxes on the diagram via constructor parameters or properties. Then it wires them together using interfaces in the *ProgrammingParadigms* folder. Whe a pair of objects is wired, one object has a field of the type of the interface and the other implements the interface. On both instances these are called ports.
+
+The wiring is done by a *WireTo* operator, which is an extension method in the *Libraries* folder. WireTo uses reflection to find matching ports. It then assigns the second object, casted as the interface, to the field in the first object. This is like dependency injection without using constructor parameters or setters. The dependency injection is directed by the diagram. We say *like* dependeny injection, because they are not really dependencies. The domain abstractions do not have dependencies on each other in any way, not even a abstract base class or an API like interface that can have multiple implementations. They only depend on their own ports. The actual dependency is on an abstract interface which we think of as at the abstraction level of a programming paradigm.
+
+Once all the instances of domain abstractions are wired according to the diagram, they can communicate at run-time because they have ordinary fields with references to each other. For example IDataflow<T> is used everywhere that a piece of data needs to be pushed from one instance to another in the diagram. One example is the wire connecting the instance of a SaveFileBrowser to the instance of a CSVFileReaderWriter. When the SaveFileBrowser has the filepath from the user, it pushes it out via its port called simply "output", which has type IDataflow<string>. It arrives at the CSVFileReaderWriter because CSVFileReaderWriter implements IDataflow<string> as its port.
+  
+The IUI interface in the programming paradigms folder is used to wire parent UI elements to their children. The IUI interface has a method that asks each child for its underlying WPF (Windows Presentation Foundation) widget. So after the wiring code has all run, and MainWindow is told to run, the first thing it does is to ask its children for their WPF objects. Those children do the same, and so the WPF tree structure is built according to the wiring of the diagram.
+  
+After that is done, the WPF UI starts responding to user events, but also MainWindow outputs a appStart event which is wired to an instance of a domain abstraction called Timer, which then generates events every 3 seconds. These are routed by the diagram to SCPSence.
+
+Peruse the code to see how each of the programming paradigm interfaces work, and how some of the domain abstractions work. You will find the domain abstractions are like independent programs to read and understand because they depend only on their own ports. 
+  
+You may notice that some of the programming paradigms have a class called *Connector* as well as an interface. Connectors solve a range of wiring scenarios such as fanout, multiple ports of the same interface type (C# doesn't allow implementing the same interface twice, even though it makes perfect sense to do so in ALA), and some other situations. 
+  
+## To run the example application
+
+1. Clone this repository or download as a zip.
+2. Open the solution in Visual Studio 2019 or later
+3. When the application runs, you will see data already loaded from a simulated real device.
+4. Click on the row on the left, and it will show data from different sessions on the right.
+5. Click on File, Import from Device, to open a Wizard, then select Local CSV File, then enter a filename to save data to a CSV file.
+6. Click on the Toolbar icon to do the same thing.
+
+
+## Built with
+
+C#, Visual Studio 2019
+
+GALADE (Graphical ALA Development Environment) see Future work below. A GALADE version is a work-in-progress in a branch of this repository.
+
+## Contributing
+
+Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. Fork the project using the button at top right of the main Github page or (<https://github.com/johnspray74/ALAExample/fork>)
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -am 'Add AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+
+### Future work
+
+Swift, Java, Python and Rust versions needed.
+
+We have a graphical tool called GALADE (Graphical ALA development environment) written by Arnab Sen here [https://github.com/arnab-sen/GALADE](https://github.com/arnab-sen/GALADE).
+
+GALADE automatically generates code of course. GALADE also features automatic layout when drawing the diagram so that the developer can concentrate on expressing user stories and inventing the needed abstractions - a feature that we find critcally important because most drawing packages ask you to spend too much effort on layout. It also presents the boxes representing instances of domain abstractions with their configuration constructor parameters and properties ready to be filled in. It also shows all the ports ready to be wired. Importantly, it acheives this by reading the code in the classes in the DomainAbstractions folder. This is really powerful integration with your C# code, and supports round trip of both the application wiring code and the domain abstractions code.
+ 
+
+We would love help to further develop GALADE to support ALA development, for example, a routing algorithm for its wiring, or to show errors for illegal dependencies according to the ALA fundmental rules.
+
+We would also like to see other graphical tools based on Visual Studio and Eclipse graphical environments to generally support ALA and specifically to generate the wiring code from the diagram.
+
+## Background
 
 ALAExample is a cut-down example of an application used by farmers to get data to/from their EID readers, livestock weighing devices, etc.
 
@@ -38,74 +138,22 @@ The project was done by a masters student and internship students over two inter
 [(Abstraction Layered Architecture)](http://www.abstractionlayeredarchitecture.com)
 -->
 
-### Abstraction Layered Architecture brief description
-
-In ALA, the only unit of code is an abstraction. Dependencies must be on abstractions that are more abstract. This gives rise to abstraction layers as follows:
-
-*Application layer:* The application layer and folder is the top layer. It contains application-diagram.pdf and its hand translation into code, application.cs.
-The application uses classes in the... 
-
-*Domain abstractions layer:* The domain abstractions layer and folder is the second layer. Domain abstractions must be more abstract (and therefore more reuseable) than the specific application. We even use multiple instances of some of them in the same diagram. The application and the domain abstractions use interfaces in the...
-
-*Programming paradigms layer:* The programming paradigms layer and folder is the third layer. Programming paradigms must be even more abstract (and therefore even more reusable) than domain abstractions. The application.cs uses a *wireTo* extension method in the...
-
-*Libraries layer:* The libraries layer and folder is the bottom layer. It contains the wireTo extension method used by Application.cs to implement each line in application-diagram. wireTo supports this whole pattern of expressing user stories through instances of domain abstractions wired together using programming paradigms. This pattern is one way to conform to the constraints provided by the fundamental rules of ALA.
-
-There are no dependencies within layers, so all abstractions are like standalone programs given knowledge of the abstractions they use. Through the use of abstraction, the internals of all abstractions are zero-coupled in ALA, even going down the layers.
-
-Knowledge of ALA itself is needed to understand the architecture of the code. Further details can be found in the Introduction and Chapter 2 of the web site <http://www.abstractionlayeredarchitecture.com>.
-
-The only purpose of this example project is to show the actual working code for an example application conforming to ALA. 
-
-
-### To run the example application
-
-1. Clone this repository or download as a zip.
-2. Open the solution in Visual Studio 2019 or later
-3. When the application runs, you will see data already loaded from a simulated real device.
-4. Click on the row on the left, and it will show data from different sessions on the right.
-5. Click on File, Import from Device, to open a Wizard, then select Local CSV File, then enter a filename to save data to a CSV file.
-6. Click on the Toolbar icon to do the same thing.
-
-
-### Built With
-
-C#, Visual Studio 2019
-
-### Contributing
-
-1. Fork it (<https://github.com/johnspray74/ALAExample/fork>)
-2. Create your feature branch (`git checkout -b feature/fooBar`)
-3. Commit your changes (`git commit -am 'Add some fooBar'`)
-4. Push to the branch (`git push origin feature/fooBar`)
-5. Create a new Pull Request
-
-
-### Future work
-
-Swift, Java, Python and Rust versions needed.
-
-We have a graphical tool called GALADE (Graphical ALA development environment) (not used for this example) written by Arnab Sen here [https://github.com/arnab-sen/GALADE](https://github.com/arnab-sen/GALADE).
-
-GALADE automatically generates code of course. GALADE also features automatic layout when drawing the diagram so that the developer can concentrate on expressing user stories and inventing the needed abstractions - a feature that we find critcally important because most drawing packages ask you to spend too much effort on layout. It also presents the boxes representing instances of domain abstractions with their configuration constructor parameters and properties ready to be filled in. It also shows all the ports ready to be wired. Importantly, it acheives this by reading the code in the classes in the DomainAbstractions folder. This is really powerful integration with your C# code, and supports round trip of both the application wiring code and the domain abstractions code.
- 
-We need to do ALAExamlpe in GALADE in a branch so you can see what the diagram looks like and also the code it generates in Application.cs. 
- 
-We would love help to further develop GALADE to support ALA development, for example, a routing algorithm for its wiring, or to show errors for illegal dependencies according to the ALA fundmental rules.
-
-We would also like to see other graphical tools based on Visual Studio and Eclipse graphical environments to generally support ALA and specifically to generate the wiring code from the diagram.
-
-### Authors
+## Authors
 
 Rosman Cheng, John Spray, Roopak Sinha, Arnab Sen
 
+### Contact
 
-### License
+John Spray - johnspray274@gmail.com
+
+
+
+## License
 
 This project is licensed under the terms of the MIT license. See [License.txt](License.txt)
 
 [![GitHub license](https://img.shields.io/github/license/johnspray74/ALAExample)](https://github.com/johnspray74/ALAExample/blob/master/License.txt)
 
-### Acknowledgments
+## Acknowledgments
 
 
