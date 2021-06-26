@@ -8,6 +8,7 @@ using Libraries;
 namespace DomainAbstractions
 {
     /// <summary>
+    /// <para>
     /// MainWindow is an ALA domain abstraction (see AbstractionLayeredArchitecture.md for more details)
     /// Abstraction description follows:
     /// This is the main window of an application.
@@ -19,12 +20,14 @@ namespace DomainAbstractions
     ///     InstanceName property: As with all domain abstractions, we have an instance name. (Because there can be multiple instances of this abstraction, the application gives us an object name which is not generally used by the abstraction internal logic. It is only used during debugging so you can tell which object you are break-pointed on.
     ///     The public method "Run" is unusual for a domain abstraction. It should be called by the application after all wiring and initialization is complete to start the application actually running.
     /// ------------------------------------------------------------------------------------------------------------------
-    /// Ports:
-    ///     close (IEvent): input to close the window and exit the application
-    ///     enable (IDataFlow<bool>): input false disables (greys out) the UI
-    ///     children (IUI): all the IUI children of the MainWindow
-    ///     appStart (IEvent): outputs an event once the window is loaded
-    ///     appClosing (IEvent): outputs and event when the window is closing
+    /// </para>
+    /// <para>Ports:</para>
+    /// <para>1. IEvent close: input to close the window and exit the application</para>
+    /// <para>2. IDataflow&lt;int&gt; enable: input false disables (greys out) the MainWindow</para>
+    /// <para>3. IEvent restoreWindow: input that minimizes or maximizes the MainWindow</para>
+    /// <para>4. IUI child: the UI content MainWindow</para>
+    /// <para>5. IEvent appStart: outputs an event once the window is loaded</para>
+    /// <para>6. IEvent appClosing: outputs and event when the window is closing</para>
     /// <summary>
 
     public class MainWindow : IEvent, IDataFlow<bool> // close, enable
@@ -35,10 +38,15 @@ namespace DomainAbstractions
 
 
 
-        // ports -----------------------------------------------------------------
+        // Ports -----------------------------------------------------------------
+
+        // Child UI content for the MainWindow      
         private IUI iuiStructure;
+        // outputs an event once the window is loaded
         private IEvent appStart;
+        // outputs an event when the window is closing
         private IEvent appClosing;
+        // input that minimizes or maximizes the window
         private IEventB restoreWindow;
 
 

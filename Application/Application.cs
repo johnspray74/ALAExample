@@ -10,7 +10,7 @@ namespace Application
     {
         // Application.cs is code hand-generated from Application-diagram (in the same folder).
         // Application-diagram is the real source along with its commentary document, Application-diagram.md
-        // Application-diagram is drawn in draw.io bt can be seen in the pdf version.
+        // Application-diagram is drawn in draw.io but can be viewed in the pdf version.
         // Application-diagram is an abstraction in the top most concrete layer of ALA (see AbstractionLayeredArchitecture.md)
 
         // The code in the constructor of this class is just hand-compiled wiring code accurately following that diagram.
