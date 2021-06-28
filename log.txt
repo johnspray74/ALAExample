@@ -1,0 +1,87 @@
+2021-06-28 11:21:48.947 +12:00 [INF] Loaded 2 extensions
+2021-06-28 11:21:49.476 +12:00 [INF] MSBuild registered from C:\Program Files\dotnet\sdk\5.0.301\
+2021-06-28 11:21:52.056 +12:00 [INF] Initializing upgrade step Select an entrypoint
+2021-06-28 11:21:52.063 +12:00 [INF] Setting entrypoint to only project in solution: C:\Projects\ALAExample\ALAExample.csproj
+2021-06-28 11:21:52.076 +12:00 [INF] Initializing upgrade step Select project to upgrade
+2021-06-28 11:21:52.176 +12:00 [INF] Initializing upgrade step Back up project
+2021-06-28 11:22:33.580 +12:00 [INF] Applying upgrade step Back up project
+2021-06-28 11:22:39.634 +12:00 [INF] Backing up C:\Projects\ALAExample to C:\Projects\ALAExample.backup
+2021-06-28 11:22:39.661 +12:00 [WRN] Could not copy file C:\Projects\ALAExample\log.txt due to 'The process cannot access the file 'C:\Projects\ALAExample\log.txt' because it is being used by another process.'
+2021-06-28 11:22:41.357 +12:00 [INF] Project backed up to C:\Projects\ALAExample.backup
+2021-06-28 11:22:41.359 +12:00 [INF] Upgrade step Back up project applied successfully
+2021-06-28 11:22:47.084 +12:00 [INF] Initializing upgrade step Convert project file to SDK style
+2021-06-28 11:22:57.055 +12:00 [INF] Applying upgrade step Convert project file to SDK style
+2021-06-28 11:22:57.058 +12:00 [INF] Converting project file format with try-convert, version 0.7.226301
+2021-06-28 11:23:01.335 +12:00 [INF] [dotnet] Conversion complete!
+2021-06-28 11:23:02.891 +12:00 [INF] Project file converted successfully! The project may require additional changes to build successfully against the new .NET target.
+2021-06-28 11:23:07.568 +12:00 [INF] Upgrade step Convert project file to SDK style applied successfully
+2021-06-28 11:23:09.149 +12:00 [INF] Initializing upgrade step Clean up NuGet package references
+2021-06-28 11:23:11.171 +12:00 [INF] Marking assembly reference System.ServiceModel for removal based on package mapping configuration System.ServiceModel
+2021-06-28 11:23:11.179 +12:00 [INF] Adding package System.ServiceModel.Primitives based on package mapping configuration System.ServiceModel
+2021-06-28 11:23:11.180 +12:00 [INF] Adding package System.ServiceModel.Http based on package mapping configuration System.ServiceModel
+2021-06-28 11:23:11.181 +12:00 [INF] Adding package System.ServiceModel.Duplex based on package mapping configuration System.ServiceModel
+2021-06-28 11:23:11.182 +12:00 [INF] Adding package System.ServiceModel.NetTcp based on package mapping configuration System.ServiceModel
+2021-06-28 11:23:11.183 +12:00 [INF] Adding package System.ServiceModel.Security based on package mapping configuration System.ServiceModel
+2021-06-28 11:23:11.183 +12:00 [INF] Adding package System.ServiceModel.Federation based on package mapping configuration System.ServiceModel
+2021-06-28 11:23:17.471 +12:00 [WRN] .NET Upgrade Assistant analyzer NuGet package reference cannot be added because the package cannot be found
+2021-06-28 11:23:17.483 +12:00 [INF] References to be removed: System.ServiceModel
+2021-06-28 11:23:17.484 +12:00 [INF] Packages to be added: System.ServiceModel.Primitives, Version=4.8.1
+System.ServiceModel.Http, Version=4.8.1
+System.ServiceModel.Duplex, Version=4.8.1
+System.ServiceModel.NetTcp, Version=4.8.1
+System.ServiceModel.Security, Version=4.8.1
+System.ServiceModel.Federation, Version=4.8.1
+2021-06-28 11:23:20.862 +12:00 [INF] Applying upgrade step Clean up NuGet package references
+2021-06-28 11:23:20.867 +12:00 [INF] Removing outdated assembly reference: System.ServiceModel
+2021-06-28 11:23:20.871 +12:00 [INF] Adding package reference: System.ServiceModel.Primitives, Version=4.8.1
+2021-06-28 11:23:20.873 +12:00 [INF] Adding package reference: System.ServiceModel.Http, Version=4.8.1
+2021-06-28 11:23:20.874 +12:00 [INF] Adding package reference: System.ServiceModel.Duplex, Version=4.8.1
+2021-06-28 11:23:20.875 +12:00 [INF] Adding package reference: System.ServiceModel.NetTcp, Version=4.8.1
+2021-06-28 11:23:20.876 +12:00 [INF] Adding package reference: System.ServiceModel.Security, Version=4.8.1
+2021-06-28 11:23:20.877 +12:00 [INF] Adding package reference: System.ServiceModel.Federation, Version=4.8.1
+2021-06-28 11:23:30.820 +12:00 [INF] Marking package System.ServiceModel.Primitives for removal because it appears to be a transitive dependency
+2021-06-28 11:23:30.825 +12:00 [INF] Marking package System.ServiceModel.Http for removal because it appears to be a transitive dependency
+2021-06-28 11:23:30.835 +12:00 [INF] Marking package System.ServiceModel.Security for removal because it appears to be a transitive dependency
+2021-06-28 11:23:30.854 +12:00 [WRN] .NET Upgrade Assistant analyzer NuGet package reference cannot be added because the package cannot be found
+2021-06-28 11:23:30.858 +12:00 [INF] Removing outdated package reference: System.ServiceModel.Primitives, Version=4.8.1
+2021-06-28 11:23:30.861 +12:00 [INF] Removing outdated package reference: System.ServiceModel.Http, Version=4.8.1
+2021-06-28 11:23:30.862 +12:00 [INF] Removing outdated package reference: System.ServiceModel.Security, Version=4.8.1
+2021-06-28 11:23:33.832 +12:00 [WRN] .NET Upgrade Assistant analyzer NuGet package reference cannot be added because the package cannot be found
+2021-06-28 11:23:33.836 +12:00 [INF] Upgrade step Clean up NuGet package references applied successfully
+2021-06-28 11:23:36.338 +12:00 [INF] Initializing upgrade step Update TFM
+2021-06-28 11:23:36.354 +12:00 [INF] TFM needs updated to net5.0-windows
+2021-06-28 11:23:40.854 +12:00 [INF] Applying upgrade step Update TFM
+2021-06-28 11:23:54.503 +12:00 [INF] Updated TFM to net5.0-windows
+2021-06-28 11:23:54.507 +12:00 [INF] Upgrade step Update TFM applied successfully
+2021-06-28 11:23:58.953 +12:00 [INF] Initializing upgrade step Update NuGet Packages
+2021-06-28 11:24:02.018 +12:00 [INF] Marking package Hardcodet.NotifyIcon.Wpf, Version=1.0.8 for removal because it doesn't support the target framework but a newer version (1.1.0) does
+2021-06-28 11:24:02.892 +12:00 [INF] Marking package WpfAnimatedGif, Version=1.4.18 for removal because it doesn't support the target framework but a newer version (2.0.0) does
+2021-06-28 11:24:02.898 +12:00 [WRN] Package WpfAnimatedGif has been upgraded across major versions (1.4.18 -> 2.0.0) which may introduce breaking changes
+2021-06-28 11:24:06.155 +12:00 [WRN] .NET Upgrade Assistant analyzer NuGet package reference cannot be added because the package cannot be found
+2021-06-28 11:24:07.485 +12:00 [INF] Adding Microsoft.Windows.Compatibility 5.0.2
+2021-06-28 11:24:07.502 +12:00 [INF] Packages to be removed: Hardcodet.NotifyIcon.Wpf, Version=1.0.8
+WpfAnimatedGif, Version=1.4.18
+2021-06-28 11:24:07.503 +12:00 [INF] Packages to be added: Hardcodet.NotifyIcon.Wpf, Version=1.1.0
+WpfAnimatedGif, Version=2.0.0
+Microsoft.Windows.Compatibility, Version=5.0.2
+2021-06-28 11:25:25.534 +12:00 [INF] Applying upgrade step Update NuGet Packages
+2021-06-28 11:25:25.538 +12:00 [INF] Removing outdated package reference: Hardcodet.NotifyIcon.Wpf, Version=1.0.8
+2021-06-28 11:25:25.539 +12:00 [INF] Removing outdated package reference: WpfAnimatedGif, Version=1.4.18
+2021-06-28 11:25:25.540 +12:00 [INF] Adding package reference: Hardcodet.NotifyIcon.Wpf, Version=1.1.0
+2021-06-28 11:25:25.541 +12:00 [INF] Adding package reference: WpfAnimatedGif, Version=2.0.0
+2021-06-28 11:25:25.543 +12:00 [INF] Adding package reference: Microsoft.Windows.Compatibility, Version=5.0.2
+2021-06-28 11:25:44.252 +12:00 [INF] Marking package System.Data.DataSetExtensions for removal because it appears to be a transitive dependency
+2021-06-28 11:25:44.471 +12:00 [WRN] .NET Upgrade Assistant analyzer NuGet package reference cannot be added because the package cannot be found
+2021-06-28 11:25:44.604 +12:00 [INF] Removing outdated package reference: System.Data.DataSetExtensions, Version=4.5.0
+2021-06-28 11:25:48.318 +12:00 [WRN] .NET Upgrade Assistant analyzer NuGet package reference cannot be added because the package cannot be found
+2021-06-28 11:25:48.438 +12:00 [INF] Upgrade step Update NuGet Packages applied successfully
+2021-06-28 11:25:50.404 +12:00 [INF] Initializing upgrade step Add template files
+2021-06-28 11:25:50.416 +12:00 [INF] 0 expected template items needed
+2021-06-28 11:25:50.437 +12:00 [INF] Initializing upgrade step Update source code
+2021-06-28 11:25:53.221 +12:00 [INF] Initializing upgrade step Move to next project
+2021-06-28 11:26:02.510 +12:00 [INF] Applying upgrade step Move to next project
+2021-06-28 11:26:02.511 +12:00 [INF] Upgrade step Move to next project applied successfully
+2021-06-28 11:26:04.683 +12:00 [INF] Initializing upgrade step Finalize upgrade
+2021-06-28 11:26:08.630 +12:00 [INF] Applying upgrade step Finalize upgrade
+2021-06-28 11:26:08.631 +12:00 [INF] Upgrade step Finalize upgrade applied successfully
+2021-06-28 11:26:10.080 +12:00 [INF] Upgrade has completed. Please review any changes.
