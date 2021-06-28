@@ -31,7 +31,7 @@ It's not about what the application itself does, it's about how all the code mec
 
 ### The diagram
 
-An ALA application expresses user stories in an executable way. It often uses a diagram because user stories themselves contain a network of relationships.
+An ALA application expresses user stories directly, but in an executable way. It often uses a diagram because user stories themselves contain a network of relationships.
 
 Consider the diagram below, which is the application's source code. (You can click on the diagram to get a clearer view.)  
 
