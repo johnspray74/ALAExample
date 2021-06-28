@@ -23,7 +23,7 @@
 
 # About the project
 
-This purpose of this project is an example application of ALA ([Abstraction Layered Architecture](AbstractionLayeredArchitecture.md)).
+The purpose of this project is an example application of ALA ([Abstraction Layered Architecture](AbstractionLayeredArchitecture.md)).
 
 It's not about what the application itself does, it's about how all the code mechanics of an application conforming to this architecture work.
 
