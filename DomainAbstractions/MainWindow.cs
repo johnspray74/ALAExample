@@ -13,12 +13,12 @@ namespace DomainAbstractions
     /// Abstraction description follows:
     /// This is the main window of an application.
     /// The IUI port should be wired to children UI domain abstractions that are to be displayed inside the main window. 
-    /// The output IEvent port appStart fires once the MainWindow is running and displayed
+    /// The output IEvent port appStart fires once the MainWindow is displayed and running
     /// ------------------------------------------------------------------------------------------------------------------
     /// Configurations: (configurations are for use by the application when it instantiates a domain abstraction)
     ///     title (parameter of the constructor): is for the application to configure the title for the title bar of the main window
     ///     InstanceName property: As with all domain abstractions, we have an instance name. (Because there can be multiple instances of this abstraction, the application gives us an object name which is not generally used by the abstraction internal logic. It is only used during debugging so you can tell which object you are break-pointed on.
-    ///     The public method "Run" is unusual for a domain abstraction. It should be called by the application after all wiring and initialization is complete to start the application actually running.
+    ///     The public method "Run" is called by the application from the layer above after all wiring and initialization is complete to get the MainWindow displayed and actually running.
     /// ------------------------------------------------------------------------------------------------------------------
     /// </para>
     /// <para>Ports:</para>

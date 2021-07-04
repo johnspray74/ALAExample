@@ -8,17 +8,16 @@ namespace Application
 {
     public class Application
     {
-        // Application.cs is code hand-generated from Application-diagram (in the same folder).
+        // Application.cs contains code hand-generated from Application-diagram (in the same folder).
         // Application-diagram is the real source along with its commentary document, Application-diagram.md
         // Application-diagram is drawn in draw.io but can be viewed in the pdf version.
         // Application-diagram is an abstraction in the top most concrete layer of ALA (see AbstractionLayeredArchitecture.md)
 
-        // The code in the constructor of this class is just hand-compiled wiring code accurately following that diagram.
+        // The code in the constructor of this class is just hand-compiled wiring code directly following that diagram.
         // The constructor code instantiates domain abstractions, configures them with constructor arguments or properties from details in the boxes on the diagram,
-        // and wires them together according to the diagram.
+        // and wires them together by the correct ports according to the diagram.
         // This class is also where you will find the main() entry point to the application, however all it does is instantiate this class to get the constructor run,
-        // which does all the work.
-        // Then main() simply tells the MainWindow instance to Run. 
+        // which does all the work. Then main() simply tells the MainWindow instance to start running. 
         // As far as the code inside the constructor below is concerned, it is not meant to be human readable from the point of view of what it does - use the application-diagram for that plus its accompanying application.md explanation.
         // However, the code in the constructor below does need to be human readable from the point of view of being an accurate reflection of the diagram.
         //
@@ -49,39 +48,38 @@ namespace Application
             // The simulated device is not part of the application, so is not shown on the application-diagram even though we instantiate and configure it here.
             // The simulated device emulates the real devices ability to receive SCP commands and respond to them.
 
-            var scpSimulator = new RealFarmingDeviceSimulator();
+            var simulatedExternalDevice = new RealFarmingDeviceSimulator();
 
             // Configure the simulated device with some session data
-            // farmer call their files inside devices "sessions". Thay can configure the fields that they want to use, so here we have three sessions, each with different fields.
-            scpSimulator.AddSession(name: "session0", date: "2021-02-28", columns: new[] { "F01FID", "F11EID" });
-            scpSimulator.AddSession(name: "session1", date: "2021-03-31", columns: new[] { "F01FID", "F11EID", "F10Weight" });
-            scpSimulator.AddSession(name: "session2", date: "2021-04-30", columns: new[] { "F01FID", "F11EID", "F10Weight", "F12Remark" });
-            scpSimulator.AddSessionData(index: 0, sessionData: new[] { "1", "EID0000000000000" });
-            scpSimulator.AddSessionData(index: 0, sessionData: new[] { "2", "EID0000000000001" });
-            scpSimulator.AddSessionData(index: 1, sessionData: new[] { "013", "EID0000000000010", "342" });
-            scpSimulator.AddSessionData(index: 1, sessionData: new[] { "001", "EID0000000000011", "373" });
-            scpSimulator.AddSessionData(index: 1, sessionData: new[] { "002", "EID0000000000012", "304" });
-            scpSimulator.AddSessionData(index: 2, sessionData: new[] { "0123", "EID0000000000021", "405", "healthy" });
-            scpSimulator.AddSessionData(index: 2, sessionData: new[] { "1023", "EID0000000000022", "376", "pregnant" });
-            scpSimulator.AddSessionData(index: 2, sessionData: new[] { "0412", "EID0000000000023", "354", "black spot" });
-            scpSimulator.AddSessionData(index: 2, sessionData: new[] { "0219", "EID0000000000024", "395", "lame" });
+            // Farmers call their files inside devices "sessions". They can configure the fields that they want to use, so here we have three sessions, each with different fields.
+            simulatedExternalDevice.AddSession(name: "session0", date: "2021-02-28", columns: new[] { "F01FID", "F11EID" });
+            simulatedExternalDevice.AddSession(name: "session1", date: "2021-03-31", columns: new[] { "F01FID", "F11EID", "F10Weight" });
+            simulatedExternalDevice.AddSession(name: "session2", date: "2021-04-30", columns: new[] { "F01FID", "F11EID", "F10Weight", "F12Remark" });
+            simulatedExternalDevice.AddSessionData(index: 0, sessionData: new[] { "1", "EID0000000000000" });
+            simulatedExternalDevice.AddSessionData(index: 0, sessionData: new[] { "2", "EID0000000000001" });
+            simulatedExternalDevice.AddSessionData(index: 1, sessionData: new[] { "013", "EID0000000000010", "342" });
+            simulatedExternalDevice.AddSessionData(index: 1, sessionData: new[] { "001", "EID0000000000011", "373" });
+            simulatedExternalDevice.AddSessionData(index: 1, sessionData: new[] { "002", "EID0000000000012", "304" });
+            simulatedExternalDevice.AddSessionData(index: 2, sessionData: new[] { "0123", "EID0000000000021", "405", "healthy" });
+            simulatedExternalDevice.AddSessionData(index: 2, sessionData: new[] { "1023", "EID0000000000022", "376", "pregnant" });
+            simulatedExternalDevice.AddSessionData(index: 2, sessionData: new[] { "0412", "EID0000000000023", "354", "black spot" });
+            simulatedExternalDevice.AddSessionData(index: 2, sessionData: new[] { "0219", "EID0000000000024", "395", "lame" });
 
 
 
 
 
-
-            // -------------------------- CODE MANUALLY GENERATED FROM DIAGRAM --------------------------------------------------------------
-            // The following code has been manually generated from the diagram in application-diagram.drawio (read-only in application-diagram.pdf)
-            // Refer to the diagram for how the application works, not this code.
+            // -------------------------- BEGIN CODE MANUALLY GENERATED FROM DIAGRAM --------------------------------------------------------------
+            // The following code has been manually generated from the diagram in application-diagram.drawio (read-only version in application-diagram.pdf)
+            // Refer to that diagram for how this application works, not this code.
             // Also application.md is a commentary on reading the diagram.
-            // Take an interest in this code if
+            // Take an interest in this code if:
             // 1. You want to understand how the diagram was hand-coded
             // 2. You want to know all the mechanics of how the ALA diagram was made to actually execute
             // 3. You have modified the diagram and need to correspondingly modify this code
 
 
-            // First instantiate any domain abstractions that we can't instantiate anonymously in the later code they need to be referred to by name, because the wiring diagram has loops in it:
+            // First instantiate any domain abstractions that we can't instantiate anonymously in the later code because they need to be referred to by name because the diagram has circular wiring:
 
             var saveFileBrowser = new SaveFileBrowser("Save file", "CSV");
             var textConnected = new Text("Connected", false) { Color = Brushes.Green };
@@ -100,11 +98,11 @@ namespace Application
 
 
             // Now do all the wiring of the diagram
-            // Note any instances of domain abstractions not already instantiated above are anonymous in this code.
+            // Note any instances of domain abstractions not already instantiated anonymously in this code.
             // Note that a.wireTo(b) is an extension method that uses reflection to wire 'a' to 'b' via 'ports'. The ports on 'a' and 'b' must be a programmming paradigm interface of the same interface type - 'a' must have a private field of the interface and 'b' must implement the interface.
-            // Note that the fluent style is used: wireTo returns its first argument, allowing you to call wireTo again to wire in another instance of a domain abstraction.
-            // Note that InstanceName properties are not needed by the code - they are just to help when debugging because if there are multiple instances of the same domain abstraction you often dont know ehich instance you have break-pointed into.
-            // Sometimes wireTo has a second parameter which is the name of the specific port it is wiring to. This ensures wiring to the correct port is there is more than one port of a given type.
+            // Note that the fluent style is used: wireTo returns its first argument, allowing you to call wireTo again to wire it some thing else.
+            // Note that InstanceName properties are not needed by the code - they are just to help when debugging because if there are multiple instances of the same domain abstraction you often dont know which instance you have break-pointed into.
+            // Sometimes WireTo has a second parameter which is the name of the specific port it is wiring to. This ensures wiring to the correct port if there is more than one port of a given type.
             mainWindow
             // UI
             .WireTo(new Vertical(true) { Layouts = new int[] { 0, 0, 2, 0 } }
@@ -169,10 +167,10 @@ namespace Application
                     .WireTo(arbitrator, "arbitrator")
                     .WireTo(scpProtocol
                         .WireTo(comPort
-                            .WireTo(scpProtocol, "charFromPort")
-                            .WireTo(scpSimulator
+                            .WireTo(scpProtocol, "outputForCharactersReceiveFromTheCOMPort")
+                            .WireTo(simulatedExternalDevice
                                 .WireTo(comPort, "responseOutput")
-                            , "charToPort")
+                            , "virtualComPortTx")
                         , "scpCommand")
                     , "requestResponseDataFlow")
                     .WireTo(new DataFlowConnector<bool>()
@@ -186,6 +184,7 @@ namespace Application
                     , "IsDeviceConnected")
                 )
             , "appStart");
+// -------------------------- END CODE MANUALLY GENERATED FROM DIAGRAM --------------------------------------------------------------
         }
     }
 }

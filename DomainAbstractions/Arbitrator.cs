@@ -8,21 +8,33 @@ namespace DomainAbstractions
 {
 
     /// <summary>
-    /// MainWindow is an ALA domain abstraction (see AbstractionLayeredArchitecture.md for more details)
+    /// Arbitrator is an ALA domain abstraction (see AbstractionLayeredArchitecture.md for more details)
     /// Abstraction description follows:
-    /// Arbitrator class is an implementation of IArbitrator interface
-    /// See IArbitrator for explanation of teh abstraction and example usage of the interface by domain abstractions
-    /// It allows only one instance to be using a resource at one time.
-    /// A cononical example is an external hardware device that should have only one thing in the application talking to it at a time.
-    /// The arbitrator works with ASYNC/AWAIT - so if the resource is already busy, a requester waits without blocking the thread and coding is very easy.
-    /// Any incoming requests for the same arbitrator will queue and once the current request is released, it will be given teh resource
-    /// It contains a configurable timer to timeout after (default) 5 seconds of no use and to release the resource. (By using cancellationToken)
-    /// An application can have multiple resources.
+    /// When you have multiple things in your application that may want to use some resource, but that resource must be used by only one at a time,
+    /// we exprerss that by wiring all the things, using the arbitration programming apardigm, to an instance of arbitrator which represents the resource.
+    /// A cononical example resource is an external hardware device that should have only one thing in the application talking to it at a time, such as an SCP command device.
+    /// This programming paradigm supports wiring with the IArbitrator interface, and this domain abstraction called Arbitrator,
+    /// one instance of which is used for each different resource.
+    /// See IArbitrator for explanation of the abstraction and example usage of the interface by domain abstractions.
+    /// The arbitrator programming paradigm works with async/await - so if the resource is already busy, a requester waits without blocking the thread and coding is very easy.
+    /// Any incoming requests for the same arbitrator will queue and once the current request is released, it will be given the resource
+    /// It contains a configurable timer to timeout after (default) 5 seconds to force release of the resource. (By using cancellationToken)
+    /// An application can have multiple resources, in which case it would use multiple instance of this domain abstraction.
+
+    /// [Note that if the number of things using a specific resource is high, you would consider making the arbitration programming paradigm work without wiring, and use symbolic names of resources instead.
+    /// You would configure arbitrator with the name of the specific resource.
+    /// Each instance of other domain abstractions would also be configured with the same resource name: That name is considered an abstraction in the domain layer.
+    /// However if the number of instances using an abstraction is small, we prefer to not make the specific resource name a domain layer abstraction, and simply wire
+    /// all the instances to an instance of Arbitrator instead.
+    /// This is an example of choosing whether or not to make something a domain abstraction (no wiring, just use the abstraction by name) or not abstraction (explicit anonymous wiring) to a common point.]
+
     /// ------------------------------------------------------------------------------------------------------------------
     /// Configurations: (configurations are for use by the application when it instantiates a domain abstraction)
+    /// None
+
     /// ------------------------------------------------------------------------------------------------------------------
     /// Ports:
-    /// 1. IArbitrator arbitrator: interface for managing mutiple asynchronized resource requests
+    /// 1. IArbitrator arbitrator: interface for wiring in all the instances of things that want to use a resource represented by this instance of Arbitrator
     /// </summary>
     public class Arbitrator : IArbitrator // arbitrator
     {

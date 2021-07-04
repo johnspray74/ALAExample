@@ -12,35 +12,33 @@ namespace DomainAbstractions
 {
 
     /// <summary>
-    /// This is a UI abstraction that displays the data in the style of a data grid (rows and columns) and
-    /// allows users to select the specific row and column they want.
-    /// An WPF Data Grid is used for displaying the data of an ITableDataFlow and keeps a copy of the data itself.
-    /// The Primary key column is not displayed by default.
+    /// Grid is an ALA domain abstraction (see AbstractionLayeredArchitecture.md for more details)
+    /// Abstraction description follows:
+    /// This is a UI abstraction that displays rows and columns of data, and allows users to select a specific row.
+    /// Grid pulls data from its dataSource port which uses the TableDataFlow programming paradigm, and is implemented by ITableDataFlow.
+    /// It pulls the data when it receives an event on the fetchDataFromSource input port
+    /// In the underlying implementation it uses a WPF DataGrid.
     /// 
-    /// Currently the only supported input data source is a DataTable, and we assume that every
-    /// DataTable binded to this grid will have the column PrimaryKey which was assigned when instantiated, so when any row selected, 
+    /// Currently the only supported input data source is an IDataTableFlow which internally is implemented using a .NET DataTable
+    /// We assume that the dataSource has a column named the value of PrimaryKey (which is to be configured when instantiated), so when a row selected, 
     /// we can find the PrimaryKey value as the primary key of the selection and generate an IDataFlow<string> as an output.
+    /// This PrimaryKey column is not displayed on the grid by default.
     /// ------------------------------------------------------------------------------------------------------------------
-    /// Notice: 
-    /// 1. If there is a checkbox column, please use the key word "checkbox" as the column name.
-    /// 2. The visibility of a column was configured in the DataTable (DataColumn.Prefix = 'hide').
+    /// Notes: 
+    /// 1. If there is a checkbox column, please use "checkbox" as the column name.
+    /// 2. The visibility of a column is configured in the DataTable (DataColumn.Prefix = 'hide').
     /// ------------------------------------------------------------------------------------------------------------------
     /// Ports:
-    /// 1. IUI inputUI: connection from the containing IUI element such as a window, panel, horizontal, vertical.
-    /// 2. ITableDataFlow inputOutputTableData: mainTableDataFlow, the main data input/output for the grid
-    /// 3. IEvent clearTable: Clear the data table and internal copy
-    /// 4. IDataFlow<bool> visible: toggle the visibility of the grid with a boolean value (visible or collapsed)
-    /// 5. IDataFlow<int> gridSelectedIndex: will set the internal datagrid index
-    /// 6. IEvent eventRowSelected: outputs an event when the currently selected row changes (by the user click or the default) TBD: deprecate this, use dataFlowSelectedPrimaryKey instead
-    /// 6. IDataFlow<string> dataFlowSelectedPrimaryKey: string output of the current row primary key selected (by the user click or the default)
-    /// 7. IDataFlow<string> dataFlowNumberOfRecords: string output of the total number of records displayed
-    /// 8. IDataFlow<bool> dataFlowShowRecordStateTitle: boolean output to toggle the finished recording on the grid title
-    /// 9. IDataFlow<bool> dataFlowShowDownloadingStateTitle: boolean output to toggle the downloading state title
+    /// 1. IUI parent: connection from the containing IUI element such as a window, panel, horizontal, vertical.
+    /// 2. ITableDataFlow dataSource: the main data input/output for the grid
+    /// 3. IEvent start: causes the grid to configure itself according to the columns in the ITableDataFlow
+    /// 4. IEvent eventRowSelected: outputs an event when the currently selected row changes (by the user click or the default) TBD: deprecate this, use dataFlowSelectedPrimaryKey instead
+    /// 5. IDataFlow<string> dataFlowSelectedPrimaryKey: string output of the current row primary key selected (by the user click or the default)
     /// </summary>
 
-    public class Grid : IUI, IEvent // inputUI, fetchDataFromSource
+    public class Grid : IUI, IEvent // parent, fetchDataFromSource
     {
-        // properties ---------------------------------------------------------------------
+        // Configurations ---------------------------------------------------------------------
         public string InstanceName = "Default";
         public bool ShowHeader = true;
         public double RowHeight = 22;
@@ -53,13 +51,17 @@ namespace DomainAbstractions
         private IDataFlow<string> dataFlowSelectedPrimaryKey;
         private ITableDataFlow dataSource;
 
+
+
         // private fields ---------------------------------------------------------------------
         private DataGrid dataGrid;
         private int selectedIndex = 0;
 
+
+
+
         /// <summary>
-        /// An WPF Data Grid which used for displaying the data of an ITableDataFlow.
-        /// It keeps a copy of the data itself.
+        /// A Grid which is used to displaying the data from its ITableDataFlow port
         /// </summary>
         public Grid(bool autoColumnWidth = true)
         {
@@ -76,6 +78,9 @@ namespace DomainAbstractions
             dataGrid.SelectionMode = DataGridSelectionMode.Single;
         }
 
+
+
+
         // IUI implementation ---------------------------------------------------------
         UIElement IUI.GetWPFElement()
         {
@@ -85,8 +90,13 @@ namespace DomainAbstractions
             return dataGrid;
         }
 
+
+
+
+
+
         // IEvent implementation ---------------------------------------------------------
-        // this ask data source to pull data
+        // Event input port tells us to that the dataSource is ready to give us data or that the data source may have different columns
         void IEvent.Execute()
         {
             var _fireAndForgot = FetchDataAsync();
@@ -94,6 +104,9 @@ namespace DomainAbstractions
 
         private async Task FetchDataAsync()
         {
+            // here we want to fetch data from the dataSource programming paradigm and display it on the grid
+            // what we actually do is bind the WPF DataGrid to the underlying DataTable in the ITableDataFlow interface
+
             dataGrid.Columns.Clear();
 
             await dataSource.GetHeadersFromSourceAsync();
@@ -109,7 +122,11 @@ namespace DomainAbstractions
             dataGrid.ItemsSource = dataSource.DataTable.DefaultView;
         }
 
-        // data grid row selection event - select a row manually or programactically
+
+
+
+
+        // user selecting a row calls this function -------------------------------------------------------
         private void RowSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             RefreshRowSelection();
@@ -117,6 +134,7 @@ namespace DomainAbstractions
 
         private void RefreshRowSelection()
         {
+            // When a row is selected, there are tow output ports, one just outputs an event and one outputs the primarty key of the selected row
             if (dataGrid.SelectedIndex >= 0)
             {
                 selectedIndex = dataGrid.SelectedIndex;
@@ -130,7 +148,11 @@ namespace DomainAbstractions
             }
         }
 
-        // cell initialized style
+
+
+
+
+        // specify and returun a style for the cells of the underlying WPF DataGrid
         private Style GetCellStyle()
         {
             var cellStyle = new Style();
@@ -159,6 +181,8 @@ namespace DomainAbstractions
         }
 
 
+
+        // Create a WPF DatGridColum for configuring a WPF DataGrid from a DataColumn, which is what describes a columns of a DataTable, which is the undelying representation of data in the ITableDataFlow programming paradigm
         private DataGridColumn GetInitializedColumn(DataColumn column)
         {
             return column.ColumnName.Equals("checkbox") || column.DataType == typeof(bool) ?
