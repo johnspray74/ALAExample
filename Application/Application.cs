@@ -65,126 +65,16 @@ namespace Application
             simulatedExternalDevice.AddSessionData(index: 2, sessionData: new[] { "0412", "EID0000000000023", "354", "black spot" });
             simulatedExternalDevice.AddSessionData(index: 2, sessionData: new[] { "0219", "EID0000000000024", "395", "lame" });
 
+            // BEGIN AUTO-GENERATED INSTANTIATIONS FOR main
+            MainWindow id_887ca6dc36c048308b37ab9577149b58 = new MainWindow() {InstanceName="id_887ca6dc36c048308b37ab9577149b58"}; /* {"IsRoot":false} */
+            Vertical id_73d30fcfb26c4dbfadb344a36d22d7ea = new Vertical() {InstanceName="id_73d30fcfb26c4dbfadb344a36d22d7ea"}; /* {"IsRoot":false,"Description":"Vertivcally arrange the title, grids, & status bar in the main window\r\n"} */
+            // END AUTO-GENERATED INSTANTIATIONS FOR main
+
+            // BEGIN AUTO-GENERATED WIRING FOR main
+            id_887ca6dc36c048308b37ab9577149b58.WireTo(id_73d30fcfb26c4dbfadb344a36d22d7ea, "child"); /* {"SourceType":"MainWindow","SourceIsReference":false,"DestinationType":"Vertical","DestinationIsReference":false,"Description":"","SourceGenerics":[],"DestinationGenerics":[]} */
+            // END AUTO-GENERATED WIRING FOR main
 
 
-
-
-            // -------------------------- BEGIN CODE MANUALLY GENERATED FROM DIAGRAM --------------------------------------------------------------
-            // The following code has been manually generated from the diagram in application-diagram.drawio (read-only version in application-diagram.pdf)
-            // Refer to that diagram for how this application works, not this code.
-            // Also application.md is a commentary on reading the diagram.
-            // Take an interest in this code if:
-            // 1. You want to understand how the diagram was hand-coded
-            // 2. You want to know all the mechanics of how the ALA diagram was made to actually execute
-            // 3. You have modified the diagram and need to correspondingly modify this code
-
-
-            // First instantiate any domain abstractions that we can't instantiate anonymously in the later code because they need to be referred to by name because the diagram has circular wiring:
-
-            var saveFileBrowser = new SaveFileBrowser("Save file", "CSV");
-            var textConnected = new Text("Connected", false) { Color = Brushes.Green };
-            var textSearching = new Text("Searching for a device...") { Color = Brushes.Red };
-            var scpProtocol = new SCPProtocol();
-            var arbitrator = new Arbitrator() { InstanceName = "scpDevice"};
-            var ignoredDataFlowConnector = new DataFlowConnector<string>();
-            var sessionListScp = new SCPSessions() { InstanceName = "sessionList" };
-            var sessionDataScp = new SCPData() { InstanceName = "forGrid" };
-            var sessionDataScpImport = new SCPData() { InstanceName = "import" };
-            var saveToCsvFileTransact = new Transfer() { InstanceName = "save to csv file transact", AutoLoadNextBatch = true };
-            var sessionListGrid = new Grid() { InstanceName = "sessions", RowHeight = 50, PrimaryKey = "index" };
-            var sessionDataGrid = new Grid() { InstanceName = "data" };
-            var csvFileReaderWriter = new CSVFileReaderWriter();
-            var comPort = new COMPort();
-
-
-            // Now do all the wiring of the diagram
-            // Note any instances of domain abstractions not already instantiated anonymously in this code.
-            // Note that a.wireTo(b) is an extension method that uses reflection to wire 'a' to 'b' via 'ports'. The ports on 'a' and 'b' must be a programmming paradigm interface of the same interface type - 'a' must have a private field of the interface and 'b' must implement the interface.
-            // Note that the fluent style is used: wireTo returns its first argument, allowing you to call wireTo again to wire it some thing else.
-            // Note that InstanceName properties are not needed by the code - they are just to help when debugging because if there are multiple instances of the same domain abstraction you often dont know which instance you have break-pointed into.
-            // Sometimes WireTo has a second parameter which is the name of the specific port it is wiring to. This ensures wiring to the correct port if there is more than one port of a given type.
-            mainWindow
-            // UI
-            .WireTo(new Vertical(true) { Layouts = new int[] { 0, 0, 2, 0 } }
-                .WireTo(new Horizontal() { InstanceName = "menubar" }
-                    .WireTo(new Menubar()
-                        .WireTo(new Menu("File")
-                            .WireTo(new MenuItem("Import from device")
-                                .WireTo(new Wizard("Where do you want to put it?")
-                                    .WireTo(new RadioButton("Local CSV file")
-                                        .WireTo(saveFileBrowser)
-                                    )
-                                    .WireTo(new RadioButton("Cloud"))
-                                )
-                            )
-                            .WireTo(new MenuItem("Exit")
-                                .WireTo(mainWindow)
-                            )
-                        )
-                    )
-                )
-                .WireTo(new Horizontal() { InstanceName = "toolbar" }
-                    .WireTo(new Toolbar()
-                        .WireTo(new Tool("5000Import.png")
-                            .WireTo(saveFileBrowser
-                                .WireTo(csvFileReaderWriter, "dataFlowOutputFilePathNames")
-                                .WireTo(saveToCsvFileTransact
-                                    .WireTo(sessionDataScpImport
-                                        .WireTo(scpProtocol, "requestResponseDataFlow")
-                                        .WireTo(arbitrator, "arbitrator")
-                                    , "tableDataFlowSource")
-                                    .WireTo(csvFileReaderWriter, "tableDataFlowDestination")
-                                , "fileSelected")
-                            )
-                        )
-                    )
-                )
-                .WireTo(new Horizontal() { InstanceName = "mainPanel", Ratios = new int[] { 1, 3 } }
-                    .WireTo(sessionListGrid
-                        .WireTo(sessionListScp
-                            .WireTo(scpProtocol, "requestResponseDataFlow")
-                            .WireTo(arbitrator, "arbitrator")
-                        , "dataSource")
-                        .WireTo(sessionListScp, "dataFlowSelectedPrimaryKey")
-                        .WireTo(sessionDataGrid
-                            .WireTo(sessionDataScp
-                                .WireTo(scpProtocol, "requestResponseDataFlow")
-                                .WireTo(arbitrator, "arbitrator")
-                            , "dataSource")
-                        , "eventRowSelected")
-                    )
-                    .WireTo(sessionDataGrid)
-                )
-                .WireTo(new Horizontal() { InstanceName = "statusbar" }
-                    .WireTo(new Statusbar()
-                        .WireTo(textConnected)
-                        .WireTo(textSearching)
-                    )
-                )
-            )
-            .WireTo(new Timer() { Delay = 3000 }
-                .WireTo(new SCPSense() { InstanceName = "scpSence"}
-                    .WireTo(arbitrator, "arbitrator")
-                    .WireTo(scpProtocol
-                        .WireTo(comPort
-                            .WireTo(scpProtocol, "outputForCharactersReceiveFromTheCOMPort")
-                            .WireTo(simulatedExternalDevice
-                                .WireTo(comPort, "responseOutput")
-                            , "virtualComPortTx")
-                        , "scpCommand")
-                    , "requestResponseDataFlow")
-                    .WireTo(new DataFlowConnector<bool>()
-                        .WireTo(textConnected)
-                        .WireTo(new Not()
-                            .WireTo(textSearching)
-                        )
-                        .WireTo(new ToEvent<bool>()
-                            .WireTo(sessionListGrid)
-                        )
-                    , "IsDeviceConnected")
-                )
-            , "appStart");
-// -------------------------- END CODE MANUALLY GENERATED FROM DIAGRAM --------------------------------------------------------------
         }
     }
 }

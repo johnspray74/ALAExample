@@ -27,6 +27,15 @@ The purpose of this project is an example application of ALA ([Abstraction Layer
 
 It's not about what the application itself does, it's about how all the code mechanics of an application conforming to this architecture work.
 
+## GALADE version
+
+You are viewing the readme.md in the GALADE branch of the repository. The master branch uses a diagram drawn in draw.io and then hand-compiled into code in Application.cs.
+The GALADE branch uses a diagram drawn in the GALADE (Graphical ALA Development Environment) tool, which automatically generates code to the Application.cs file.
+In Application.cs, you can see what the auto-generated code looks like. It has only two types of lines.
+
+One type is for instantiating and configuring instances of domain abstractions. It gives them an object name from the instanceName specified in the diagram if there is one, otherwise a generated GUID for the object name. (This code is not meant to be human readable.) If configurations are specified in the diagram, then the code passes in constructor arguments, or sets properties. 
+
+The other type of line implements a wiring in the diagram using the WireTo method. The source object's port name is always specified.
 
 
 ### The diagram
@@ -76,7 +85,7 @@ The *Application* folder contains application-diagram.drawio (the source) and it
 
 The constructor in Application.cs instantiates classes in the *DomainAbstractions* folder. It configures them with any details from inside the boxes on the diagram via constructor parameters or properties. Then it wires them together using interfaces in the *ProgrammingParadigms* folder. When a pair of objects is wired, one object has a field of the type of the interface and the other implements the interface. On both instances these are called ports.
 
-The wiring is done by a *WireTo* operator, which is an extension method in the *Libraries* folder. WireTo uses reflection to find matching ports. It then assigns the second object, casted as the interface, to the field in the first object. This is like dependency injection without using constructor parameters or setters. The dependency injection is directed by the diagram. We say *like* dependeny injection, because they are not really dependencies. The domain abstractions do not have dependencies on each other in any way, not even a abstract base class or an API like interface that can have multiple implementations. They only depend on their own ports. The actual dependency is on an abstract interface which we think of as at the abstraction level of a programming paradigm.
+The wiring is done by a *WireTo* operator, which is an extension method in the *Libraries* folder. WireTo uses reflection to find matching ports. It then assigns the second object, casted as the interface, to the field in the first object. This is like dependency injection without using constructor parameters or setters. The dependency injection is directed by the diagram. We say *like* dependency injection, because they are not really dependencies. The domain abstractions do not have dependencies on each other in any way, not even an abstract base class or an API like interface that can have multiple implementations. They only depend on their own ports. The actual dependency is on an abstract interface which we think of as at the abstraction level of a programming paradigm.
 
 Once all the instances of domain abstractions are wired according to the diagram, they can communicate at run-time because they have ordinary fields with references to each other. For example IDataflow<T> is used everywhere that a piece of data needs to be pushed from one instance to another in the diagram. One example is the wire connecting the instance of a SaveFileBrowser to the instance of a CSVFileReaderWriter. When the SaveFileBrowser has the filepath from the user, it pushes it out via its port called simply "output", which has type IDataflow<string>. It arrives at the CSVFileReaderWriter because CSVFileReaderWriter implements IDataflow<string> as its port.
   

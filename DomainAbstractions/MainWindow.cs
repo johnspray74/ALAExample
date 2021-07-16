@@ -41,7 +41,7 @@ namespace DomainAbstractions
         // Ports -----------------------------------------------------------------
 
         // Child UI content for the MainWindow      
-        private IUI iuiStructure;
+        private IUI child;
         // outputs an event once the window is loaded
         private IEvent appStart;
         // outputs an event when the window is closing
@@ -98,7 +98,7 @@ namespace DomainAbstractions
         // This method is the main entry point to start the application. Call after all wiring and initilization is completed.
         public void Run()
         {
-            window.Content = iuiStructure.GetWPFElement();
+            window.Content = child.GetWPFElement();
             System.Windows.Application app = new System.Windows.Application();
             Console.WriteLine("MainWindow Running");
             app.Run(window);
