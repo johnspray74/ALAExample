@@ -42,9 +42,9 @@ The domain abstractions layer and folder is the second layer. Domain abstraction
 
 The programming paradigms layer and folder is the third layer. Programming paradigms must be even more abstract (and therefore even more reusable) than domain abstractions. They are called programming paradigms becasue at this level of abstractions they are setting in place patterns for how we will use domain abstarctions to create programs. Programming paradigms will often encompass an *execution model*, which controls how the programming paradigm actullay works in terms of its execution by the CPU.
 
-### Libraries layer
+### Foundation layer
 
-The libraries layer and folder is the bottom layer. It contains generic and widely reusable abstractions.
+The foundation layer and folder is the bottom layer. It contains generic and widely reusable abstractions.
 
 ## Wiring pattern
 
@@ -59,7 +59,7 @@ We can then write the application layer code:
 ```
 using DomainAbstractions;
 using ProgrammingParadigms;
-using Libraries;
+using Foundation;
 
 namespace Application
 {
@@ -74,7 +74,7 @@ namespace Application
 ```
     
 This code will instantiate an A and B and wire them together.
-The WireTo method is an extension method implemented in the libraries layer.
+The WireTo method is an extension method implemented in the foundation layer.
 Let's say the event-driven programming paradigm we are using is a simple synchronous execution model and is implemented by IEvent:
 
 
