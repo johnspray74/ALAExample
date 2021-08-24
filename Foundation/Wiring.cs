@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.IO;
 
-namespace Libraries
+namespace Foundation
 {
     public static class Wiring
     {

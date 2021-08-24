@@ -15,7 +15,7 @@ using System.Text.RegularExpressions;
 using System.Net.Http;
 using System.Threading;
 
-namespace Libraries
+namespace Foundation
 {
     public static class StaticUtilities
     {

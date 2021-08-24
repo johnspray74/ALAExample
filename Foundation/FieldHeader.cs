@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Libraries
+namespace Foundation
 {
     /// <summary>
     /// Defines the type of field. 
