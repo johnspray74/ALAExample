@@ -85,7 +85,8 @@ namespace DomainAbstractions
 
             window.Closing += (s, e) =>
             {
-                if (!string.IsNullOrEmpty(logArchiveFilePath)) File.Copy(Logging.logFilePath, logArchiveFilePath);
+                // TBD don't want MainWindow to be concerned about logging. Application should wire the Logging DomainAbstraction to this appClosing port instead
+                if (!string.IsNullOrEmpty(logArchiveFilePath)) File.Copy(Foundation.LoggingDeprecated.logFilePath, logArchiveFilePath);
                 appClosing?.Execute();
             };
 

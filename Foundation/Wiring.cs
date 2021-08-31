@@ -8,14 +8,16 @@ namespace Foundation
 {
     public static class Wiring
     {
+        public delegate void DiagnosticOutputDelegate(string output);
+        private static DiagnosticOutputDelegate diagnosticOutput;
+        public static DiagnosticOutputDelegate DiagnosticOutput { get => diagnosticOutput; set => diagnosticOutput = value; }
 
         private delegate void InitializeDelegate();
-        public delegate void PostWiringInitializeDelegate();
-        public delegate void OutputDelegate(string output);
-
-        private static string firstPortName;
         private static event InitializeDelegate Initialize;
-        public static event OutputDelegate Output;
+
+        public delegate void PostWiringInitializeDelegate();
+        private static string firstPortName;
+
 
         /// <Summary>
         /// wireTo is an extension method on the type object
@@ -103,9 +105,6 @@ namespace Foundation
                 .Where(f => (APortName == null || f.Name == APortName) && (!reverse ^ EndsIn_B(f.Name))).ToList(); // find the fields that the name meets all criteria
                                                                                                                    // TODO: when not reverse ports ending in _B should be excluded
 
-            //if (A.GetType().Name=="DragDrop" && AinstanceName=="Initial Tag")
-            //{ // for breakpoint
-            //}
             var wiredSomething = false;
             firstPortName = null;
             foreach (var BimplementedInterface in BType.GetInterfaces()) // consider every interface implemented by B 
@@ -121,7 +120,7 @@ namespace Foundation
                     {
                         if (wiredSomething)
                         {
-                            string exceptionMessage = multiportExceptionMessage + "\n" + Logging.WriteToWiringLog(A, B, AfieldInfo, save: false);
+                            string exceptionMessage = multiportExceptionMessage + "\n" + WiringToString(A, B, AfieldInfo);
                             // throw new Exception(exceptionMessage);
                         }
                             
@@ -136,8 +135,7 @@ namespace Foundation
                             handler();
                         }
 
-                        WriteLine($"{A.GetType().Name}[{AinstanceName}].{AfieldInfo.Name} wired to {BType.Name}[{BinstanceName}]");
-                        Logging.WriteToWiringLog(A, B, AfieldInfo);
+                        DiagnosticOutput?.Invoke(WiringToString(A, B, AfieldInfo));
                     }
                     continue;  // could be more than one interface to wire
                 }
@@ -169,7 +167,7 @@ namespace Foundation
                             if (wiredSomething)
                             {
 
-                                string exceptionMessage = multiportExceptionMessage + "\n" + Logging.WriteToWiringLog(A, B, AListFieldValue, save: false);
+                                string exceptionMessage = multiportExceptionMessage + "\n" + WiringToString(A, B, AListFieldValue);
                                 throw new Exception(exceptionMessage);
                             }
                                 
@@ -187,15 +185,12 @@ namespace Foundation
                             handler();
                         }
 
-                        WriteLine($"{A.GetType().Name}[{AinstanceName}].{AlistFieldInfo.Name} wired to {BType.Name}[{BinstanceName}]");
-                        Logging.WriteToWiringLog(A, B, AlistFieldInfo);
+                        DiagnosticOutput?.Invoke(WiringToString(A, B, AlistFieldInfo));
                         break;
                     }
 
                 }
             }
-
-            Logging.WriteToWiringLog();
 
             if (!reverse && !wiredSomething)
             {
@@ -275,6 +270,9 @@ namespace Foundation
             return s.Length > 2 && s.EndsWith("_B");
         }
 
+
+
+
         public static T IfWireTo<T>(this T A, bool condition, object B, string portName = null)
         {
             if (condition) A.WireTo(B, APortName: portName);
@@ -292,10 +290,25 @@ namespace Foundation
             Initialize?.Invoke();
         }
 
-        private static void WriteLine(string output)
-        {
-            Output?.Invoke(output);
-        }
 
+
+        private static string WiringToString(dynamic A, dynamic B, dynamic matchedInterface)
+        {
+            string AInstanceName = "No InstanceName";
+            string BInstanceName = "No InstanceName";
+            try { if (A.InstanceName != null) AInstanceName = $"{A.InstanceName}"; } catch { };
+            try { if (B.InstanceName != null) BInstanceName = $"{B.InstanceName}"; } catch { };
+
+            var AClassName = A.GetType().Name;
+            var BClassName = B.GetType().Name;
+            string matchedInterfaceType = $"{matchedInterface.FieldType.Name}";
+            if (matchedInterface.FieldType.GenericTypeArguments.Length > 0)
+            {
+                matchedInterfaceType += $"<{matchedInterface.FieldType.GenericTypeArguments[0]}>";
+            }
+
+            return $"WireTo {AClassName}[{AInstanceName}].{matchedInterface.Name} <{matchedInterfaceType}> ---> {BClassName}[{BInstanceName}]";
+        }
+ 
     }
 }

@@ -39,6 +39,12 @@
   </PropertyGroup>
   <PropertyGroup />
   <ItemGroup>
+    <Compile Remove="delete\**" />
+    <EmbeddedResource Remove="delete\**" />
+    <None Remove="delete\**" />
+    <Page Remove="delete\**" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System.Windows" />
   </ItemGroup>
   <ItemGroup>

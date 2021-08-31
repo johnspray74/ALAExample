@@ -138,7 +138,7 @@ namespace DomainAbstractions
             if (dataGrid.SelectedIndex >= 0)
             {
                 selectedIndex = dataGrid.SelectedIndex;
-                Debug.WriteLine($"{InstanceName} Selected index is SET: {selectedIndex}");
+                diagnosticOutput?.Invoke($"{InstanceName} Selected index is SET: {selectedIndex}");
                 // output the primary key of the selected row
                 if (dataFlowSelectedPrimaryKey != null)
                 {
@@ -219,5 +219,10 @@ namespace DomainAbstractions
                 Visibility = "hide".Equals(column.Prefix) ? Visibility.Collapsed : Visibility.Visible
             };
         }
+
+
+        public delegate void DiagnosticOutputDelegate(string output);
+        private static DiagnosticOutputDelegate diagnosticOutput;
+        public static DiagnosticOutputDelegate DiagnosticOutput { get => diagnosticOutput; set => diagnosticOutput = value; }
     }
 }

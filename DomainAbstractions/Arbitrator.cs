@@ -39,7 +39,7 @@ namespace DomainAbstractions
     public class Arbitrator : IArbitrator // arbitrator
     {
         //properties ---------------------------------------------------------------
-        public string InstanceName { get; set; } = "default";
+        public string InstanceName { get; set; } = "anonymous";
 
         // private fields ---------------------------------------------------------------
         private Queue<Tuple<string, TaskCompletionSource<object>>> waitingQueue = new Queue<Tuple<string, TaskCompletionSource<object>>>();
@@ -63,15 +63,15 @@ namespace DomainAbstractions
 
             if (name==null || name=="" || name=="Default")
             {
-                System.Diagnostics.Debug.WriteLine($"Arbitrator {this.InstanceName} request without name");
-                throw new Exception($"Arbitrator {this.InstanceName}: Client without name is attempting to request the resource");
+                diagnosticOutput?.Invoke($"Arbitrator.cs {this.InstanceName} request without name");
+                throw new Exception($"Arbitrator.cs: {this.InstanceName}: Client without name is attempting to request the resource");
             }
             // if it is the first request, immediately return back
             if (waitingQueue.Count == 0)
             {
                 occupierRequestorName = name;
                 waitingQueue.Enqueue(new Tuple<string, TaskCompletionSource<object>>(name, t));
-                System.Diagnostics.Debug.WriteLine($"\nArbitrator {this.InstanceName} requested for {occupierRequestorName}");
+                diagnosticOutput?.Invoke($"Arbitrator.cs: {this.InstanceName} requested for {occupierRequestorName}");
                 
                 t.TrySetResult(null);
                 StartTimer(t);
@@ -81,8 +81,8 @@ namespace DomainAbstractions
                 waitingQueue.Enqueue(new Tuple<string, TaskCompletionSource<object>>(name, t));
             }
 
-           
-            // System.Diagnostics.Debug.WriteLine($"Arbitrator {this.InstanceName} Waiting Queue Number: ({waitingQueue.Count}) and being served: ({waitingQueue.Peek().Item1})");
+
+            // diagnosticOutput?.Invoke($"Arbitrator.cs: {this.InstanceName} Waiting Queue Number: ({waitingQueue.Count}) and being served: ({waitingQueue.Peek().Item1})");
 
             return t.Task;
         }
@@ -97,31 +97,31 @@ namespace DomainAbstractions
         {
             if (occupierRequestorName != name && occupierRequestorName != null)
             {
-                throw new Exception($"Arbitrator {this.InstanceName}: Client {name} is attempting to release the resource, that is currently locked by client {occupierRequestorName}");
+                throw new Exception($"Arbitrator.cs: {this.InstanceName}: Client {name} is attempting to release the resource, that is currently locked by client {occupierRequestorName}");
             }
 
             // if the queue is not empty after releasing resource, start the next task
             if (waitingQueue.Count > 0)
             {
                 cancellationTokenSource?.Dispose();
-                System.Diagnostics.Debug.WriteLine($"Arbitrator {this.InstanceName} released for {occupierRequestorName}\n");
+                diagnosticOutput?.Invoke($"Arbitrator.cs: {this.InstanceName} released for {occupierRequestorName}\n");
                 waitingQueue.Dequeue(); //take off task that just finished
                 occupierRequestorName = null;
 
                 if (waitingQueue.Count > 0)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Arbitrator {this.InstanceName} Waiting Queue Number: ({waitingQueue.Count}) and next served: ({waitingQueue.Peek().Item1})");
+                    diagnosticOutput?.Invoke($"Arbitrator.cs: {this.InstanceName} Waiting Queue Number: ({waitingQueue.Count}) and next served: ({waitingQueue.Peek().Item1})");
 
                     Tuple<string, TaskCompletionSource<object>> nextTask = waitingQueue.Peek();
                     nextTask.Item2.TrySetResult(null);
                     StartTimer(nextTask.Item2);
                     occupierRequestorName = nextTask.Item1;
 
-                    System.Diagnostics.Debug.WriteLine($"\nArbitrator {this.InstanceName} requested for {occupierRequestorName}");
+                    diagnosticOutput?.Invoke($"Arbitrator.cs: {this.InstanceName} requested for {occupierRequestorName}");
                 }
                 else
                 {
-                    // System.Diagnostics.Debug.WriteLine($"Arbitrator {this.InstanceName} Waiting Queue: (EMPTY) and next served: (NONE)");
+                    // diagnosticOutput?.Invoke($"Arbitrator.cs {this.InstanceName} Waiting Queue: (EMPTY) and next served: (NONE)");
                 }
 
             }
@@ -141,7 +141,7 @@ namespace DomainAbstractions
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Arbitrator {InstanceName} 5 second timeout");
+                    diagnosticOutput?.Invoke($"Arbitrator.cs: {InstanceName} 5 second timeout");
                     tcs.TrySetCanceled();
                     ReleaseSource(occupierRequestorName);
                 }
@@ -149,5 +149,13 @@ namespace DomainAbstractions
                 //cancellationTokenSource.Dispose(); //dispose of the cancellation token to free up memory used by the CancellationTokenSource KL:please check if works and does not create deadlock
             });
         }
+
+
+
+        // output port for logging or debugging
+        // Rather than uses a direct call to an abstraction, whjich would be a dependency that must be included, this doesn't complain if no logging abstraction exists
+        public delegate void DiagnosticOutputDelegate(string output);
+        private static DiagnosticOutputDelegate diagnosticOutput;
+        public static DiagnosticOutputDelegate DiagnosticOutput { get => diagnosticOutput; set => diagnosticOutput = value; }
     }
 }

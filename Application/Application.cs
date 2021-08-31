@@ -1,8 +1,11 @@
 using System;
 using System.Windows.Media;
+using System.Diagnostics;
+
 using DomainAbstractions;
 using ProgrammingParadigms;
 using Foundation;
+using System.Reflection;
 
 namespace Application
 {
@@ -29,6 +32,9 @@ namespace Application
         [STAThread]
         public static void Main()
         {
+            // You don't need to do this, but just demonstrates how to get logging of all the WireTos that are done in case you need to check everything was wired correctly or chase down a bug in the Wiring.cs
+            Wiring.DiagnosticOutput += (string s) => { new Logging(@"C:\ProgramData\Example_ALA\wiringLog.txt") { InstanceName = "wiringLogging" }.WriteText(s); };
+
             // fairly standard way of starting an ALA application that uses windows.
             new Application().Initialize().mainWindow.Run();
         }
@@ -69,7 +75,7 @@ namespace Application
 
 
 
-            // -------------------------- BEGIN CODE MANUALLY GENERATED FROM DIAGRAM --------------------------------------------------------------
+// -------------------------- BEGIN CODE MANUALLY GENERATED FROM DIAGRAM --------------------------------------------------------------
             // The following code has been manually generated from the diagram in application-diagram.drawio (read-only version in application-diagram.pdf)
             // Refer to that diagram for how this application works, not this code.
             // Also application.md is a commentary on reading the diagram.
@@ -184,7 +190,31 @@ namespace Application
                     , "IsDeviceConnected")
                 )
             , "appStart");
-// -------------------------- END CODE MANUALLY GENERATED FROM DIAGRAM --------------------------------------------------------------
+            // -------------------------- END CODE MANUALLY GENERATED FROM DIAGRAM --------------------------------------------------------------
+
+
+            // See logging.cs for an explantion of why we wire up logging instead of using a programming paradigm layer abstraction for it
+
+            // This logging instance is configured to output to the specified file and to the output window
+            // It needs all the logging output ports of all the programming paradigms wiring to it
+            var logging = new Logging(@"C:\ProgramData\Example_ALA\debugLog.txt") { InstanceName = "debugLogging" };
+
+
+
+            // This wires the static diagnostic output port of WireManyPorts abstraction to logging so we get diagnostic output of it wiring up all the other diagnostic outputs
+            WireManyPorts.DiagnosticOutput = (string s) => { logging.WriteText(s); };
+            
+            // this method will look through all the domain abstractions and wire all their DiagnosticOutput ports (which must be static) to logging
+            // doing the equivalent of the lines below without us having to do every one individually
+            new WireManyPorts().WireManyPortsTo("DomainAbstractions", "DiagnosticOutput", logging, "WriteText");
+
+            // These manual wirings are how we used to do it - they are now done by WireStaticPorts above
+            // Do it this way to override anything that you want to go to a special place
+            // Arbitrator.DiagnosticOutput = (string s) => { logging.WriteText(s); };
+            // SCPProtocol.DiagnosticOutput = (string s) => { logging.WriteText(s); };
+            // Grid.DiagnosticOutput = (string s) => { logging.WriteText(s); };
+            // CSVFileReaderWriter.DiagnosticOutput =  (string s) => { logging.WriteText(s); };
+            // Transfer.DiagnosticOutput =  (string s) => { logging.WriteText(s); };
         }
     }
 }

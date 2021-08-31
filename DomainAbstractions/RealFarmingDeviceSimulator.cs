@@ -65,7 +65,9 @@ namespace DomainAbstractions
                 _commandBuffer += value;
 
                 if (value == '}')
+                {
                     SendResultAsync(_commandBuffer);
+                }
             }
         }
 

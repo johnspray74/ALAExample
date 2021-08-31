@@ -150,8 +150,7 @@ namespace DomainAbstractions
             {
                 if (!(e is OperationCanceledException || e is ObjectDisposedException))
                 {
-                    Logging.Log($"exception caught during transact: {e.Message}");
-                    this.Log($"Exception caught during transact: {e}");
+                    diagnosticOutput?.Invoke($"Exception caught during transact: {e.Message}");
                     
                     if (eventFailed != null)
                     {
@@ -267,5 +266,13 @@ namespace DomainAbstractions
         
         // IDataFlow<bool> implementation
         bool IDataFlow<bool>.Data { set => ClearDestination = value; }
+
+
+
+
+
+        public delegate void DiagnosticOutputDelegate(string output);
+        private static DiagnosticOutputDelegate diagnosticOutput;
+        public static DiagnosticOutputDelegate DiagnosticOutput { get => diagnosticOutput; set => diagnosticOutput = value; }
     }
 }

@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace DomainAbstractions
 {
+// TBD replace the Debug.WriteLines with an outputLogging port owning its own delegate type (same is in Wiring.cs)
+// Application must wired it to somewhere such as an instance of logging.cs
+
     /// <summary>
     /// This abstraction is used to interact with the device using SCP commands and all the request will be asynchronized. All the scp command will be sent 
     /// through this abstraction to the devices and the returns of the devices will be handled here to composite a complete string, 
@@ -56,8 +59,8 @@ namespace DomainAbstractions
 
             if (command.StartsWith("{") && command.EndsWith("}"))
             {
-                System.Diagnostics.Debug.WriteLine("DeviceSimulator: Received command: " + command);
                 scpCommand.Data = command; // this line will tell COMPortAdapter to write to the Port
+                diagnosticOutput?.Invoke("SCPProtocol.cs: Sending: " + command);
             }
             else
             {
@@ -78,7 +81,7 @@ namespace DomainAbstractions
                 case '^':
                     {
                         cancellationTokenSource?.Dispose();
-                        System.Diagnostics.Debug.WriteLine($"Response was: {character}");
+                        diagnosticOutput?.Invoke($"SCPProtocol.cs: Response: {character}");
                         scpResponseTask.TrySetResult(Char.ToString(character));
                     }
                     break;
@@ -90,7 +93,7 @@ namespace DomainAbstractions
                         string tempString = incomingBuffer;
                         incomingBuffer = null;
                         cancellationTokenSource?.Dispose();
-                        System.Diagnostics.Debug.WriteLine($"DeviceSimulator: Response: {tempString}");
+                        diagnosticOutput?.Invoke($"SCPProtocol.cs: Response: {tempString}");
                         scpResponseTask.TrySetResult(tempString);
                     }
                     break;
@@ -99,7 +102,7 @@ namespace DomainAbstractions
                         if (!string.IsNullOrEmpty(incomingBuffer) && incomingBuffer.StartsWith("("))
                         {
                             string error = incomingBuffer + character;
-                            Debug.WriteLine(error);
+                            diagnosticOutput?.Invoke(error);
                             incomingBuffer = null;
                             cancellationTokenSource?.Dispose();
                             scpResponseTask.TrySetException(new Exception(String.Format($"Command execution failed. Error message ({error})")));
@@ -124,10 +127,18 @@ namespace DomainAbstractions
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    System.Diagnostics.Debug.WriteLine("SCPProtocol 2 second timeout. Cancelling task.");
+                    diagnosticOutput?.Invoke("SCPProtocol: 2 second timeout. Cancelling task.");
                     tcs.TrySetCanceled();
                 }
             });
         }
+
+
+
+
+        public delegate void DiagnosticOutputDelegate(string output);
+        private static DiagnosticOutputDelegate diagnosticOutput;
+        public static DiagnosticOutputDelegate DiagnosticOutput { get => diagnosticOutput; set => diagnosticOutput = value; }
+
     }
 }

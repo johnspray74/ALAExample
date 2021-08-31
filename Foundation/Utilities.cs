@@ -17,7 +17,7 @@ using System.Threading;
 
 namespace Foundation
 {
-    public static class StaticUtilities
+    public static class Utilities
     {
         /// <summary>
         /// <para>An extension method for objects, particularly anonymous objects, to get a named property.</para>
@@ -47,7 +47,7 @@ namespace Foundation
         {
             foreach (var element in enumerable)
             {
-                Logging.Log(element.ToString());
+                diagnosticOutput?.Invoke(element.ToString());
             }
         }
 
@@ -148,22 +148,22 @@ namespace Foundation
 
         public static void LogDataChange(this object obj)
         {
-            Logging.Log($"Value change observed:\n{FormatObjectAsString(obj)}");
+            diagnosticOutput?.Invoke($"Value change observed:\n{FormatObjectAsString(obj)}");
         }
 
         public static void LogDataChange(this object obj, string objName)
         {
-            Logging.Log($"{objName}:\n{FormatObjectAsString(obj)}");
+            diagnosticOutput?.Invoke($"{objName}:\n{FormatObjectAsString(obj)}");
         }
 
         public static void LogDataChange(this object obj, string A, string B, string interfaceName)
         {
-            Logging.Log($"\"{A}\" {interfaceName} {B} changed to: {FormatObjectAsString(obj)}");
+            diagnosticOutput?.Invoke($"\"{A}\" {interfaceName} {B} changed to: {FormatObjectAsString(obj)}");
         }
 
         public static void LogDataChange(this object obj, string A, string B, string interfaceName, object oldValue)
         {
-            Logging.Log($"\"{A}\" {interfaceName} {B} changed: {FormatObjectAsString(oldValue)} --> {FormatObjectAsString(obj)}");
+            diagnosticOutput?.Invoke($"\"{A}\" {interfaceName} {B} changed: {FormatObjectAsString(oldValue)} --> {FormatObjectAsString(obj)}");
         }
 
         public static JObject CreateJObjectMessage(string msgKeyword, string msgContent)
@@ -178,6 +178,12 @@ namespace Foundation
                 yield return list.GetRange(i, Math.Min(chunkSize, list.Count - i));
             }
         }
+
+
+        public delegate void DiagnosticOutputDelegate(string output);
+        private static DiagnosticOutputDelegate diagnosticOutput;
+        public static DiagnosticOutputDelegate DiagnosticOutput { get => diagnosticOutput; set => diagnosticOutput = value; }
+
     }
 
     public class HttpLoggingHandler : DelegatingHandler
@@ -186,7 +192,8 @@ namespace Foundation
         {
             string content;
 
-            this.Log("HTTP Request:\r\n" + request.ToString());
+            diagnosticOutput?.Invoke("HTTP Request:\r\n" + request.ToString());
+            // this.Log("HTTP Request:\r\n" + request.ToString());
             if (request.Content != null)
             {
                 content = await request.Content.ReadAsStringAsync();
@@ -199,13 +206,14 @@ namespace Foundation
                 catch
                 {
                 }
-
-                this.Log("HTTP Request Content:\r\n" + content);
+                diagnosticOutput?.Invoke("HTTP Request Content:\r\n" + content);
+                // this.Log("HTTP Request Content:\r\n" + content);
             }
 
             HttpResponseMessage response = await base.SendAsync(request, cancellationToken);
 
-            this.Log("HTTP Response:\r\n" + response.ToString());
+            diagnosticOutput?.Invoke("HTTP Response:\r\n" + response.ToString());
+            // this.Log("HTTP Response:\r\n" + response.ToString());
             if (response.Content != null)
             {
                 content = await response.Content.ReadAsStringAsync();
@@ -219,10 +227,15 @@ namespace Foundation
                 {
                 }
 
-                this.Log("HTTP Response Content:\r\n" + content);
+                diagnosticOutput?.Invoke("HTTP Response Content:\r\n" + content);
+                // this.Log("HTTP Response Content:\r\n" + content);
             }
 
             return response;
         }
+
+        public delegate void DiagnosticOutputDelegate(string output);
+        private static DiagnosticOutputDelegate diagnosticOutput;
+        public static DiagnosticOutputDelegate DiagnosticOutput { get => diagnosticOutput; set => diagnosticOutput = value; }
     }
 }

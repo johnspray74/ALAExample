@@ -223,7 +223,8 @@ namespace DomainAbstractions
                 }
                 catch (Exception e)
                 {
-                    this.Log($"error setting creation date: {e}");
+                    diagnosticOutput?.Invoke($"error setting creation date: {e}");
+                    // this.Log($"error setting creation date: {e}");
                 }
             }
         }
@@ -304,5 +305,12 @@ namespace DomainAbstractions
         
         // IDataFlow<DateTime> implementation
         DateTime IDataFlow<DateTime>.Data { set => creationDate = value; }
+
+
+
+        public delegate void DiagnosticOutputDelegate(string output);
+        private static DiagnosticOutputDelegate diagnosticOutput;
+        public static DiagnosticOutputDelegate DiagnosticOutput { get => diagnosticOutput; set => diagnosticOutput = value; }
+
     }
 }

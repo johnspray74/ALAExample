@@ -8,13 +8,12 @@ using System.Threading.Tasks;
 
 namespace Foundation
 {
-    public static class Logging
+    public static class LoggingDeprecated
     {
-        public static string logFilePath = @"C:\ProgramData\Example_ALA\DataLink_ALA.log";
-        public static string wiringLogFilePath = @"C:\ProgramData\Example_ALA\wiringLog.txt";
         public static string lineSeparator = new string('-', 120) + "\n";
+        public static string logFilePath { get;  set; }
 
-        public static string GetCurrentTime()
+        private static string GetCurrentTime()
         {
             return $"{DateTime.Now:yyyy-MM-dd HH-mm-ss-ffff}";
         }
@@ -37,32 +36,7 @@ namespace Foundation
             WriteText(path: logFilePath, content: $"{lineSeparator}[{GetCurrentTime()}]\n{s}\n{lineSeparator}");
         }
         
-        [Conditional("DEBUG")]
-        public static void WriteToWiringLog()
-        {
-            // Overload for printing a separator between wiring outputs
-            WriteText(path: wiringLogFilePath, content: "");
-        }
 
-        public static string WriteToWiringLog(dynamic A, dynamic B, dynamic matchedInterface, bool save = true)
-        {
-            string AInstanceName = "(No InstanceName)";
-            string BInstanceName = "(No InstanceName)";
-            try { if (A.InstanceName != null) AInstanceName = $"(\"{A.InstanceName}\")"; } catch { };
-            try { if (B.InstanceName != null) BInstanceName = $"(\"{B.InstanceName}\")"; } catch { };
-
-            var AClassName = A.GetType().Name;
-            var BClassName = B.GetType().Name;
-            string matchedInterfaceType = $"{matchedInterface.FieldType.Name}";
-            if (matchedInterface.FieldType.GenericTypeArguments.Length > 0)
-            {
-                matchedInterfaceType += $"<{matchedInterface.FieldType.GenericTypeArguments[0]}>"; 
-            }
-
-            string output = $"({AClassName} {AInstanceName}.{matchedInterface.Name}) -- [{matchedInterfaceType}] --> ({BClassName} {BInstanceName})";
-            if (save) WriteText(path: wiringLogFilePath, content: output);
-            return output; 
-        }
 
         public static void WriteText(string path = "", string content = "", bool createNewFile = false)
         {
