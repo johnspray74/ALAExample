@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Foundation
 {
-    class WireManyPorts
+    class WireMany
     {
         /// <summary>
         /// WireManyPorts can wire up many ports at once to a destination. 

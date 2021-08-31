@@ -2,10 +2,11 @@ using System;
 using System.Windows.Media;
 using System.Collections.Generic;
 
+using System.Diagnostics;
+
 using DomainAbstractions;
 using ProgrammingParadigms;
 using Foundation;
-
 
 namespace Application
 {
@@ -33,7 +34,8 @@ namespace Application
         public static void Main()
         {
             // You don't need to do this, but just demonstrates how to get logging of all the WireTos that are done in case you need to check everything was wired correctly or chase down a bug in the Wiring.cs
-            Wiring.DiagnosticOutput += (string s) => { new Logging(@"C:\ProgramData\Example_ALA\wiringLog.txt") { InstanceName = "wiringLogging" }.WriteText(s); };
+            Wiring.DiagnosticOutput += (s) => { Debug.WriteLine(s); };
+            Wiring.DiagnosticOutput += (s) => { new LoggerToFile(@"C:\ProgramData\Example_ALA\wiringLog.txt") { InstanceName = "wiringLogging" }.WriteLine(s); };
 
             // fairly standard way of starting an ALA application that uses windows.
             new Application().Initialize().mainWindow.Run();
@@ -198,16 +200,16 @@ namespace Application
 
             // This logging instance is configured to output to the specified file and to the output window
             // It needs all the logging output ports of all the programming paradigms wiring to it
-            var logging = new Logging(@"C:\ProgramData\Example_ALA\debugLog.txt") { InstanceName = "debugLogging" };
+            var logging = new LoggerToFile(@"C:\ProgramData\Example_ALA\debugLog.txt") { InstanceName = "debugLogging" };
 
 
 
             // This wires the static diagnostic output port of WireManyPorts abstraction to logging so we get diagnostic output of it wiring up all the other diagnostic outputs
-            WireManyPorts.DiagnosticOutput = (string s) => { logging.WriteText(s); };
+            WireMany.DiagnosticOutput = (string s) => { logging.WriteLine(s); };
             
             // this method will look through all the domain abstractions and wire all their DiagnosticOutput ports (which must be static) to logging
             // doing the equivalent of the lines below without us having to do every one individually
-            new WireManyPorts().WireManyPortsTo("DomainAbstractions", "DiagnosticOutput", logging, "WriteText");
+            new WireMany().WireManyPortsTo("DomainAbstractions", "DiagnosticOutput", logging, "WriteLine");
 
             // These manual wirings are how we used to do it - they are now done by WireStaticPorts above
             // Do it this way to override anything that you want to go to a special place
