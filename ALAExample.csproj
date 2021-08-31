@@ -102,6 +102,7 @@
     <WCFMetadataStorage Include="Connected Services\NaitService\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="Foundation\DataLinkUpdateXMLSchema.cs" />
     <Compile Remove="Libraries\DataLinkUpdateXMLSchema.cs" />
     <Compile Remove="Libraries\Utilities.cs" />
   </ItemGroup>

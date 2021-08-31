@@ -27,7 +27,8 @@ namespace DomainAbstractions
     {
         // properties
         public string InstanceName = "Default";
-        public string Filter { set => fileBrowser.Filter = value; }
+        public Dictionary<string, string> Filters { set => fileBrowser.Filter = String.Join("|", value.Values); }
+
         public bool Multiselect { set => fileBrowser.Multiselect = value; }
         public int FilterIndex { set => fileBrowser.FilterIndex = value; }
 
@@ -49,7 +50,6 @@ namespace DomainAbstractions
         {
             fileBrowser.Title = title;
             fileBrowser.Multiselect = true;
-            fileBrowser.Filter = String.Join("|", Constants.FilterTypes.Values);
 
             fileBrowser.FileOk += (object sender, CancelEventArgs e) =>
             {

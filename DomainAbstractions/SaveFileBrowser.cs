@@ -28,7 +28,8 @@ namespace DomainAbstractions
     {
         // properties
         public string InstanceName = "Default";
-        public string Filter { set => saveFileDialog.Filter = value; }
+
+        public Dictionary<string, string> Filters { set => saveFileDialog.Filter = String.Join("|", value.Values); }
         public string FileName { set => saveFileDialog.FileName = value; }
 
         // ports
@@ -46,11 +47,11 @@ namespace DomainAbstractions
         /// Please refer to filter keys within class for specific file filter.
         /// </summary>
         /// <param name="title">the text diaplayed on the window top border</param>
-        public SaveFileBrowser(string title = null, string filter = "Default")
+        public SaveFileBrowser(string title = null, string extension = "*")
         {
             saveFileDialog.Title = title;
 
-            string filterString = customiseFilter(filter);
+            string filterString = $"{extension} file (*.{extension})|*.{extension}";
 
             saveFileDialog.Filter = filterString;
 
@@ -74,38 +75,5 @@ namespace DomainAbstractions
             saveFileDialog.ShowDialog();
         }
 
-        //private method ---------------------------------------------------------
-        private string customiseFilter(string filter)
-        {
-            List<string> filters = new List<string>();
-
-            switch (filter)
-            {
-                case "CSV": 
-                case "CSV No Header":
-                case "CSV 3000 Format":
-                case "CSV Minda Format":
-                case "CSV EID only":
-                case "Excel 97-2003":
-                case "Excel Worksheet":
-                case "Excel 97-2003 from Template":
-                case "XML":
-                case "All files":
-                    filters.Add(Constants.FilterTypes[filter]);
-                    break;
-                case "Favourite":
-                    filters.Add(Constants.FilterTypes[filter]);
-                    filters.Add(Constants.FilterTypes["All files"]);
-                    break;
-                case "Default":
-                    foreach(KeyValuePair<string,string> entry in Constants.FilterTypes)
-                    {
-                        filters.Add(entry.Value);
-                    }
-                    break;
-            }
-
-            return String.Join("|", filters);
-        }
     }
 }

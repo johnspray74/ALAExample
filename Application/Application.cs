@@ -1,11 +1,11 @@
 using System;
 using System.Windows.Media;
-using System.Diagnostics;
+using System.Collections.Generic;
 
 using DomainAbstractions;
 using ProgrammingParadigms;
 using Foundation;
-using System.Reflection;
+
 
 namespace Application
 {
@@ -87,7 +87,7 @@ namespace Application
 
             // First instantiate any domain abstractions that we can't instantiate anonymously in the later code because they need to be referred to by name because the diagram has circular wiring:
 
-            var saveFileBrowser = new SaveFileBrowser("Save file", "CSV");
+            var saveFileBrowser = new SaveFileBrowser(title: "Save file", extension: "CSV");
             var textConnected = new Text("Connected", false) { Color = Brushes.Green };
             var textSearching = new Text("Searching for a device...") { Color = Brushes.Red };
             var scpProtocol = new SCPProtocol();
@@ -191,6 +191,7 @@ namespace Application
                 )
             , "appStart");
             // -------------------------- END CODE MANUALLY GENERATED FROM DIAGRAM --------------------------------------------------------------
+
 
 
             // See logging.cs for an explantion of why we wire up logging instead of using a programming paradigm layer abstraction for it
