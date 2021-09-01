@@ -272,7 +272,6 @@ namespace DomainAbstractions
 
 
         public delegate void DiagnosticOutputDelegate(string output);
-        private static DiagnosticOutputDelegate diagnosticOutput;
-        public static DiagnosticOutputDelegate DiagnosticOutput { get => diagnosticOutput; set => diagnosticOutput = value; }
+        public static event DiagnosticOutputDelegate diagnosticOutput;
     }
 }

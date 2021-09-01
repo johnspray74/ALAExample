@@ -155,7 +155,6 @@ namespace DomainAbstractions
         // output port for logging or debugging
         // Rather than uses a direct call to an abstraction, whjich would be a dependency that must be included, this doesn't complain if no logging abstraction exists
         public delegate void DiagnosticOutputDelegate(string output);
-        private static DiagnosticOutputDelegate diagnosticOutput;
-        public static DiagnosticOutputDelegate DiagnosticOutput { get => diagnosticOutput; set => diagnosticOutput = value; }
+        public static event DiagnosticOutputDelegate diagnosticOutput;
     }
 }

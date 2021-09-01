@@ -8,9 +8,6 @@ namespace Foundation
 {
     public static class Wiring
     {
-        public delegate void DiagnosticOutputDelegate(string output);
-        private static DiagnosticOutputDelegate diagnosticOutput;
-        public static DiagnosticOutputDelegate DiagnosticOutput { get => diagnosticOutput; set => diagnosticOutput = value; }
 
         private delegate void InitializeDelegate();
         private static event InitializeDelegate Initialize;
@@ -135,7 +132,7 @@ namespace Foundation
                             handler();
                         }
 
-                        DiagnosticOutput?.Invoke(WiringToString(A, B, AfieldInfo));
+                        diagnosticOutput?.Invoke(WiringToString(A, B, AfieldInfo));
                     }
                     continue;  // could be more than one interface to wire
                 }
@@ -185,7 +182,7 @@ namespace Foundation
                             handler();
                         }
 
-                        DiagnosticOutput?.Invoke(WiringToString(A, B, AlistFieldInfo));
+                        diagnosticOutput?.Invoke(WiringToString(A, B, AlistFieldInfo));
                         break;
                     }
 
@@ -309,6 +306,11 @@ namespace Foundation
 
             return $"WireTo {AClassName}[{AInstanceName}].{matchedInterface.Name} <{matchedInterfaceType}> ---> {BClassName}[{BInstanceName}]";
         }
- 
+
+
+        public delegate void DiagnosticOutputDelegate(string output);
+        public static event DiagnosticOutputDelegate diagnosticOutput;
+
+
     }
 }
