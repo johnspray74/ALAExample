@@ -28,7 +28,7 @@ namespace DomainAbstractions
     public class SCPProtocol : IDataFlow<char>, IRequestResponseDataFlow<string, string> // charFromSource, SCPRequestResponse
     {
         //properties
-        public string InstanceName;
+        public string InstanceName { get; set; } = "anonymous";
 
         // ports
         private IDataFlow<string> scpCommand;

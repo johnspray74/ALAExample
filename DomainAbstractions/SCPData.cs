@@ -11,38 +11,40 @@ using System.Threading.Tasks;
 namespace DomainAbstractions
 {
     /// <summary>
-    /// Sends SCP commands to the connected SCP device to retrieve session data and store as a data table.
-    /// SCP commands are like {FH} for header, {FN} for row, device responds with like [982000000123456,123.5,2018-11-23]
-    /// There is a Dictionary to store cached session data tables.
+    /// Know about SCP commands of the connected SCP device to retrieve session data and convert to an ITableDataflow
+    /// SCP commands are like {FH} for header, {FN} for rows of data, device responds with like [982000000123456,123.5,2018-11-23]
+    /// TBD: create caching abstraction so we don't have to do slow reloading data from the device e.g. when displying data and then getting the data a second time to import to a file 
     /// ------------------------------------------------------------------------------------------------------------------
     /// Ports:
-    /// 1. IEvent clear: Clears the session data cache.
-    /// 2. IDataFlow<string> currentSessionIndex: sets the current session index to cache the session table data (not needing to reload it)
-    /// 3. ITableDataFlow inputOutputTableData: input/output port which can be source - getting session data (retrieving from device) or destination - putting session data (uploading to device)
-    /// 4. IRequestResponseDataFlow<string, string> requestResponseDataFlow: usage of the request response of the SCPProtocol
-    /// 5. IArbitrator arbitrator: arbitrator for ordering SCP commands
+    /// 1. ITableDataFlow inputOutputTableData: input/output port which can be source - getting session data (retrieving from device) or destination - putting session data to device
+    /// 2. IRequestResponseDataFlow<string, string> requestResponseDataFlow: both way serial connection to the device using SCPProtocol commands (SCP is a request/response protocol)
+    /// 3. IArbitrator arbitrator: arbitrator for allowing only one thing at a time to use the device
     /// </summary>
-    public class SCPData : ITableDataFlow // clear, currentSessionIndex, inputOutputTableData
+    public class SCPData : ITableDataFlow // inputOutputTableData
     {
-        // properties
-        public string InstanceName;
-        // public string InstanceName = "Default";
+        // Configurations
+        // Instance name gnerally identifies the instance when debugging
+        // This one is also used to identify who is using the arbitrator port
+        public string InstanceName { set; get; } = "anonymous";
+
+        // a batch is how many records we get at a time from the device, default is 26
+        // smaller makes overhead of moving lots of data inefficient
+        // too big makes higher latency to get more data
+        public int batchSize { set; get; }  = 26;
+
 
         // ports
-        private IRequestResponseDataFlow<string, string> requestResponseDataFlow;
+        // ITableDataFlow 
+        private IRequestResponseDataFlow<string, string> SCPPort;
         private IArbitrator arbitrator;
 
+
+
         // private fields
-        // how many records are there in a page. default is 26
-        private int pageSize = 26;
         private long rowId = 1;
         private List<FieldHeader> headers = new List<FieldHeader>();
         private Dictionary<string, Dictionary<int, string>> customFields;
 
-        // this flag is used when a session file is selected and there exsits cached data, then the cached data will be returned
-        // when GetPageFromSource is called. However, there still exists another situation that the user wants to load next page
-        // when calling GetPageFromSource, then the flag should be false and it will return the data of the next page.
-        private bool cacheFlag = false;
 
         /// <summary>
         /// Fetch session data by sending a series SCP commands to device. Such as {FH} for header, {FN} for row.
@@ -51,6 +53,8 @@ namespace DomainAbstractions
         
         // ITableDataFlow implementation --------------------------------------------------------------------------------------------------------
         private DataTable currentDataTable = new DataTable();
+
+
         DataTable ITableDataFlow.DataTable
         {
             get => currentDataTable;
@@ -62,29 +66,39 @@ namespace DomainAbstractions
             throw new NotImplementedException();
         }
 
+
+        // devices have dynamic columns
+        // get column header names
+
         async Task ITableDataFlow.GetHeadersFromSourceAsync(object queryOperation)
         {
+            // devices can have so called custom fields which are like enums, their data is actually numbers, but these numbers represent a finite number of strings.
+            // used e.g for fields that represents things like animal genders, breeeds, etc
+            // These string sets are read from the device using the {SOCU} command
+            // {SOCU} returns the total number of string sets
+            // {SOCUx} returns the name of the field that the strings apply to, and the number of strings. e.g. Breed,3
+            // {SOCUx,y} returns the yth string e.g Angus, Fiesian or Hereford
             if (customFields == null)
             {
                 await arbitrator.Request(InstanceName);
 
                 customFields = new Dictionary<string, Dictionary<int, string>>();
-                int customFieldCount = int.Parse(await requestResponseDataFlow.SendRequest("{SOCU}"));
+                int customFieldCount = int.Parse(await SCPPort.SendRequest("{SOCU}"));
 
                 for (int i = 0; i < customFieldCount; i++)
                 {
-                    Dictionary<int, string> field = new Dictionary<int, string>();
-                    string[] response = (await requestResponseDataFlow.SendRequest("{SOCU" + i + "}")).Split(',');
+                    Dictionary<int, string> fields = new Dictionary<int, string>();
+                    string[] response = (await SCPPort.SendRequest("{SOCU" + i + "}")).Split(',');
                     string fieldName = response[0];
                     int numberVal = int.Parse(response[1]);
 
                     for (int j = 1; j <= numberVal; j++)
                     {
-                        string valueName = await requestResponseDataFlow.SendRequest("{SOCU" + i + "," + j + "}");
-                        field.Add(j, valueName);
+                        string valueName = await SCPPort.SendRequest("{SOCU" + i + "," + j + "}");
+                        fields.Add(j, valueName);
                     }
 
-                    customFields.Add(fieldName, field);
+                    customFields.Add(fieldName, fields);
                 }
 
                 arbitrator.Release(InstanceName);
@@ -92,16 +106,19 @@ namespace DomainAbstractions
 
             currentDataTable = new DataTable();
 
-            // start to fetch header
+            // devices have field header names and field types which are fetched with {FU} command
+            // {FH} returns nt<name> where n is a field number, t is a field type
+            // we only want the name
             string header = null;
             List<string> headerList = new List<string>();
 
+
             await arbitrator.Request(InstanceName);
-            header = await requestResponseDataFlow.SendRequest("{FH}");
+            header = await SCPPort.SendRequest("{FH}");
             while (!string.IsNullOrEmpty(header))
             {
                 headerList.Add(header.Substring(3));
-                header = await requestResponseDataFlow.SendRequest("{FH}");
+                header = await SCPPort.SendRequest("{FH}");
             }
 
             arbitrator.Release(InstanceName);
@@ -114,21 +131,31 @@ namespace DomainAbstractions
                 }
             }
 
+            // add a column in the table called index, which will just be sequenctial record number starting from 0
+
             if (!currentDataTable.Columns.Contains("index")) currentDataTable.Columns.Add(new DataColumn("index") { Prefix = "hide" });
             currentDataTable.TableName = "";
         }
+
+
+
+        // get a batch of records from teh device using the {FM} command
+        // The {FGDD} command sets the device up for downloading session data rtaher than lifedata or other tables
+        // The {FD} command starts from the first record
+        // The {FRn} command selects record n
+        // {FNn} gets n records in the form [1,data,data,data;2,data;data,data]
 
         async Task<Tuple<int, int>> ITableDataFlow.GetPageFromSourceAsync()
         {
             int rowStartIndex = currentDataTable.Rows.Count;
 
             await arbitrator.Request(InstanceName);
-            await requestResponseDataFlow.SendRequest("{FGDD}");
+            await SCPPort.SendRequest("{FGDD}");
 
             // set the cursor to the last record
-            await requestResponseDataFlow.SendRequest("{FD}");  // {FD} first to start downloading from the first record
-            await requestResponseDataFlow.SendRequest("{FR" + rowStartIndex + "}"); // {FRn} resets back to this record number inside the selected session or life data
-            string content = await requestResponseDataFlow.SendRequest("{FN" + pageSize + "}");
+            await SCPPort.SendRequest("{FD}");  // (redundant?)
+            await SCPPort.SendRequest("{FR" + rowStartIndex + "}"); 
+            string content = await SCPPort.SendRequest("{FN" + batchSize + "}");
             arbitrator.Release(InstanceName);
 
             if (!string.IsNullOrEmpty(content))
@@ -136,21 +163,20 @@ namespace DomainAbstractions
                 string[] records = content.Split(';');
                 foreach (var r in records)
                 {
-                    string[] fields = r.Split(',');
+                    string[] datas = r.Split(',');
                     // add one record to datatable
-                    if (fields.Length >= currentDataTable.Columns.Count)
+                    if (datas.Length >= currentDataTable.Columns.Count)
                     {
                         DataRow row = currentDataTable.NewRow();
                         for (var i = 0; i < currentDataTable.Columns.Count - 1; i++)
                         {
                             DataColumn column = currentDataTable.Columns[i];
-                            string field = fields[i+1];
+                            string field = datas[i+1];
 
                             if (customFields.ContainsKey(column.ColumnName))
                             {
                                 // try get custom field from the dictionary
-                                // if there is some sort of error, skip and just
-                                // display the value
+                                // if there is some sort of error, skip and just display the value
                                 try
                                 {
                                     field = customFields[column.ColumnName][int.Parse(field)];
@@ -198,18 +224,18 @@ namespace DomainAbstractions
             string sessionDate = metaData[2].Replace("Date: ", "");
 
             await arbitrator.Request(InstanceName);
-            await requestResponseDataFlow.SendRequest("{FGDD}"); // select session data
+            await SCPPort.SendRequest("{FGDD}"); // select session data
 
             // find the end of the session list
             // add one to the end to create new session
             while (true)
             {
-                string response = await requestResponseDataFlow.SendRequest("{FL}");
+                string response = await SCPPort.SendRequest("{FL}");
                 if (String.IsNullOrEmpty(response)) break;
                 sessionId = Int32.Parse(response) + 1;
             }
 
-            await requestResponseDataFlow.SendRequest("{FF" + sessionId + "}"); // select session
+            await SCPPort.SendRequest("{FF" + sessionId + "}"); // select session
 
             // retrieve headers
             // convert into field headers
@@ -217,7 +243,7 @@ namespace DomainAbstractions
             string header;
             while (true)
             {
-                header = await requestResponseDataFlow.SendRequest("{FH}");
+                header = await SCPPort.SendRequest("{FH}");
                 if (String.IsNullOrEmpty(header)) break;
 
                 try
@@ -235,8 +261,8 @@ namespace DomainAbstractions
             }
 
             // set name and date of session
-            await requestResponseDataFlow.SendRequest("{FPNA" + sessionId + "," + sessionName + "}");
-            await requestResponseDataFlow.SendRequest("{FPDA" + sessionId + "," + sessionDate + "}");
+            await SCPPort.SendRequest("{FPNA" + sessionId + "," + sessionName + "}");
+            await SCPPort.SendRequest("{FPDA" + sessionId + "," + sessionDate + "}");
 
             arbitrator.Release(InstanceName);
         }
@@ -251,13 +277,13 @@ namespace DomainAbstractions
 
             await arbitrator.Request(InstanceName);
 
-            await requestResponseDataFlow.SendRequest("{FGDD}"); // select session data
-            await requestResponseDataFlow.SendRequest("{FF" + sessionId + "}"); // select session index
+            await SCPPort.SendRequest("{FGDD}"); // select session data
+            await SCPPort.SendRequest("{FF" + sessionId + "}"); // select session index
 
             // build headers to send
             // basically their IDs joined together with commas
             string uploadHeaders = String.Join(",", from FieldHeader header in headers select header.Id);
-            await requestResponseDataFlow.SendRequest("{FI" + uploadHeaders + "}"); // send upload headers
+            await SCPPort.SendRequest("{FI" + uploadHeaders + "}"); // send upload headers
 
             for (int i = firstRowIndex; i < lastRowIndex; i++)
             {
@@ -266,7 +292,7 @@ namespace DomainAbstractions
                 // select data from row in same order as headers
                 // join with commas
                 string uploadData = String.Join(",", from FieldHeader header in headers select row[header.Name].ToString());
-                await requestResponseDataFlow.SendRequest("{FU" + uploadData + "}");
+                await SCPPort.SendRequest("{FU" + uploadData + "}");
             }
 
             arbitrator.Release(InstanceName);

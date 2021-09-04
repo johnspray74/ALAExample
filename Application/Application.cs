@@ -144,7 +144,7 @@ namespace Application
                                 .WireTo(csvFileReaderWriter, "dataFlowOutputFilePathNames")
                                 .WireTo(saveToCsvFileTransact
                                     .WireTo(sessionDataScpImport
-                                        .WireTo(scpProtocol, "requestResponseDataFlow")
+                                        .WireTo(scpProtocol, "SCPPort")
                                         .WireTo(arbitrator, "arbitrator")
                                     , "tableDataFlowSource")
                                     .WireTo(csvFileReaderWriter, "tableDataFlowDestination")
@@ -162,7 +162,7 @@ namespace Application
                         .WireTo(sessionListScp, "dataFlowSelectedPrimaryKey")
                         .WireTo(sessionDataGrid
                             .WireTo(sessionDataScp
-                                .WireTo(scpProtocol, "requestResponseDataFlow")
+                                .WireTo(scpProtocol, "SCPPort")
                                 .WireTo(arbitrator, "arbitrator")
                             , "dataSource")
                         , "eventRowSelected")
