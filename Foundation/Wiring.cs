@@ -15,6 +15,7 @@ namespace Foundation
         public delegate void PostWiringInitializeDelegate();
         private static string firstPortName;
 
+		static bool preventRecursion;
 
         /// <Summary>
         /// wireTo is an extension method on the type object
@@ -120,8 +121,17 @@ namespace Foundation
                             string exceptionMessage = multiportExceptionMessage + "\n" + WiringToString(A, B, AfieldInfo);
                             // throw new Exception(exceptionMessage);
                         }
-                            
-                        AfieldInfo.SetValue(A, B);  // do the wiring
+
+                        if (!preventRecursion && dictionary.ContainsKey(AfieldInfo.FieldType))
+                        {
+                            preventRecursion = true;
+                            dictionary[AfieldInfo.FieldType](A, B, AfieldInfo.Name);
+                            preventRecursion = false;
+                        }
+                        else
+                        {
+                            AfieldInfo.SetValue(A, B);  // do the wiring
+                        }
                         wiredSomething = true;
 
                         // see if there is a PostWiring function associated with the port and call it.
@@ -308,6 +318,22 @@ namespace Foundation
         }
 
 
+
+
+
+        // This dictionary is a register of interface types for which there is an overriding WireTo method
+        // Overriding WireTo methods are commonly used to wire in an intermediary object
+        // such as an execution enginer, a logging decorator object etc
+        public delegate void WireToDelegate(object A, object B, string APortName);
+        private static Dictionary<Type, WireToDelegate> dictionary = new Dictionary<Type, WireToDelegate>();
+
+        public static void RegisterInterface(Type t, WireToDelegate h)
+        {
+            dictionary.Add(t, h);
+        }
+
+        // diagnostics output port
+        // doesn't have to be wired anywhere
         public delegate void DiagnosticOutputDelegate(string output);
         public static event DiagnosticOutputDelegate diagnosticOutput;
 
