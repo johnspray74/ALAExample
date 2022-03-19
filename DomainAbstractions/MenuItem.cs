@@ -41,7 +41,7 @@ namespace DomainAbstractions
 
         // ports
         private IEvent output;
-        private IDataFlow_B<bool> enableInput;  // greys out the menu item when disabled
+        private IDataFlow_R<bool> enableInput;  // greys out the menu item when disabled
 
         // private fields
         private System.Windows.Controls.MenuItem menuItem;
@@ -64,9 +64,9 @@ namespace DomainAbstractions
         // By having this name convention, this method gets called by WireTo immediately after the correspeonding port is wired
         private void enableInputInitialize()
         {
-                enableInput.DataChanged += () =>
+                enableInput.Push += (data) =>
                 {
-                    menuItem.IsEnabled = enableInput.Data;
+                    menuItem.IsEnabled = data;
                     menuItem.Foreground = menuItem.IsEnabled ? new SolidColorBrush(Color.FromRgb(0, 0, 0)) : Brushes.DarkGray;
                 };
         }

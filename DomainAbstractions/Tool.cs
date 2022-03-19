@@ -21,7 +21,7 @@ namespace DomainAbstractions
         // ports
         private IEvent eventOutput;
         private IUI iuiStructure;
-        private IDataFlow_B<bool> enableInput;
+        private IDataFlow_R<bool> enableInput;
 
         // private fields
         private System.Windows.Controls.Button toolButton = new System.Windows.Controls.Button();
@@ -44,9 +44,9 @@ namespace DomainAbstractions
         // By having this name convention, this method gets called by WireTo immediately after the correspeonding port is wired
         private void enableInputInitialize()
         {
-                enableInput.DataChanged += () =>
+                enableInput.Push += (data) =>
                 {
-                    toolButton.IsEnabled = enableInput.Data;
+                    toolButton.IsEnabled = data;
                     toolButton.Foreground = toolButton.IsEnabled ? new SolidColorBrush(Color.FromRgb(0, 0, 0)) : Brushes.DarkGray;
                 };
         }
