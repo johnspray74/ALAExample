@@ -14,7 +14,7 @@ namespace ProgrammingParadigms
     /// <typeparam name="T">Generic data type</typeparam>
     public interface IDataFlow<T>
     {
-        T Data { set; }
+        void Push(T data);
     }
 
     /// <summary>
@@ -31,17 +31,20 @@ namespace ProgrammingParadigms
     }
 
     /// <summary>
-    /// Acts as a pipe to fan out incoming by creating a list and assign the data to the element in the list.
-    /// Moreover, any IDataFlow and IDataFlow_B (listens for when data changed within this DataFlowConnector or acts as an IDataFlow<B> adapter) can be transferred bidirectionally.
+    /// Acts similar to a connector object in a components and connectors architecture
+    /// Usually it is not necessary to wire two instances of a domain abstraction with this connector object - you can wire two complimentary IDataFlow ports directly.
+    /// It is only needed for situations where you want fanout, or to use IDataFlow_R, or to chain connectors to control order of execution
+    /// (or to connect a push to a pull port. IDataFlowPull not yet implemented)
+    /// Note IDataflow_R is wired in the reverse direction of dataflow (from the destination to the source). It's purpose is to allow a domain abstractions to have more than one input of the same type (becasue you can't implement IDataFlow twice for the same type)
     /// ----------------------------------------------------------------------------------------------
     /// Ports:
-    /// 1. IDataFlow<T> IDataFlow<T>: incoming data which wants to be fanned out
-    /// 2. IDataFlow_B<T> IDataFlow_B<T>: the 'b port' which listens for when data changed within this DataFlowConnector or acts as an IDataFlow<B> adapter. Note: this happens after the fanoutList
+    /// 1. IDataFlow<T> IDataFlow<T>: incoming data port
+    /// 2. IDataFlow_R<T> IDataFlow_R<T>: the reverse wired output port. Note: this output happens after the fanoutList but before last
     /// 3. List<IDataFlow<T>> fanoutList: output port that fans out to every abstraction connected in order of wiring
-    /// 4. IDataFlow<T> last: output port that will output after the fanoutList and IDataFlow_B data changed event. This enables chaining of data flow and explicit execution of last to push the data flow.
+    /// 4. IDataFlow<T> last: output port that will output after the fanoutList and the IDataFlow_B. This enables chaining of these connectors to explicitly control order of execution of wired outputs.
     /// </summary>
     /// <typeparam name="T">Generic data type</typeparam>
-    public class DataFlowConnector<T> : IDataFlow<T>, IDataFlow_R<T>  // IDataFlow<T>, IDataFlow_B<T>
+    public class DataFlowConnector<T> : IDataFlow<T>, IDataFlow_R<T>  // Input, Output
     {
         // properties
         public string InstanceName = "Default";
@@ -55,26 +58,18 @@ namespace ProgrammingParadigms
         /// </summary>
         public DataFlowConnector() { }
 
-        /// <summary>
-        /// Handles data provided to the connector.
-        /// </summary>
-        /// <param name="value">The data provided.</param>
-        private void HandleData(T value)
-        {
-            data = value;
-            foreach (var f in fanoutList) f.Data = value;
-            /* DataChanged?.Invoke(); */
-            Push?.Invoke(value);
-            if (last != null) last.Data = value;
-        }
 
         // IDataFlow<T> implementation ---------------------------------
-        private T data = default;
 
-        T IDataFlow<T>.Data { set => HandleData(value);  }
+        void IDataFlow<T>.Push(T data)
+        {
+            foreach (var f in fanoutList) f.Push(data);
+            Push?.Invoke(data);
+            if (last != null) last.Push(data);
+        }
 
         // IDataFlow_R<T> implementation ---------------------------------
-        event PushDelegate<T> Push;
+        private event PushDelegate<T> Push;
         event PushDelegate<T> IDataFlow_R<T>.Push { add { Push += value; } remove { Push -= value; } }
     }
 }

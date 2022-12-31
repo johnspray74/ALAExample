@@ -39,12 +39,9 @@ namespace DomainAbstractions
         DataTable ITableDataFlow.DataTable => sessionListDataTable;
         DataRow ITableDataFlow.CurrentRow { get; set; }
         bool ITableDataFlow.SupportQuery { get; }
-        string IDataFlow<string>.Data 
+        void IDataFlow<string>.Push(string data) 
         {
-            set
-            {
-                var _fireAndForgot = SetSessionIndexAsync(value);
-            }
+                var _fireAndForgot = SetSessionIndexAsync(data);
         }
 
         bool ITableDataFlow.RequestQuerySupport()

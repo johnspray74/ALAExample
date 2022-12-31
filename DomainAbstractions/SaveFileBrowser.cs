@@ -56,18 +56,18 @@ namespace DomainAbstractions
             saveFileDialog.Filter = filterString;
 
             saveFileDialog.FileOk += (object sender, CancelEventArgs e) => {
-                if (dataFlowFileFormatIndex != null) dataFlowFileFormatIndex.Data = saveFileDialog.FilterIndex;
+                if (dataFlowFileFormatIndex != null) dataFlowFileFormatIndex.Push(saveFileDialog.FilterIndex);
 
-                foreach (var i in dataFlowOutputFileNames) i.Data = Path.GetFileName(saveFileDialog.FileName);
-                foreach (var i in dataFlowOutputFilePaths) i.Data = Path.GetDirectoryName(saveFileDialog.FileName);
-                foreach (var i in dataFlowOutputFilePathNames) i.Data = saveFileDialog.FileName;
+                foreach (var i in dataFlowOutputFileNames) i.Push(Path.GetFileName(saveFileDialog.FileName));
+                foreach (var i in dataFlowOutputFilePaths) i.Push(Path.GetDirectoryName(saveFileDialog.FileName));
+                foreach (var i in dataFlowOutputFilePathNames) i.Push(saveFileDialog.FileName);
 
                 fileSelected?.Execute();
             };
         }
 
         // IDataFlow<string> implementation --------------------------------------------------------
-        string IDataFlow<string>.Data { set => saveFileDialog.FileName = value; }
+        void IDataFlow<string>.Push(string data) { saveFileDialog.FileName = data; }
 
         // IEvent implementation -------------------------------------------------------------------
         void IEvent.Execute()

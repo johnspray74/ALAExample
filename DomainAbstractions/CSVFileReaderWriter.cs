@@ -68,7 +68,7 @@ namespace DomainAbstractions
             {
                 if (dataFlowRecordsTotalCount != null) // number of records outputs
                 {
-                    dataFlowRecordsTotalCount.Data = (contents.Length - currentIndex).ToString();
+                    dataFlowRecordsTotalCount.Push((contents.Length - currentIndex).ToString());
                 }
 
                 // initialization
@@ -115,10 +115,10 @@ namespace DomainAbstractions
                     r["Date"] = date;
                     r["Count"] = dataTable.Rows.Count + "";
                     dt.Rows.Add(r);
-                    dataFlowTableHeader.Data = dt;
+                    dataFlowTableHeader.Push(dt);
 
-                    dataFlowSessionId.Data = fileId;
-                    dataFlowDataTable.Data = dataTable;
+                    dataFlowSessionId.Push(fileId);
+                    dataFlowDataTable.Push(dataTable);
                 }
 
                 return new Tuple<int, int>(dataTable.Rows.Count, dataTable.Rows.Count);
@@ -154,7 +154,7 @@ namespace DomainAbstractions
         async Task ITableDataFlow.PutHeaderToDestinationAsync()
         {
             if (dataFlowOpenOrCloseProgressWindow != null)
-                dataFlowOpenOrCloseProgressWindow.Data = true;
+                dataFlowOpenOrCloseProgressWindow.Push(true);
 
             stringBuilder.Clear();
             string header = "";
@@ -290,21 +290,21 @@ namespace DomainAbstractions
                 File.WriteAllText(filePath, stringBuilder.ToString());
                 stringBuilder.Clear();
                 if (dataFlowOpenOrCloseProgressWindow != null)
-                    dataFlowOpenOrCloseProgressWindow.Data = false;
+                    dataFlowOpenOrCloseProgressWindow.Push(false);
                 eventOutputSuccessWindow?.Execute();
             }
         }
 
         // IDataFlow<string> implementation ------------------------------------------------------
         private string filePath;
-        string IDataFlow<string>.Data { set => filePath = value; }
+        void IDataFlow<string>.Push(string data) { filePath = data; }
 
         // IDataFlow<int> implmentation ----------------------------------------------------------
         private int fileFormatIndex = 1;
-        int IDataFlow<int>.Data { set => fileFormatIndex = value; }
+        void IDataFlow<int>.Push(int data) { fileFormatIndex = data; }
         
         // IDataFlow<DateTime> implementation
-        DateTime IDataFlow<DateTime>.Data { set => creationDate = value; }
+        void IDataFlow<DateTime>.Push(DateTime data) { creationDate = data; }
 
 
 

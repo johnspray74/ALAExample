@@ -92,9 +92,9 @@ namespace DomainAbstractions
         }
 
         // IDataFlow<string> implementation ---------------------------------------------------------------
-        string IDataFlow<string>.Data { set => textBlock.Text = value; }
+        void IDataFlow<string>.Push(string data) { textBlock.Text = data; }
 
         // IDataFlow<bool> implementation -----------------------------------------------------------------
-        bool IDataFlow<bool>.Data { set => wpfElement.Visibility = value ? Visibility.Visible : Visibility.Collapsed; }
+        void IDataFlow<bool>.Push(bool data) { wpfElement.Visibility = data ? Visibility.Visible : Visibility.Collapsed; }
     }
 }

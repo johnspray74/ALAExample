@@ -53,15 +53,15 @@ namespace DomainAbstractions
 
             fileBrowser.FileOk += (object sender, CancelEventArgs e) =>
             {
-                if (fileFormatIndex != null) fileFormatIndex.Data = fileBrowser.FilterIndex;
+                if (fileFormatIndex != null) fileFormatIndex.Push(fileBrowser.FilterIndex);
 
                 filePaths = fileBrowser.FileNames;
                 if (dataFlowSelectedFileCount != null)
                 {
-                    dataFlowSelectedFileCount.Data = filePaths.Length.ToString();
+                    dataFlowSelectedFileCount.Push(filePaths.Length.ToString());
                 }
 
-                if (selectedFilePaths != null) selectedFilePaths.Data = filePaths.ToList();
+                if (selectedFilePaths != null) selectedFilePaths.Push(filePaths.ToList());
                 eventFileSelectedOutput?.Execute();
             };
         }

@@ -35,13 +35,10 @@ namespace DomainAbstractions
   
 
         // Implement IDataFlow<string> -------------------------------------------------------
-        string IDataFlow<string>.Data
+        void IDataFlow<string>.Push(string value)
         {
             // When we receive a string to be transmitted out the COM port, serial tranmits can take time for every character, so start an asychronous function to output one character at a time 
-            set
-            {
-                var _fireAndForget = WriteToPortAsync(value);
-            }
+            var _fireAndForget = WriteToPortAsync(value);
         }
 
 
@@ -49,7 +46,7 @@ namespace DomainAbstractions
         {
             foreach (var c in command)
             {
-                virtualComPortTx.Data = c;
+                virtualComPortTx.Push(c);
             }
         }
 
@@ -58,12 +55,9 @@ namespace DomainAbstractions
 
 
         // Implement virtualCOMPortRx -------------------------------------------------------
-        char IDataFlow<char>.Data 
+        void IDataFlow<char>.Push(char value) 
         { 
-            set
-            {
-                outputForCharactersReceiveFromTheCOMPort.Data = value;
-            }
+             outputForCharactersReceiveFromTheCOMPort.Push(value);
         }
 
 

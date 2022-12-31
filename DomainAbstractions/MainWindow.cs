@@ -133,6 +133,6 @@ namespace DomainAbstractions
 
 
         // IDataFlow<bool> implementation ----------------------------------------------
-        bool IDataFlow<bool>.Data { set => window.IsEnabled = value; }
+        void IDataFlow<bool>.Push(bool data) { window.IsEnabled = data; }
     }
 }

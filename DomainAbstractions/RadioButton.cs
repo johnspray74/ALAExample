@@ -84,7 +84,7 @@ namespace DomainAbstractions
         }
 
         // IDataFlow<bool> implementation
-        bool IDataFlow<bool>.Data { set => SetVisibility(value); }
+        void IDataFlow<bool>.Push(bool data) { SetVisibility(data); }
 
 
 

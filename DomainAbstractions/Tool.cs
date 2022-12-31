@@ -61,7 +61,10 @@ namespace DomainAbstractions
         }
 
         // IDataFlow<bool> implementation -----------------------------------------------
-        bool IDataFlow<bool>.Data { set => toolButton.Visibility = value ? Visibility.Visible : Visibility.Collapsed; }
+        void IDataFlow<bool>.Push(bool data)
+        {
+            toolButton.Visibility = data ? Visibility.Visible : Visibility.Collapsed; 
+        }
 
         private void ButtonClicked(object sender, RoutedEventArgs e) => eventOutput?.Execute();
 
@@ -81,5 +84,6 @@ namespace DomainAbstractions
 
             return buttonStyle;
         }
+
     }
 }

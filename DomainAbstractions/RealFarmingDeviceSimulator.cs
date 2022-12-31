@@ -52,23 +52,20 @@ namespace DomainAbstractions
             });
         }
 
-        char IDataFlow<char>.Data 
+        void IDataFlow<char>.Push(char data) 
         {
-            set
-            {
-                if (value == '{')
+                if (data == '{')
                 {
-                    _commandBuffer = value.ToString();
+                    _commandBuffer = data.ToString();
                     return;
                 }
 
-                _commandBuffer += value;
+                _commandBuffer += data;
 
-                if (value == '}')
+                if (data == '}')
                 {
                     SendResultAsync(_commandBuffer);
                 }
-            }
         }
 
         private async Task SendResultAsync(string command)
@@ -82,7 +79,7 @@ namespace DomainAbstractions
                 {
                     var response = responseDic[command];
                     foreach (var c in response.ToCharArray())
-                        responseOutput.Data = c;
+                        responseOutput.Push(c);
                     return;
                 }
 
@@ -90,7 +87,7 @@ namespace DomainAbstractions
                 {
                     _listIndex = 0;
                     await Task.Delay(ResponseDelay);  // simulate delay in the device
-                    responseOutput.Data = '^';
+                    responseOutput.Push('^');
                     return;
                 }
 
@@ -121,7 +118,7 @@ namespace DomainAbstractions
                     _dataIndex = int.Parse(command.Trim('{').Trim('}').Substring(2));
                     _headerIndex = 0;
                     await Task.Delay(ResponseDelay);  // simulate delay in the device
-                    responseOutput.Data = '^';
+                    responseOutput.Push('^');
                     return;
                 }
 
@@ -137,7 +134,7 @@ namespace DomainAbstractions
                 {
                     _dataRowIndex = 0;
                     await Task.Delay(ResponseDelay);  // simulate delay in the device
-                    responseOutput.Data = '^';
+                    responseOutput.Push('^');
                     return;
                 }
 
@@ -145,7 +142,7 @@ namespace DomainAbstractions
                 {
                     _dataRowIndex = int.Parse(command.Trim('{').Trim('}').Substring(2));
                     await Task.Delay(ResponseDelay);  // simulate delay in the device
-                    responseOutput.Data = '^';
+                    responseOutput.Push('^');
                     return;
                 }
 
@@ -182,13 +179,13 @@ namespace DomainAbstractions
             await Task.Delay(ResponseDelay);  // simulate delay in the device
             foreach (var c in dataString.ToCharArray())
             {
-                responseOutput.Data = c;
+                responseOutput.Push(c);
             }
         }
 
         void IEvent.Execute()
         {
-            listOfPorts.Data = new List<string>() { "COM-1" };
+            listOfPorts.Push(new List<string>() { "COM-1" });
         }
 
         private Dictionary<string, string> responseDic = new Dictionary<string, string>()

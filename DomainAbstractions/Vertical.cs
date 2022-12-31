@@ -67,6 +67,6 @@ namespace DomainAbstractions
         }
 
         // IDataFlow<bool> implementation
-        bool IDataFlow<bool>.Data { set => gridPanel.Visibility = value ? Visibility.Visible : Visibility.Collapsed; }
+        void IDataFlow<bool>.Push(bool data) { gridPanel.Visibility = data ? Visibility.Visible : Visibility.Collapsed; }
     }
 }

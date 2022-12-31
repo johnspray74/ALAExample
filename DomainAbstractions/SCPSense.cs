@@ -72,7 +72,10 @@ namespace DomainAbstractions
                 if (response.Equals("^"))
                 {
                     if (!_isDeviceConnected)
-                        _keepDetectingDevice = _isDeviceConnected = IsDeviceConnected.Data = true;
+                    {
+                        IsDeviceConnected.Push(true);
+                        _keepDetectingDevice = _isDeviceConnected = true;
+                    }
 
                     while (_keepDetectingDevice)
                         await SendTimedResponseAsync();
@@ -102,12 +105,18 @@ namespace DomainAbstractions
                 if (response != "")
                 {
                     if (!_isDeviceConnected)
-                        _isDeviceConnected = IsDeviceConnected.Data = true;
+                    {
+                        IsDeviceConnected.Push(true);
+                        _isDeviceConnected = true;
+                    }
                 }
                 else
                 {
                     if (_isDeviceConnected)
-                        _isDeviceConnected = IsDeviceConnected.Data = false;
+                    {
+                        IsDeviceConnected.Push(false);
+                        _isDeviceConnected = false;
+                    }
                 }
             }
             catch (TaskCanceledException)

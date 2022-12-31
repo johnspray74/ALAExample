@@ -44,12 +44,9 @@ namespace DomainAbstractions
         public SCPProtocol() { }
 
         // IDataFlow<char> implementation ------------------------------------------------------
-        char IDataFlow<char>.Data
+        void IDataFlow<char>.Push(char data)
         {
-            set
-            {
-                ParseIncomingCharacters(value);
-            }
+            ParseIncomingCharacters(data);
         }
 
         // IResponseDataFlow<string, string> implementation ------------------------------------
@@ -59,7 +56,7 @@ namespace DomainAbstractions
 
             if (command.StartsWith("{") && command.EndsWith("}"))
             {
-                scpCommand.Data = command; // this line will tell COMPortAdapter to write to the Port
+                scpCommand.Push(command); // this line will tell COMPortAdapter to write to the Port
                 diagnosticOutput?.Invoke("SCPProtocol.cs: Sending: " + command);
             }
             else

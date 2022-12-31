@@ -23,6 +23,6 @@ namespace DomainAbstractions
         public Not() { }
 
         // IDataFlow<bool> implementation -------------------------------------------------------
-        bool IDataFlow<bool>.Data { set => reversedInput.Data = !value; }
+        void IDataFlow<bool>.Push(bool data) { reversedInput.Push(!data); }
     }
 }

@@ -142,7 +142,7 @@ namespace DomainAbstractions
                 // output the primary key of the selected row
                 if (dataFlowSelectedPrimaryKey != null)
                 {
-                    dataFlowSelectedPrimaryKey.Data = dataSource.DataTable.Rows[dataGrid.SelectedIndex][PrimaryKey].ToString();
+                    dataFlowSelectedPrimaryKey.Push(dataSource.DataTable.Rows[dataGrid.SelectedIndex][PrimaryKey].ToString());
                 }
                 eventRowSelected?.Execute();
             }

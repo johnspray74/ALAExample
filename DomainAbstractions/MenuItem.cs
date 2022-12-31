@@ -74,7 +74,11 @@ namespace DomainAbstractions
         // IUI implmentation -----------------------------------------------------------
         UIElement IUI.GetWPFElement() => menuItem;
 
+        void IDataFlow<bool>.Push(bool data)
+        {
+            menuItem.Visibility = data ? Visibility.Visible : Visibility.Collapsed; 
+        }
+
         // IDataFlow<bool> implementation -----------------------------------------------
-        bool IDataFlow<bool>.Data { set => menuItem.Visibility = value ? Visibility.Visible : Visibility.Collapsed; }
     }
 }

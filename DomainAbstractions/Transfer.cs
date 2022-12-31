@@ -161,7 +161,7 @@ namespace DomainAbstractions
                         throw e;
                     }
 
-                    if (errorString != null) errorString.Data = e.Message;
+                    if (errorString != null) errorString.Push(e.Message);
                     Cancel_EventHappened();
                 }
             });
@@ -209,8 +209,8 @@ namespace DomainAbstractions
                         await destination.PutPageToDestinationAsync(AutoLoadNextBatch ? 0 : tuple.Item1, tuple.Item2, null);
 
                         eventCompleteNoErrors?.Execute();
-                        if (transactCompleteFlag != null) transactCompleteFlag.Data = true;
-                        if (dataFlowTransacting != null) dataFlowTransacting.Data = false;
+                        if (transactCompleteFlag != null) transactCompleteFlag.Push(true);
+                        if (dataFlowTransacting != null) dataFlowTransacting.Push(false);
                         break;
                     }
                 }
@@ -243,7 +243,7 @@ namespace DomainAbstractions
                 dtDestination.ImportRow(dtSource.Rows[i]);
 
                 // the reason of using i+1 is the index of a table starts from 0, the user should see 1 when it's 0.
-                foreach (var d in dataFlowsIndex) d.Data = (i+1).ToString();
+                foreach (var d in dataFlowsIndex) d.Push((i+1).ToString());
             }
 
             // if merge key is set - remove any duplicates, prioritizing rows with a higher index
@@ -265,11 +265,7 @@ namespace DomainAbstractions
         }
         
         // IDataFlow<bool> implementation
-        bool IDataFlow<bool>.Data { set => ClearDestination = value; }
-
-
-
-
+        void IDataFlow<bool>.Push(bool data) { ClearDestination = data; }
 
         public delegate void DiagnosticOutputDelegate(string output);
         public static event DiagnosticOutputDelegate diagnosticOutput;

@@ -24,6 +24,6 @@ namespace DomainAbstractions
         public ToEvent() { }
 
         // IDataFlow<T> implementation -----------------------------------------------------------------
-        T IDataFlow<T>.Data { set => eventOutput.Execute(); }
+        void IDataFlow<T>.Push(T data) { eventOutput.Execute(); }
     }
 }
