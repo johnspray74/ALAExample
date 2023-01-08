@@ -53,6 +53,8 @@ namespace DomainAbstractions
 
             string filterString = $"{extension} file (*.{extension})|*.{extension}";
 
+            // saveFileDialog.InitialDirectory = @"C:\";
+
             saveFileDialog.Filter = filterString;
 
             saveFileDialog.FileOk += (object sender, CancelEventArgs e) => {

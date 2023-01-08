@@ -20,14 +20,14 @@ namespace DomainAbstractions
     /// Error messages can be for a whole columns, a whole row, or a specific cell.
     /// ------------------------------------------------------------------------------------------------------------------
     /// Ports:
-    /// 1. IEvent start: start transacting data from the source DataTable to the destination DataTable
-    /// 2. IDataFlow<bool> clearDestination: whether to clear destination before transferring
-    /// 2. ITableDataFlow tableDataFlowSource: the source data to be transferred
-    /// 3. ITableDataFlow tableDataFlowDestination: destination for the DataTable to be transferred to
-    /// 4. List<IDataFlow<string>> dataFlowsIndex: fan-out list 
-    /// 5. IEvent eventCompleteNoErrors: transaction complete event
-    /// 6. IDataFlow<bool> transactCompleteFlag: transaction complete boolean value
-    /// 7. IDataFlow<bool> dataFlowTransacting: boolean output of whether the transact is still processing
+    /// 1. IEvent start: input - start transacting data from the source DataTable to the destination DataTable
+    /// 2. IDataFlow<bool> input - clearDestination - whether to clear destination before transferring
+    /// 2. ITableDataFlow tableDataFlowSource: source of the transfer
+    /// 3. ITableDataFlow tableDataFlowDestination: destination of the transfer
+    /// 4. List<IDataFlow<string>> dataFlowsIndex: outputs each index of the record being transferred for use in, for example, a progress bar (probably shouldn't be a list. If it needs to be wired to muliple places than wire it to a DataFlowConnector.)
+    /// 5. IEvent eventCompleteNoErrors: output transaction complete event
+    /// 6. IDataFlow<bool> transactCompleteFlag: transaction complete boolean value (not sure why we need both an event and a boolean - this one is never reset to false anyway - delete this one and make sure nothing is wired to it)
+    /// 7. IDataFlow<bool> dataFlowTransacting: boolean output of whether the transact is still processing (never set to true - delete)
     /// 8. IEventB cancel: if Transact has started, it listens for another Event from this input port to cancel the transact
     /// </summary>
     public class Transfer : IEvent, IDataFlow<bool> // start, clearDestination

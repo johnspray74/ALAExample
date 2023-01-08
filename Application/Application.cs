@@ -1,3 +1,6 @@
+
+// #define test1
+
 using System;
 using System.Windows.Media;
 using System.Collections.Generic;
@@ -7,6 +10,9 @@ using System.Diagnostics;
 using DomainAbstractions;
 using ProgrammingParadigms;
 using Foundation;
+
+
+
 
 namespace Application
 {
@@ -55,6 +61,33 @@ namespace Application
 
         private Application()
         {
+
+#if test1
+            System.Windows.Window window = new System.Windows.Window();
+            window.Width = 300;
+            window.Height = 300;
+
+            System.Windows.Controls.Button button = new System.Windows.Controls.Button();
+            button.Content = "Click";
+            button.Height = 23;
+            button.Margin = new System.Windows.Thickness(96, 50, 107, 0);
+            button.VerticalAlignment = System.Windows.VerticalAlignment.Top;
+            button.Click += new System.Windows.RoutedEventHandler(
+                (object sender, System.Windows.RoutedEventArgs e) =>
+                {
+                    Microsoft.Win32.SaveFileDialog saveFileDialog = new();
+                    saveFileDialog.InitialDirectory = "c:\\";
+                    saveFileDialog.ShowDialog();
+                }
+            );
+            window.Content = button;
+
+            System.Windows.Application app = new System.Windows.Application();
+            Console.WriteLine("MainWindow Running");
+            app.Run(window);
+
+
+#else
 
             // First part of the code is to set up a real farming device simulator instance that we configure with mock data.
             // In the real application, this would be a real farming device connected to the physical COM port of the PC.
@@ -109,7 +142,6 @@ namespace Application
             var sessionDataGrid = new Grid() { InstanceName = "data" };
             var csvFileReaderWriter = new CSVFileReaderWriter();
             var comPort = new COMPort();
-
 
             // Now do all the wiring of the diagram
             // Note any instances of domain abstractions not already instantiated anonymously in this code.
@@ -198,6 +230,7 @@ namespace Application
                     , "IsDeviceConnected")
                 )
             , "appStart");
+#endif
             // -------------------------- END CODE MANUALLY GENERATED FROM DIAGRAM --------------------------------------------------------------
 
 

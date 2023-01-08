@@ -12,14 +12,24 @@ namespace ProgrammingParadigms
     /// Sometimes one directional and sometimes bi-directional depending on the operators(some are bidirectional).
     /// Data only moves when an operator called a transact is fired. (Called transact because it transfers the whole table at once so it remains self-consistent).
     /// Transactions can be triggered in either direction.
-    /// Transact can be near the source, or the destination, or anywhere in-between.Thus if the transaction is initiated at the source it is analogous to RX (Reactive extensions) with a hot observable.If the transaction is at the destination, it is analogous to a query.
+    /// Transact can be near the source, or the destination, or anywhere in-between.
+    /// Thus if the transaction is initiated at the source it is analogous to RX (Reactive extensions) with a hot observable.
+    /// If the transaction is at the destination, it is analogous to a query.
     /// Some abstractions are sources (SCPSessionList), some are destinations (readonly grid) and many are both(FileReaderWriter, DatabaseTable, SCPSessionData).
     /// Some abstractions transform data and are not considered a source or destination, so they send the data through, transformed, when a transaction occurs anywhere in their stream.
     /// The ITableData interface also has a 'current row'.
-    /// At the logical level, all rows are transmitted on a transaction.For example, several of these interfaces can be connected directly to a single destination and the destination will show the last transaction sent from any of the sources. In practice only the rows that are actually needed are transferred, so a grid actually requests the data it needs for the display even if the transact itself is at the source.
-    /// This will cause less data to be brought off the device or from the database.If the sink is say a file or a website, then all data must be queried. When this happens for a slow device, the data is queried in chunks that can be adjusted for efficiency.
-    /// Many decorators can be implemented such as the equivalent of Select (Map), Where (Filter), Aggregate (Reduce). When the inputs change, a new transaction will be sent from that point.For example when a filter input port changes, a new transaction is sent logically consisting of the new set of rows.
-    /// Three or more ITableDataFlows can be connected to a single point.Transacts or inactive Gates will block them.If there is more than one active destination, the data flows to all destinations.When there are multiple active sources it will cause an error.
+    /// At the logical level, all rows are transmitted on a transaction.
+    /// For example, several of these interfaces can be connected directly to a single destination and the destination will show the last transaction sent from any of the sources. 
+    /// In practice only the rows that are actually needed are transferred, so a grid actually requests the data it needs for the display even if the transact itself is at the source.
+    /// This will cause less data to be brought off the device or from the database.
+    /// If the sink is say a file or a website, then all data must be queried. When this happens for a slow device, the data is queried in chunks that can be adjusted for efficiency.
+    /// Many decorators can be implemented such as the equivalent of Select (Map), Where (Filter), Aggregate (Reduce). 
+    /// When the inputs change, a new transaction will be sent from that point.
+    /// For example when a filter input port changes, a new transaction is sent logically consisting of the new set of rows.
+    /// Three or more ITableDataFlows can be connected to a single point.
+    /// Transacts or inactive Gates will block them.
+    /// If there is more than one active destination, the data flows to all destinations.
+    /// When there are multiple active sources it will cause an error.
     /// Rule: When you have more than two ITableDataFlows connected to a single point, all but one must have a Transact so it is clear which two the data is flowing through on a transaction.
     /// </summary>
     public interface ITableDataFlow

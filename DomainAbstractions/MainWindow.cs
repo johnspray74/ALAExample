@@ -88,7 +88,8 @@ namespace DomainAbstractions
                 appClosing?.Execute();
             };
 
-            window.Closed += (object sender, EventArgs e) => ((IEvent)this).Execute();
+            window.Closed += (object sender, EventArgs e) =>
+                ((IEvent)this).Execute();
         }
 
 
